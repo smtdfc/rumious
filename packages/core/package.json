@@ -1,6 +1,6 @@
 {
   "name": "@smtdfc_group/aura-core",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "The simple library for build UI",
   "keywords": [
     "aura",
@@ -14,7 +14,8 @@
   "unpkg": "dist/index.min.js",
   "scripts": {
     "build": "rollup -c",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "release": "standard-version"
   },
   "files": [
     "dist/*",
