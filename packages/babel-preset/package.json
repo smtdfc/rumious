@@ -8,7 +8,7 @@
     "smtdfc"
   ],
   "scripts": {
-    "release": "standard-version --dry-run--no-tag --no-git-tag-version && npm publish --access-public && npm pkg fix"
+    "release": "standard-version && npm publish --access public && npm pkg fix"
   },
   "author": "smtdfc",
   "license": "MIT",
