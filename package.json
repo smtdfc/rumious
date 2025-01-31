@@ -1,11 +1,11 @@
 {
   "name": "smtdfc-aura",
   "private": true,
-  "workspace": [
-    "packages/*"
+  "workspaces": [
+    "packages/**"
   ],
   "scripts": {
-    "build": "node ./scripts/prepare.mjs && node ./scripts/build.mjs",
+    "build:core":"npm run build --workspace packages/core",
     "test": "rollup -c ./test/rollup.config.mjs --watch "
   },
   "devDependencies": {
