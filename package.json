@@ -1,8 +1,8 @@
 {
   "name": "smtdfc-aura",
-  "private":true,
-  "workspace":[
-   "packages/*"
+  "private": true,
+  "workspace": [
+    "packages/*"
   ],
   "scripts": {
     "build": "node ./scripts/prepare.mjs && node ./scripts/build.mjs",
@@ -17,7 +17,8 @@
     "@rollup/plugin-terser": "^0.4.4",
     "babel-preset-minify": "^0.5.2",
     "pnpm": "^9.15.4",
-    "rollup": "^3.28.1"
+    "rollup": "^3.28.1",
+    "standard-version": "^9.5.0"
   },
   "version": "1.0.0",
   "main": "index.js",

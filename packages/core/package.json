@@ -1,6 +1,6 @@
 {
   "name": "@smtdfc_group/aura-core",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "The simple library for build UI",
   "keywords": [
     "aura",
@@ -15,7 +15,7 @@
   "scripts": {
     "build": "rollup -c",
     "prepublishOnly": "npm run build",
-    "release": "standard-version && git push --follow-tags && npm publish"
+    "release": "standard-version && git push --follow-tags && npm publish && npm pkg fix"
   },
   "files": [
     "dist/*",
@@ -26,7 +26,7 @@
   "peerDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/smtdfc/AuraJs"
+    "url": "git+https://github.com/smtdfc/AuraJs.git"
   },
   "bugs": {
     "url": "https://github.com/smtdfc/AuraJs/issues"
