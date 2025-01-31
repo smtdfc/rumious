@@ -1,5 +1,5 @@
 {
-  "name": "@smtdfc/aura-babel-preset",
+  "name": "@smtdfc_team/aura-babel-preset",
   "version": "0.0.1",
   "description": "Aura Preset for Babel",
   "keywords": [
@@ -7,6 +7,9 @@
     "aurajs",
     "smtdfc"
   ],
+  "scripts": {
+    "release": "standard-version && git push --follow-tags && npm publish && npm pkg fix"
+  },
   "author": "smtdfc",
   "license": "MIT",
   "files": [
