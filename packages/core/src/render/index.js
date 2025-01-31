@@ -1,6 +1,5 @@
 export function render(element, container, renderContext = {}) {
   let dom;
-
   if (element.type === "FRAGMENT") {
     element.props.children.forEach(child => render(child, container, renderContext));
     return container;
@@ -12,13 +11,13 @@ export function render(element, container, renderContext = {}) {
     document.createElement(element.type);
 
   const isProperty = key => key !== "children";
-  Object.keys(element.props)
+  Object.keys(element.props ?? {})
     .filter(isProperty)
     .forEach(name => {
       dom[name] = element.props[name];
     });
 
-  element.props.children.forEach(child => render(child, dom, renderContext));
+  if(element.props) element.props.children.forEach(child => render(child, dom, renderContext));
   container.appendChild(dom);
 
   return container;

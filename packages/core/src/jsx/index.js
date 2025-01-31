@@ -2,7 +2,7 @@ function createElement(type, props, ...children) {
   if (type === createFragment) {
     return createFragment(...children);
   }
-  
+
   return {
     type,
     props: {
@@ -13,7 +13,7 @@ function createElement(type, props, ...children) {
         createTextElement(child)
       ),
     },
-  }
+  };
 }
 
 function createTextElement(text) {
@@ -23,15 +23,19 @@ function createTextElement(text) {
       nodeValue: text,
       children: [],
     },
-  }
+  };
 }
 
 function createFragment(...children) {
   return {
     type: "FRAGMENT",
     props: {
-      children: children,
-    },
+      children: children.map(child =>
+        typeof child === "object" ?
+        child :
+        createTextElement(child)
+      ),
+    }
   };
 }
 
