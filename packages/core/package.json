@@ -15,7 +15,7 @@
   "scripts": {
     "build": "rollup -c",
     "prepublishOnly": "npm run build",
-    "release": "standard-version"
+    "release": "standard-version && git push --follow-tags && npm publish"
   },
   "files": [
     "dist/*",
