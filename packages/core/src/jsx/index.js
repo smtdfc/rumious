@@ -13,7 +13,7 @@ function createElement(type, props, ...children) {
         createTextElement(child)
       ),
     },
-  };
+  }
 }
 
 function createTextElement(text) {
@@ -23,7 +23,7 @@ function createTextElement(text) {
       nodeValue: text,
       children: [],
     },
-  };
+  }
 }
 
 function createFragment(...children) {
@@ -35,7 +35,7 @@ function createFragment(...children) {
         child :
         createTextElement(child)
       ),
-    }
+    },
   };
 }
 
