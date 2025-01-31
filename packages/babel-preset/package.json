@@ -1,6 +1,6 @@
 {
   "name": "@smtdfc_team/aura-babel-preset",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "Aura Preset for Babel",
   "keywords": [
     "aura",
@@ -14,5 +14,10 @@
   "license": "MIT",
   "files": [
     "index.js"
-  ]
+  ],
+  "standard-version": {
+    "skip": {
+      "tag": true
+    }
+  }
 }
