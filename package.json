@@ -1,0 +1,30 @@
+{
+  "name": "smtdfc-aura",
+  "private":true,
+  "workspace":[
+   "packages/*"
+  ],
+  "scripts": {
+    "build": "node ./scripts/prepare.mjs && node ./scripts/build.mjs",
+    "test": "rollup -c ./test/rollup.config.mjs --watch "
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.26.7",
+    "@babel/preset-react": "^7.26.3",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "^28.0.2",
+    "@rollup/plugin-node-resolve": "^16.0.0",
+    "@rollup/plugin-terser": "^0.4.4",
+    "babel-preset-minify": "^0.5.2",
+    "pnpm": "^9.15.4",
+    "rollup": "^3.28.1"
+  },
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

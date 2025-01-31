@@ -1,0 +1,15 @@
+{
+  "name": "@smtdfc/aura-babel-preset",
+  "version": "0.0.1",
+  "description": "Aura Preset for Babel",
+  "keywords": [
+    "aura",
+    "aurajs",
+    "smtdfc"
+  ],
+  "author": "smtdfc",
+  "license": "MIT",
+  "files": [
+    "index.js"
+  ]
+}
