@@ -1,6 +1,6 @@
 {
   "name": "@smtdfc_group/aura-babel-preset",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "Aura Preset for Babel",
   "keywords": [
     "aura",
@@ -17,7 +17,8 @@
   ],
   "standard-version": {
     "skip": {
-      "tag": true
+      "tag": true,
+      "changelog":true
     }
   }
 }
