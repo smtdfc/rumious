@@ -4,9 +4,9 @@ export class RumiousComponentElement extends HTMLElement{
     this.instance = null;
   }
   
-  init(componentConstructor,props,renderer){
+  init(componentConstructor,props,wrapped={},renderer){
     this.instance = new componentConstructor();
-    this.instance.prepare(this,props,renderer);
+    this.instance.prepare(this,props,wrapped,renderer);
   }
   
   connectedCallback(){

@@ -6,12 +6,14 @@ export class RumiousComponent {
     this.props = {};
     this.renderContext = new RumiousRenderContext(this);
     this.renderer = null;
+    this.wrapped= null;
   }
 
-  prepare(element, props, renderer = null) {
+  prepare(element, props, wrapped={}, renderer = null) {
     this.element = element;
     this.props = props;
     this.renderer = renderer;
+    this.wrapped = wrapped;
   }
 
   template() { return {}; }

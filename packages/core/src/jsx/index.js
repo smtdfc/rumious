@@ -1,57 +1,33 @@
 import { isComponent } from '../component/component.js';
+import {RumiousElement,RumiousElementList} from '../dom/element.js';
 
 
 function createElement(type, props, ...children) {
-  if(isComponent(type)){
-    return createComponent(type,props);
+  if (isComponent(type)) {
+    return createComponent(type, props, children);
   }
-  
+
   if (type === createFragment) {
     return createFragment(...children);
   }
 
-  return {
-    type,
-    props: {
-      ...props,
-      children: children.map(child =>
-        typeof child === "object" ?
-        child :
-        createTextElement(child)
-      ),
-    },
-  }
+  return new RumiousElement(type, props || {}, normalizeChildren(children));
 }
 
 function createTextElement(text) {
-  return {
-    type: "TEXT_ELEMENT",
-    props: {
-      nodeValue: text,
-      children: [],
-    },
-  }
+  return new RumiousElement("TEXT_ELEMENT", { nodeValue: text }, []);
 }
 
-function createComponent(type,props){
-  return {
-    type:"COMPONENT",
-    props:props,
-    component:type
-  }
+function createComponent(type, props, children) {
+  return new RumiousElement("COMPONENT", { component: type, ...props },new RumiousElementList(normalizeChildren(children)));
 }
 
 function createFragment(...children) {
-  return {
-    type: "FRAGMENT",
-    props: {
-      children: children.map(child =>
-        typeof child === "object" ?
-        child :
-        createTextElement(child)
-      ),
-    },
-  };
+  return new RumiousElement("FRAGMENT", {}, normalizeChildren(children));
+}
+
+function normalizeChildren(children) {
+  return children.map(child => (typeof child === "object" ? child : createTextElement(child)));
 }
 
 window.RUMIOUS_JSX_SUPPORT = {

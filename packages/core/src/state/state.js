@@ -18,7 +18,6 @@ export class RumiousState {
         return value && typeof value === 'object' ? new RumiousState(value, this.reactor).value : value;
       },
       set: (target, prop, value) => {
-        
         if (value && typeof value === 'object') {
           value = new RumiousState(value, this.reactor).proxy;
         }
