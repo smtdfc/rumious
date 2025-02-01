@@ -1,5 +1,19 @@
+import {isCamelCase} from '../utils/checker.js';
+import {isComponent,renderComponent} from '../component/render.js';
+
 export function render(element, container, renderContext = {}) {
   let dom;
+  
+  if(isComponent(element.type)){
+    dom = renderComponent(
+      element.type,
+      element.props,
+      render
+    )
+    container.appendChild(dom)
+    return container;
+  }
+  
   if (element.type === "FRAGMENT") {
     element.props.children.forEach(child => render(child, container, renderContext));
     return container;
@@ -14,7 +28,16 @@ export function render(element, container, renderContext = {}) {
   Object.keys(element.props ?? {})
     .filter(isProperty)
     .forEach(name => {
-      dom[name] = element.props[name];
+      if(name == "ref") renderContext.addRef(element.props[name]);
+      else if(name.startsWith("on") && isCamelCase(name)){
+        dom.addEventListener(name.substring(2),element.props[name]);
+      }
+      else{
+        if(element.nodeType === Node.ELEMENT_NODE){
+          dom.setAttribute(name,element.props[name]);
+        }
+        else dom[name] = element.props[name];
+      }
     });
 
   if(element.props) element.props.children.forEach(child => render(child, dom, renderContext));
