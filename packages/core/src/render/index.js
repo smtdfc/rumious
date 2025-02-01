@@ -1,5 +1,6 @@
 import {isCamelCase} from '../utils/checker.js';
-import {isComponent,renderComponent} from '../component/render.js';
+import {renderComponent} from '../component/render.js';
+import {isComponent} from '../component/component.js';
 
 export function render(element, container, renderContext = {}) {
   let dom;

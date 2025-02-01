@@ -22,7 +22,7 @@ export default [
       {
         file: path.join(__dirname, 'dist/index.js'),
         format: 'iife',
-        name: 'Aura',
+        name: 'Rumious',
         sourcemap: true,
       },
     ],
@@ -53,7 +53,7 @@ export default [
       {
         file: path.join(__dirname, 'dist/index.min.js'),
         format: 'iife',
-        name: 'Aura',
+        name: 'Rumious',
         sourcemap: false,
       },
     ],

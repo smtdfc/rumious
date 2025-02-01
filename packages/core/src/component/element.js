@@ -1,4 +1,4 @@
-export class AuraComponentElement extends HTMLElement{
+export class RumiousComponentElement extends HTMLElement{
   constructor(){
     super();
     this.instance = null;
@@ -19,4 +19,4 @@ export function createComponentElement(){
    return document.createElement("a-component");
 }
 
-window.customElements.define("a-component",AuraComponentElement);
+window.customElements.define("a-component",RumiousComponentElement);

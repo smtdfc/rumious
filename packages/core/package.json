@@ -1,10 +1,10 @@
 {
-  "name": "@smtdfc_group/aura-core",
-  "version": "0.0.4",
+  "name": "rumious",
+  "version": "0.0.1",
   "description": "The simple library for build UI",
   "keywords": [
-    "aura",
-    "aurajs",
+    "rumious",
+    "rumiousjs",
     "smtdfc"
   ],
   "author": "smtdfc",
@@ -26,10 +26,10 @@
   "peerDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/smtdfc/AuraJs.git"
+    "url": "git+https://github.com/smtdfc/rumious.git"
   },
   "bugs": {
-    "url": "https://github.com/smtdfc/AuraJs/issues"
+    "url": "https://github.com/smtdfc/rumious/issues"
   },
-  "homepage": "https://github.com/smtdfc/AuraJs#readme"
+  "homepage": "https://github.com/smtdfc/rumious#readme"
 }

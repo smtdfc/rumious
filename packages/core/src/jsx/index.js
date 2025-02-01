@@ -1,8 +1,7 @@
-import { isComponent } from '../component/render.js';
+import { isComponent } from '../component/component.js';
 
 
 function createElement(type, props, ...children) {
-  
   if(isComponent(type)){
     return createComponent(type,props);
   }
@@ -55,7 +54,7 @@ function createFragment(...children) {
   };
 }
 
-window.AURA_JSX_SUPPORT = {
+window.RUMIOUS_JSX_SUPPORT = {
   createElement,
   createFragment,
 };

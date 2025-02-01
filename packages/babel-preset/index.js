@@ -6,8 +6,8 @@ module.exports = function(api) {
         [
           "@babel/preset-react",
           {
-          "pragma": "AURA_JSX_SUPPORT.createElement",
-          "pragmaFrag": "AURA_JSX_SUPPORT.createFragment",
+          "pragma": "RUMIOUS_JSX_SUPPORT.createElement",
+          "pragmaFrag": "RUMIOUS_JSX_SUPPORT.createFragment",
           "throwIfNamespace": false,
           "runtime": "classic"
           }

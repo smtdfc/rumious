@@ -1,10 +1,10 @@
 {
-  "name": "@smtdfc_group/aura-babel-preset",
+  "name": "rumious-babel-preset",
   "version": "0.0.1",
-  "description": "Aura Preset for Babel",
+  "description": "Rumious Preset for Babel",
   "keywords": [
-    "aura",
-    "aurajs",
+    "rumious",
+    "rumiousjs",
     "smtdfc"
   ],
   "scripts": {

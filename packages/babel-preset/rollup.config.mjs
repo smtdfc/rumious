@@ -13,7 +13,7 @@ const getOutputConfigs = () => {
     {
       file: path.join(__dirname, 'dist/bundle.iife.js'),
       format: 'iife',
-      name: 'Aura',
+      name: 'Rumious',
       sourcemap: !isProduction,
     },
     {
@@ -33,7 +33,7 @@ const getOutputConfigs = () => {
     outputs.push({
       file: path.join(__dirname, 'dist/bundle.iife.min.js'),
       format: 'iife',
-      name: 'Aura',
+      name: 'Rumious',
       plugins: [terser()], // Minify chỉ cho production
       sourcemap: false,
     });

@@ -1,5 +1,5 @@
 {
-  "name": "smtdfc-aura",
+  "name": "smtdfc-rumious",
   "private": true,
   "workspaces": [
     "packages/**"

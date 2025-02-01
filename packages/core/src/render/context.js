@@ -1,7 +1,6 @@
-export class AuraRenderContext{
+export class RumiousRenderContext{
   constructor(target){
-    this.bindings = {};
-    this.refs = {};
+    this.target = target
   }
   
   
