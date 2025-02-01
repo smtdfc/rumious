@@ -20,6 +20,7 @@ export class RumiousComponent {
     let template = this.template();
     let fragment = this.renderer(template, document.createDocumentFragment(), this.renderContext);
     this.element.appendChild(fragment);
+    this.onRender();
   }
 
   onCreate() {}

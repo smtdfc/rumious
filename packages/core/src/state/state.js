@@ -15,9 +15,10 @@ export class RumiousState {
     this._value = new Proxy(target, {
       get: (target, prop) => {
         const value = target[prop];
-        return value && typeof value === 'object' ? new RumiousState(value, this.reactor).proxy : value;
+        return value && typeof value === 'object' ? new RumiousState(value, this.reactor).value : value;
       },
       set: (target, prop, value) => {
+        
         if (value && typeof value === 'object') {
           value = new RumiousState(value, this.reactor).proxy;
         }
