@@ -1,4 +1,12 @@
+import { isComponent } from '../component/render.js';
+
+
 function createElement(type, props, ...children) {
+  
+  if(isComponent(type)){
+    return createComponent(type,props);
+  }
+  
   if (type === createFragment) {
     return createFragment(...children);
   }
@@ -23,6 +31,14 @@ function createTextElement(text) {
       nodeValue: text,
       children: [],
     },
+  }
+}
+
+function createComponent(type,props){
+  return {
+    type:"COMPONENT",
+    props:props,
+    component:type
   }
 }
 

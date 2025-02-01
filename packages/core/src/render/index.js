@@ -4,10 +4,10 @@ import {isComponent,renderComponent} from '../component/render.js';
 export function render(element, container, renderContext = {}) {
   let dom;
   
-  if(isComponent(element.type)){
+  if(element.type === "COMPONENT"){
     dom = renderComponent(
-      element.type,
-      element.props,
+      element.component,
+      element.props ?? {},
       render
     )
     container.appendChild(dom)
