@@ -1,22 +1,22 @@
-import { RumiousRenderContext } from '../render/context.js';
-
 export class RumiousComponent {
   constructor() {
     this.element = null;
     this.props = {};
     this.renderContext = new RumiousRenderContext(this);
     this.renderer = null;
-    this.wrapped= null;
+    this.wrapped = null;
   }
 
-  prepare(element, props, wrapped={}, renderer = null) {
+  prepare(element, props, wrapped = {}, renderer = null) {
     this.element = element;
     this.props = props;
     this.renderer = renderer;
     this.wrapped = wrapped;
   }
 
-  template() { return {}; }
+  template() {
+    return {};
+  }
 
   requestRender() {
     let template = this.template();
@@ -25,12 +25,21 @@ export class RumiousComponent {
     this.onRender();
   }
 
+  async requestCleanUp() {
+    if (this.element) {
+      let cloned = this.element.cloneNode(true);
+      this.element.replaceWith(cloned);
+      this.element = cloned;
+
+      while (this.element.firstChild) {
+        this.element.removeChild(this.element.firstChild);
+      }
+    }
+  }
+
+  onInit() {}
   onCreate() {}
   onRender() {}
   onUpdate() {}
   onDestroy() {}
-}
-
-export function isComponent(constructor) {
-  return Object.getPrototypeOf(constructor) === RumiousComponent;
 }
