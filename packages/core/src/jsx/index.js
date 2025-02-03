@@ -1,6 +1,12 @@
 import { isComponent } from '../component/component.js';
 import {RumiousElement,RumiousElementList} from '../dom/element.js';
+import {registerDirective} from '../render/directives.js';
 
+
+
+function createDirective(type,name,value) {
+  return registerDirective(type,name,value)
+}
 
 function createElement(type, props, ...children) {
   if (isComponent(type)) {
@@ -33,4 +39,5 @@ function normalizeChildren(children) {
 window.RUMIOUS_JSX_SUPPORT = {
   createElement,
   createFragment,
+  createDirective
 };

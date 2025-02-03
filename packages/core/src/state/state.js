@@ -1,5 +1,6 @@
 import { RumiousReactor } from './reactive.js';
 
+const ROOT_STATE = Symbol('ROOT_STATE');
 export class RumiousState {
   constructor(target, reactor = null) {
     this.target = target;
@@ -15,7 +16,8 @@ export class RumiousState {
     this._value = new Proxy(target, {
       get: (target, prop) => {
         const value = target[prop];
-        return value && typeof value === 'object' ? new RumiousState(value, this.reactor).value : value;
+        value.setProperty(ROOT_STATE,this)
+        return value && typeof value === 'object' ? new RumiousState(value, this.reactor).value : new RumiousState(value, this.reactor);
       },
       set: (target, prop, value) => {
         if (value && typeof value === 'object') {
@@ -27,7 +29,6 @@ export class RumiousState {
       }
     });
   }
-
 
   set value(val) {
     if (val && typeof val === "object") {
@@ -45,4 +46,8 @@ export class RumiousState {
 
 export function createState(value) {
   return new RumiousState(value);
+}
+
+export function isState(obj){
+  return obj instanceof RumiousState;
 }

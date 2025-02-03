@@ -1,3 +1,5 @@
+const path = require("path")
+
 module.exports = function(api) {
   api.cache(true);
 
@@ -12,6 +14,9 @@ module.exports = function(api) {
           "runtime": "classic"
           }
         ]
+    ],
+    "plugins":[
+      path.join(__dirname,"./tranforms")
     ]
   };
 };

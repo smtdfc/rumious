@@ -1,3 +1,5 @@
+import {RumiousRenderContext} from '../render/context.js';
+
 export class RumiousComponent {
   constructor() {
     this.element = null;
@@ -42,4 +44,8 @@ export class RumiousComponent {
   onRender() {}
   onUpdate() {}
   onDestroy() {}
+}
+
+export function isComponent(component){
+  return Object.getPrototypeOf(component) === RumiousComponent;
 }
