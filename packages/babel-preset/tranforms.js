@@ -43,7 +43,7 @@ module.exports = function({ types: t }) {
           t.objectProperty(t.identifier("type"), t.stringLiteral(valueInfo.type)),
           t.objectProperty(
               t.identifier("value"),
-              valueInfo.type === "value" ? t.valueToNode(valueInfo.value) : valueInfo.value
+              valueInfo.type === "dynamic_value" ? t.valueToNode(valueInfo.value) : valueInfo.value
             )
         ])
       ]

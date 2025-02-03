@@ -24,21 +24,21 @@ function handleRegularElement(element, renderContext) {
     if (name.startsWith("on") && isCamelCase(name)) {
       dom.addEventListener(name.substring(2).toLowerCase(), propValue);
     } else {
-      setElementProps(dom, name, propValue);
+      setElementProps(dom, name, propValue,renderContext);
     }
   });
   return dom;
 }
 
-function handleDirective(dom,directive){
-  directive.init(dom)
+function handleDirective(dom,directive,renderContext){
+  directive.init(dom,renderContext);
 }
 
-function setElementProps(dom, name, propValue) {
+function setElementProps(dom, name, propValue,renderContext) {
   if (dom.nodeType === Node.TEXT_NODE) {
     dom.nodeValue = propValue;
   } else if (propValue instanceof RumiousDirective) {
-    handleDirective(dom,propValue);
+    handleDirective(dom,propValue,renderContext);
   } else {
     dom.setAttribute(name, propValue);
   }
