@@ -1,0 +1,17 @@
+{
+  "name": "rumious-start-app",
+  "version": "0.0.1",
+  "main": "index.jsx",
+  "scripts": {
+    "build:dev":"rumious build:dev",
+    "build:prod":"rumious build:prod",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "rumious":"*",
+    "rumious-babel-preset":"*"
+  },
+  "author": "",
+  "license": "MIT",
+  "description": ""
+}
