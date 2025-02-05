@@ -32,7 +32,7 @@ export default [
       babel({
         babelHelpers: 'bundled',
         presets: [['@babel/preset-env']],
-        compact: true,
+        compact: false,
         minified: false, 
       }),
     ],

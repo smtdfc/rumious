@@ -13,7 +13,7 @@ export class RumiousDirective {
 }
 
 export class RumiousEventBindingDirective extends RumiousDirective {
-  init(dom, renderContext) {
+  async init(dom, renderContext) {
     let fn = null;
 
     const getHandler = (value) => {
@@ -45,12 +45,54 @@ export class RumiousEventBindingDirective extends RumiousDirective {
   }
 }
 
+export class RumiousPropsBindingDirective extends RumiousDirective {
+  async init(dom, renderContext) {
+    let fn = null;
+
+    if (this.value.type === "expression") {
+
+    } else if (this.value.type === "dynamic_value") {
+      let currentStateValue = this.value.evaluator?.(renderContext.target)
+      let currentState = renderContext.find(this.value.value.objectName);
+      if (!currentState) {
+        throw "Invalid props value: Directive bind: require a RumiousState Object !"
+      } else {
+        currentState.reactor.addBinding(() => {
+          let currentStateValue = this.value.evaluator?.(renderContext.target)
+          this.bindAttr(dom,currentStateValue);
+        })
+      }
+
+      this.bindAttr(dom,currentStateValue);
+    }
+  }
+  
+  normalizeValue(value){
+    if(typeof value === "object"){
+      return value.toString?.() ?? ""
+    }
+    return value;
+  }
+  
+  async bindAttr(dom,value) {
+    switch(this.name){
+      case "html":
+        dom.innerHTML = this.normalizeValue(value);
+        break;
+      
+      
+    }
+  }
+}
+
 
 const directives = {
   on(event, value) {
     return new RumiousEventBindingDirective("on", event, value);
   },
-  "bind": null
+  bind(attr, value) {
+    return new RumiousPropsBindingDirective("bind", attr, value);
+  }
 };
 
 

@@ -1,46 +1,68 @@
 import { RumiousReactor } from './reactive.js';
+import { RumiousReducer } from './reducer.js';
+import { produceState } from './produce.js';
 
 const ROOT_STATE = Symbol('ROOT_STATE');
+
 export class RumiousState {
   constructor(target, reactor = null) {
-    this.target = target;
+    this.value = target;
     this.reactor = reactor ?? new RumiousReactor(this, []);
-    if (target && typeof target === 'object') {
-      this.wrapProxy(target)
-    } else {
-      this._value = target;
-    }
   }
 
-  wrapProxy(target) {
-    this._value = new Proxy(target, {
-      get: (target, prop) => {
-        const value = target[prop];
-        value.setProperty(ROOT_STATE,this)
-        return value && typeof value === 'object' ? new RumiousState(value, this.reactor).value : new RumiousState(value, this.reactor);
-      },
-      set: (target, prop, value) => {
-        if (value && typeof value === 'object') {
-          value = new RumiousState(value, this.reactor).proxy;
-        }
-        this.reactor.react();
-        target[prop] = value;
-        return true;
+  produce(recipe) {
+    return produceState(this, recipe);
+  }
+
+
+  reducer(...args) {
+    let computedObj;
+    if (args.length === 1) {
+      computedObj = new RumiousReducer(this, "", args[0])
+    } else {
+      computedObj = new RumiousReducer(this, args[0], args[1])
+    }
+    return computedObj.trigger.bind(computedObj);
+  }
+
+  setObjectByPath(path = "", value) {
+    if (path.length == 0) {
+      this.value = value;
+      return;
+    }
+    
+    if (typeof path !== 'string' || !path) {
+      throw new Error('Invalid path');
+    }
+
+    let keys = path.split('.');
+    let obj = this.value;
+
+    for (let i = 0; i < keys.length - 1; i++) {
+      let key = keys[i];
+      if (!(key in obj)) {
+        obj[key] = {};
       }
-    });
+      obj = obj[key];
+    }
+
+    obj[keys[keys.length - 1]] = value;
   }
 
-  set value(val) {
-    if (val && typeof val === "object") {
-      this.wrapProxy(val);
+  set(...args) {
+    if (args.length === 1) {
+      this.value = args[0];
     } else {
-      this._value = val;
+      let path = args[0];
+      let value = args[1];
+      this.setObjectByPath(path, value);
     }
+
     this.reactor.react();
   }
 
-  get value() {
-    return this._value;
+  get() {
+    return this.value;
   }
 }
 
@@ -48,6 +70,6 @@ export function createState(value) {
   return new RumiousState(value);
 }
 
-export function isState(obj){
+export function isState(obj) {
   return obj instanceof RumiousState;
 }

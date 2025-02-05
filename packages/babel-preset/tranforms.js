@@ -7,17 +7,19 @@ module.exports = function({ types: t }) {
 
     if (match) {
       const parts = match[1].split('.');
-      const chainsString = `this.${parts.join('.')}`;
+      const objectName = parts[0];
+      const chains = parts.slice(1);
+      const chainsString = `context.${objectName}.value${chains.length > 0 ? '.' + chains.join('.') : ''}`;
+
       return {
-        objectName: parts[0],
-        chains: parts.slice(1),
-        chainsString: chainsString
+        objectName,
+        chains,
+        chainsString,
       };
     } else {
       return null;
     }
   }
-
 
   function getDirectiveValueType(nodeValue) {
     if (!nodeValue) return null;
@@ -42,9 +44,24 @@ module.exports = function({ types: t }) {
         t.objectExpression([
           t.objectProperty(t.identifier("type"), t.stringLiteral(valueInfo.type)),
           t.objectProperty(
-              t.identifier("value"),
-              valueInfo.type === "dynamic_value" ? t.valueToNode(valueInfo.value) : valueInfo.value
-            )
+            t.identifier("value"),
+            valueInfo.type === "dynamic_value" ? t.valueToNode(valueInfo.value) : valueInfo.value
+          ),
+          t.objectProperty(
+            t.identifier("evaluator"),
+            valueInfo.type === "dynamic_value" ?
+            t.arrowFunctionExpression(
+             [t.identifier("context")],
+              t.callExpression(
+                t.newExpression(t.identifier("Function"), [
+                    t.stringLiteral("context"),
+                    t.stringLiteral("return "+valueInfo.value.chainsString ?? "")
+                ]),
+                [t.identifier("context")]
+              )
+            ) :
+            t.nullLiteral()
+          )
         ])
       ]
     );
@@ -65,7 +82,7 @@ module.exports = function({ types: t }) {
         if (nodeName.type === "JSXNamespacedName") {
           const namespace = nodeName.namespace.name;
           const name = nodeName.name.name;
-          if (directives.includes(namespace+":")) {
+          if (directives.includes(namespace + ":")) {
             transformDirective(path, namespace, name, nodeValue);
           }
         } else if (nodeName.type === "JSXIdentifier") {
