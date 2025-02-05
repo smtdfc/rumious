@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "rumious":"*",
-    "rumious-babel-preset":"*"
+    "rumious-babel-preset":"*",
+    "rumious-builder":"*"
   },
   "author": "",
   "license": "MIT",
