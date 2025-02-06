@@ -12,11 +12,10 @@
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^28.0.2",
     "@rollup/plugin-node-resolve": "^16.0.0",
-    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-terser": "^0.3.0",
     "babel-preset-minify": "^0.5.2",
     "pnpm": "^9.15.4",
-    "rollup": "^3.28.1",
-    "standard-version": "^9.5.0"
+    "rollup": "^3.28.1"
   },
   "version": "1.0.0",
   "main": "index.js",

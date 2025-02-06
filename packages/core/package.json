@@ -1,6 +1,6 @@
 {
   "name": "rumious",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "The simple library for build UI",
   "keywords": [
     "rumious",
@@ -13,9 +13,7 @@
   "module": "dist/index.esm.js",
   "unpkg": "dist/index.min.js",
   "scripts": {
-    "build": "rollup -c",
-    "prepublishOnly": "npm run build",
-    "release": "standard-version && git push --follow-tags && npm publish && npm pkg fix"
+    "build": "rollup -c"
   },
   "files": [
     "dist/*",

@@ -1,6 +1,6 @@
 {
   "name": "rumious-babel-preset",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Rumious Preset for Babel",
   "keywords": [
     "rumious",
@@ -19,6 +19,11 @@
   "peerDependencies": {
     "rumious": "*"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smtdfc/rumious.git"
+  },
+  "homepage": "https://github.com/smtdfc/rumious#readme",
   "files": [
     "index.js",
     "tranforms.js"

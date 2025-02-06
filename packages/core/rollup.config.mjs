@@ -1,6 +1,7 @@
-import babel from '@rollup/plugin-babel';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import terser from "@rollup/plugin-terser";
+import os from 'os';
 import path from 'path';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
@@ -12,7 +13,7 @@ export default [
       {
         file: path.join(__dirname, 'dist/index.esm.js'),
         format: 'esm',
-        sourcemap: true, 
+        sourcemap: true,
       },
       {
         file: path.join(__dirname, 'dist/index.cjs.js'),
@@ -29,12 +30,11 @@ export default [
     plugins: [
       resolve(),
       commonjs(),
-      babel({
-        babelHelpers: 'bundled',
-        presets: [['@babel/preset-env']],
-        compact: false,
-        minified: false, 
-      }),
+      terser({
+        maxWorkers: {
+          value: os.cpus().length || 1,
+        }
+      })
     ],
   },
   {
@@ -43,7 +43,7 @@ export default [
       {
         file: path.join(__dirname, 'dist/index.esm.min.js'),
         format: 'esm',
-        sourcemap: false, 
+        sourcemap: false,
       },
       {
         file: path.join(__dirname, 'dist/index.cjs.min.js'),
@@ -60,12 +60,19 @@ export default [
     plugins: [
       resolve(),
       commonjs(),
-      babel({
-        babelHelpers: 'bundled',
-        presets: [['@babel/preset-env']],
-        compact: true,
-        minified: true,
-      }),
+      terser({
+        compress: {
+          drop_console: true,
+          passes: 3,
+        },
+        mangle: true,
+        output: {
+          comments: false,
+        },
+        maxWorkers: {
+          value: os.cpus().length || 1,
+        }
+      })
     ],
   },
 ];
