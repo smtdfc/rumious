@@ -20,7 +20,7 @@ module.exports = function(argv) {
   fs.copy(templatePath, currentDir)
     .then(() => {
       console.log(`📦 npm installing package ... ! `);
-      exec(`npm install --no-bin-links `, { cwd: path.join(currentDir) }, (err, stdout, stderr) => {
+      exec(`npm install ${process.env.FORCE_INSTALL ?"--no-bin-links" :""} `, { cwd: path.join(currentDir) }, (err, stdout, stderr) => {
         if (err) {
           console.error(`🚨 Error running npm install: ${err.message}`);
           return;

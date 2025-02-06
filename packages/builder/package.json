@@ -1,9 +1,12 @@
 {
   "name": "rumious-builder",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin":{
+    "rumious":"./index.js"
   },
   "dependencies": {
     "@babel/plugin-transform-runtime": "^7.25.9",
