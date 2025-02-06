@@ -1,11 +1,12 @@
 {
   "name": "rumious-builder",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.25.9",
     "@babel/preset-env": "^7.26.7",
     "@babel/preset-react": "^7.26.3",
     "@rollup/plugin-babel": "^6.0.4",
@@ -13,10 +14,10 @@
     "@rollup/plugin-node-resolve": "^16.0.0",
     "@rollup/plugin-terser": "^0.3.0",
     "babel-preset-minify": "^0.5.2",
+    "chalk": "^4.1.2",
     "fs-extra": "^11.3.0",
     "rollup": "*",
-    "yargs": "^17.7.2",
-    "chalk": "^4.1.2"
+    "yargs": "^17.7.2"
   },
   "peerDependencies": {
     "rumious": "*"
@@ -24,7 +25,8 @@
   "files": [
     "index.js",
     "tasks/**",
-    "templates/**"
+    "templates/**",
+    "helpers/**"
   ],
   "author": "smtdfc",
   "license": "MIT",

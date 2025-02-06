@@ -1,4 +1,4 @@
 {
   "entryPoint":"index.jsx",
-  "output":"public/dist"
+  "outputDir":"public/dist"
 }

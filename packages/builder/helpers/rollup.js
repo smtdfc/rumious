@@ -9,6 +9,7 @@ module.exports.generateConfigFile = function(filePath, input, output) {
     import commonjs from '@rollup/plugin-commonjs';
     import terser from "@rollup/plugin-terser";
     import path from 'path';
+    import os from "os";
     
     const __dirname = path.dirname(new URL(import.meta.url).pathname);
     
@@ -28,8 +29,12 @@ module.exports.generateConfigFile = function(filePath, input, output) {
           presets: [
             './node_modules/rumious-babel-preset/index.js',
           ],
-        }),
-        terser()
+       }),
+        terser({
+          maxWorkers: {
+            value: os.cpus().length || 1,
+          }
+        })
       ],
     };
 `;
