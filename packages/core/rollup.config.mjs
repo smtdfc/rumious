@@ -13,18 +13,19 @@ export default [
       {
         file: path.join(__dirname, 'dist/index.esm.js'),
         format: 'esm',
-        sourcemap: true,
+        sourcemap: path.join(__dirname, 'dist/index.map'), 
+        sourcemapExcludeSources: true,
       },
       {
         file: path.join(__dirname, 'dist/index.cjs.js'),
         format: 'cjs',
-        sourcemap: true,
+        sourcemap: false, 
       },
       {
         file: path.join(__dirname, 'dist/index.js'),
         format: 'iife',
         name: 'Rumious',
-        sourcemap: true,
+        sourcemap: false,
       },
     ],
     plugins: [
