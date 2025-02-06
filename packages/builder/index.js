@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const yargs = require('yargs');
 const path = require("path");
 const tasks = require("./tasks");
@@ -10,10 +12,7 @@ yargs
       type: 'string',
     },
   }, tasks.init)
-  .demandOption('name', 'The name of the app is required to initialize')
   .command('build:dev', 'Built for development environment ', {},tasks.build.dev)
-  .command('build:prod', 'Built for production environment ', {}, (argv) => {
-
-  })
+  .command('build:prod', 'Built for production environment ', {}, tasks.build.prod)
   .help()
   .argv;
