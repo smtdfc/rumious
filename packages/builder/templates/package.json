@@ -3,14 +3,16 @@
   "version": "0.0.1",
   "main": "index.jsx",
   "scripts": {
-    "build:dev":"rumious build:dev",
-    "build:prod":"rumious build:prod",
+    "build:dev": "rumious build:dev",
+    "build:prod": "rumious build:prod",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "rumious":"*",
-    "rumious-babel-preset":"*",
-    "rumious-builder":"*"
+    "rumious": "*"
+  },
+  "devDependencies": {
+    "rumious-babel-preset": "*",
+    "rumious-builder": "*"
   },
   "author": "",
   "license": "MIT",

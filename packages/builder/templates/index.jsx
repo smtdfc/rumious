@@ -1,4 +1,4 @@
-import { RumiousApp } from 'rumious-core';
+import { RumiousApp } from 'rumious';
 
 const app = new RumiousApp(document.getElementById("root"))
 app.render(

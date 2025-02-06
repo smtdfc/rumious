@@ -92,6 +92,9 @@ const directives = {
   },
   bind(attr, value) {
     return new RumiousPropsBindingDirective("bind", attr, value);
+  },
+  ref(_,value){
+    
   }
 };
 

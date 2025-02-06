@@ -1,48 +1,76 @@
 const path = require("path");
 const fs = require('fs-extra');
 const { exec } = require('child_process');
+const { generateConfigFile } = require("../helpers/rollup.js");
 
 module.exports = {
   "dev": async (argv) => {
-    console.log(`🚀 Initializing   ... ! `);
+    console.log(`🚀 Initializing development environment...`);
 
     let currentDir = process.env.PWD;
-    let configs = require(path.join(currentDir, "rumious.configs.json"));
+    let configs;
 
+    // Load configuration from rumious.configs.json
+    try {
+      configs = require(path.join(currentDir, "rumious.configs.json"));
+      console.log("✅ Configuration loaded successfully.");
+    } catch (error) {
+      console.error("🚨 Failed to load configuration: ", error);
+      return;
+    }
+
+    // Determine entry point and output directory from configuration
     let entryPoint = path.join(currentDir, configs.entryPoint ?? "index.jsx");
     let outputDir = path.join(currentDir, configs.outputDir ?? "dist");
-    console.log(`🚀 Initializing builder ... ! `);
 
-    exec(`rollup -c ./rollup.config.mjs --watch`, { cwd: path.join(currentDir) }, (err, stdout, stderr) => {
-      if (err) {
-        console.error(`🚨 Error running : ${err.message}`);
+    // Clear the output directory if it exists
+    if (fs.existsSync(outputDir)) {
+      console.log(`⚠️ Output directory exists at ${outputDir}. Removing previous build...`);
+      try {
+        fs.rmdirSync(outputDir, { recursive: true });
+        console.log(`✅ Successfully removed the existing output directory: ${outputDir}`);
+      } catch (err) {
+        console.error(`🚨 Failed to remove output directory: ${err}`);
         return;
       }
-      if (stderr) {
-        console.error(`⚠️  warning: ${stderr}`);
+    }
+
+    console.log(`🚀 Initializing Rollup configuration file...`);
+    try {
+      generateConfigFile(
+        path.join(currentDir, "rollup.config.mjs"),
+        configs.entryPoint,
+        configs.outputDir
+      );
+      console.log("✅ Rollup configuration generated successfully.");
+    } catch (err) {
+      console.error("🚨 Failed to generate Rollup configuration: ", err);
+      return;
+    }
+
+    console.log(`🚀 Bundling the application...`);
+    const task = exec(`rollup -c ./rollup.config.mjs`, { cwd: path.join(currentDir) });
+
+    // Output Rollup process stdout
+    task.stdout.on('data', (data) => {
+      console.log(`${data}`);
+    });
+
+    // Output Rollup process stderr
+    task.stderr.on('data', (data) => {
+      console.error(`${data}`);
+    });
+
+    task.on('close', (code) => {
+      if (code !== 0) {
+        console.error(`🚨 Process exited with error code ${code}`);
+      } else {
+        console.log('✅ Bundling completed successfully!');
       }
-      console.log(`✅ Process completed ! `);
     });
   },
   "prod": async (argv) => {
-    console.log(`🚀 Initializing   ... ! `);
-
-    let currentDir = process.env.PWD;
-    let configs = require(path.join(currentDir, "rumious.configs.json"));
-
-    let entryPoint = path.join(currentDir, configs.entryPoint ?? "index.jsx");
-    let outputDir = path.join(currentDir, configs.outputDir ?? "dist");
-    console.log(`🚀 Initializing builder ... ! `);
-
-    exec(`rollup -c ./rollup.config.mjs`, { cwd: path.join(currentDir) }, (err, stdout, stderr) => {
-      if (err) {
-        console.error(`🚨 Error running : ${err.message}`);
-        return;
-      }
-      if (stderr) {
-        console.error(`⚠️  Warning: ${stderr}`);
-      }
-      console.log(`✅ Process completed. Production is ready !`);
-    });
+    // Can be implemented with similar level of detail in the future
+    console.log("🚀 Preparing production environment... (currently not implemented)");
   }
 }
