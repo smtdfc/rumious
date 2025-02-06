@@ -50,7 +50,16 @@ export class RumiousPropsBindingDirective extends RumiousDirective {
     let fn = null;
 
     if (this.value.type === "expression") {
-
+      let currentState = this.value.value;
+      if (!currentState) {
+        throw "Invalid props value: Directive bind: require a RumiousState Object !"
+      } else {
+        currentState.reactor.addBinding(() => {
+          let currentStateValue = currentState.get();
+          this.bindAttr(dom, currentStateValue);
+        })
+        this.bindAttr(dom, currentState.get());
+      }
     } else if (this.value.type === "dynamic_value") {
       let currentStateValue = this.value.evaluator?.(renderContext.target)
       let currentState = renderContext.find(this.value.value.objectName);
@@ -59,32 +68,73 @@ export class RumiousPropsBindingDirective extends RumiousDirective {
       } else {
         currentState.reactor.addBinding(() => {
           let currentStateValue = this.value.evaluator?.(renderContext.target)
-          this.bindAttr(dom,currentStateValue);
+          this.bindAttr(dom, currentStateValue);
         })
       }
 
-      this.bindAttr(dom,currentStateValue);
+      this.bindAttr(dom, currentStateValue);
     }
   }
-  
-  normalizeValue(value){
-    if(typeof value === "object"){
+
+  normalizeValue(value) {
+    if (typeof value === "object") {
       return value.toString?.() ?? ""
     }
     return value;
   }
-  
-  async bindAttr(dom,value) {
-    switch(this.name){
+
+  async bindAttr(dom, value) {
+    switch (this.name) {
       case "html":
         dom.innerHTML = this.normalizeValue(value);
         break;
-      
-      
+
+
     }
   }
 }
 
+export class RumiousRefDirective extends RumiousDirective {
+  async init(dom, renderContext) {
+    let fn = null;
+    if (this.value.type === "expression") {
+      let ref = this.value.value;
+      if (!ref) {
+        throw "Invalid props value: Directive ref: require a RumiousRef Object !"
+      } else {
+        ref.set(dom);
+      }
+    } else if (this.value.type === "dynamic_value") {
+      let ref = this.value.evaluator?.(renderContext.target)
+      if (!ref) {
+        throw "Invalid props value: Directive ref: require a RumiousRef Object !"
+      } else {
+        ref.set(dom);
+      }
+    }
+  }
+}
+
+export class RumiousChildrensRefDirective extends RumiousDirective {
+  async init(dom, renderContext) {
+    let fn = null;
+    if (this.value.type === "expression") {
+      let ref = this.value.value;
+      if (!ref) {
+        throw "Invalid props value: Directive childsRef: require a RumiousChildRef Object !"
+      } else {
+        ref.set(dom);
+      }
+    } else if (this.value.type === "dynamic_value") {
+      let ref = this.value.evaluator?.(renderContext.target)
+      if (!ref) {
+        throw "Invalid props value: Directive childsRef: require a RumiousChildRef Object !"
+      } else {
+        ref.set(dom);
+      }
+    }
+  }
+}
 
 const directives = {
   on(event, value) {
@@ -93,8 +143,11 @@ const directives = {
   bind(attr, value) {
     return new RumiousPropsBindingDirective("bind", attr, value);
   },
-  ref(_,value){
-    
+  ref(_, value,type="element") {
+    return new RumiousRefDirective("ref", _, value);
+  },
+  childsRef(_, value) {
+    return new RumiousChildrensRefDirective("childsRef", _, value)
   }
 };
 

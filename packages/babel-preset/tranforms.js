@@ -1,4 +1,4 @@
-const directives = ["on:", "bind:", "ref","refChild"];
+const directives = ["on:", "bind:", "ref","childsRef"];
 
 module.exports = function({ types: t }) {
   function parseChainsString(str) {

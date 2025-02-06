@@ -2,6 +2,11 @@ export class RumiousComponentElement extends HTMLElement{
   constructor(){
     super();
     this.instance = null;
+    this.ref =null;
+  }
+  
+  setRef(ref){
+    this.ref = ref;
   }
   
   init(componentConstructor,props,wrapped={},renderer){
@@ -13,6 +18,7 @@ export class RumiousComponentElement extends HTMLElement{
   connectedCallback(){
     this.instance.onCreate();
     this.instance.requestRender();
+    this.instance.forwardRef = this.ref ?? {};
   }
   
   
