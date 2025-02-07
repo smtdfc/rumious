@@ -4,7 +4,7 @@ const { exec } = require('child_process');
 const { generateConfigFile } = require("../helpers/rollup.js");
 
 module.exports = {
-  "dev": async () => {
+  "dev": async (argv) => {
     console.log(`🚀 Initializing development environment...`);
 
     let currentDir = process.env.PWD;
@@ -48,7 +48,7 @@ module.exports = {
     }
 
     console.log(`🚀 Bundling the application...`);
-    const task = exec(`rollup -c ./rollup.config.mjs`, { cwd: path.join(currentDir) });
+    const task = exec(`rollup -c ./rollup.config.mjs ${argv.watch ? "--watch" : ""}`, { cwd: path.join(currentDir) });
 
     // Output Rollup process stdout
     task.stdout.on('data', (data) => {
