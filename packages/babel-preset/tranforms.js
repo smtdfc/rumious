@@ -1,4 +1,4 @@
-const directives = ["on:", "bind:", "ref","childsRef"];
+const directives = ['on:', 'bind:', 'ref','childsRef'];
 
 module.exports = function({ types: t }) {
   function parseChainsString(str) {
@@ -23,41 +23,41 @@ module.exports = function({ types: t }) {
 
   function getDirectiveValueType(nodeValue) {
     if (!nodeValue) return null;
-    if (nodeValue.type === "JSXExpressionContainer") return { type: "expression", value: nodeValue.expression };
-    if (nodeValue.type === "StringLiteral") {
+    if (nodeValue.type === 'JSXExpressionContainer') return { type: 'expression', value: nodeValue.expression };
+    if (nodeValue.type === 'StringLiteral') {
       let rawValue = nodeValue.value;
       let parsedValue = parseChainsString(rawValue);
       if (parsedValue) {
-        return { type: "dynamic_value", value: parsedValue };
+        return { type: 'dynamic_value', value: parsedValue };
       }
-      return { type: "string", value: nodeValue };
+      return { type: 'string', value: nodeValue };
     }
     return null;
   }
 
   function createDirectiveCall(namespace, name, valueInfo) {
     return t.callExpression(
-      t.identifier("RUMIOUS_JSX_SUPPORT.createDirective"),
+      t.identifier('RUMIOUS_JSX_SUPPORT.createDirective'),
       [
         t.stringLiteral(namespace),
         name ? t.stringLiteral(name) : t.nullLiteral(),
         t.objectExpression([
-          t.objectProperty(t.identifier("type"), t.stringLiteral(valueInfo.type)),
+          t.objectProperty(t.identifier('type'), t.stringLiteral(valueInfo.type)),
           t.objectProperty(
-            t.identifier("value"),
-            valueInfo.type === "dynamic_value" ? t.valueToNode(valueInfo.value) : valueInfo.value
+            t.identifier('value'),
+            valueInfo.type === 'dynamic_value' ? t.valueToNode(valueInfo.value) : valueInfo.value
           ),
           t.objectProperty(
-            t.identifier("evaluator"),
-            valueInfo.type === "dynamic_value" ?
+            t.identifier('evaluator'),
+            valueInfo.type === 'dynamic_value' ?
             t.arrowFunctionExpression(
-             [t.identifier("context")],
+             [t.identifier('context')],
               t.callExpression(
-                t.newExpression(t.identifier("Function"), [
-                    t.stringLiteral("context"),
-                    t.stringLiteral("return "+valueInfo.value.chainsString ?? "")
+                t.newExpression(t.identifier('Function'), [
+                    t.stringLiteral('context'),
+                    t.stringLiteral('return '+valueInfo.value.chainsString)
                 ]),
-                [t.identifier("context")]
+                [t.identifier('context')]
               )
             ) :
             t.nullLiteral()
@@ -73,19 +73,19 @@ module.exports = function({ types: t }) {
   }
 
   return {
-    name: "rumious-custom-jsx",
+    name: 'rumious-custom-jsx',
     visitor: {
       JSXAttribute(path) {
         const nodeName = path.node.name;
         const nodeValue = path.node.value;
 
-        if (nodeName.type === "JSXNamespacedName") {
+        if (nodeName.type === 'JSXNamespacedName') {
           const namespace = nodeName.namespace.name;
           const name = nodeName.name.name;
-          if (directives.includes(namespace + ":")) {
+          if (directives.includes(namespace + ':')) {
             transformDirective(path, namespace, name, nodeValue);
           }
-        } else if (nodeName.type === "JSXIdentifier") {
+        } else if (nodeName.type === 'JSXIdentifier') {
           const name = nodeName.name;
           if (directives.includes(name)) {
             transformDirective(path, name, null, nodeValue);

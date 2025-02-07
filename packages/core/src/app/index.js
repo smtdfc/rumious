@@ -2,7 +2,7 @@ import { RumiousRenderContext } from '../render/context.js';
 import { render } from '../render/index.js';
 
 export class RumiousApp {
-  constructor(root = document.createElement("span"), configs = {}) {
+  constructor(root = document.createElement('span'), configs = {}) {
     this.root = root;
     this.configs = configs;
     this.renderContext = new RumiousRenderContext(this);

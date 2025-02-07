@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-require("dotenv").config()
+require('dotenv').config();
 const yargs = require('yargs');
-const path = require("path");
-const tasks = require("./tasks");
-console.log(process.env.FORCE_INSTALL)
+const tasks = require('./tasks');
+
+
 yargs
   .command('init', 'Create a Rumious application ', {
     name: {

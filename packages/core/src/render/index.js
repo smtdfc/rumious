@@ -1,15 +1,14 @@
 import { isCamelCase } from '../utils/checker.js';
 import { renderComponent } from '../component/render.js';
-import { isComponent } from '../component/component.js';
 import { RumiousDirective } from './directives.js';
 
 function handleComponentElement(element, container, render,renderContext) {
   const dom = renderComponent(element.props.component, element.props, element.children, render);
-  Object.entries(element.props || {}).forEach(([name, propValue]) => {
+  Object.entries(element.props || {}).forEach(([, propValue]) => {
     if (propValue instanceof RumiousDirective) {
-      handleDirective(dom, propValue, renderContext,"component");
+      handleDirective(dom, propValue, renderContext,'component');
     }
-  })
+  });
   container.appendChild(dom);
   return container;
 }
@@ -26,7 +25,7 @@ function handleTextElement(element) {
 function handleRegularElement(element, renderContext) {
   const dom = document.createElement(element.type);
   Object.entries(element.props || {}).forEach(([name, propValue]) => {
-    if (name.startsWith("on") && isCamelCase(name)) {
+    if (name.startsWith('on') && isCamelCase(name)) {
       dom.addEventListener(name.substring(2).toLowerCase(), propValue);
     } else {
       setElementProps(dom, name, propValue, renderContext);
@@ -43,7 +42,7 @@ function setElementProps(dom, name, propValue, renderContext) {
   if (dom.nodeType === Node.TEXT_NODE) {
     dom.nodeValue = propValue;
   } else if (propValue instanceof RumiousDirective) {
-    handleDirective(dom, propValue, renderContext, "element");
+    handleDirective(dom, propValue, renderContext, 'element');
   } else {
     dom.setAttribute(name, propValue);
   }
@@ -54,15 +53,15 @@ export function render(element, container, renderContext = {}) {
 
   let dom;
 
-  if (element.type === "COMPONENT") {
+  if (element.type === 'COMPONENT') {
     return handleComponentElement(element, container, render,renderContext);
   }
 
-  if (element.type === "FRAGMENT" || element.type === "ELEMENT_LIST") {
+  if (element.type === 'FRAGMENT' || element.type === 'ELEMENT_LIST') {
     return handleFragmentOrElementList(element, container, renderContext);
   }
 
-  if (element.type === "TEXT_ELEMENT") {
+  if (element.type === 'TEXT_ELEMENT') {
     dom = handleTextElement(element);
   } else {
     dom = handleRegularElement(element, renderContext);

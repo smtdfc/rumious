@@ -12,7 +12,7 @@ export class RumiousComponentElement extends HTMLElement{
   init(componentConstructor,props,wrapped={},renderer){
     this.instance = new componentConstructor();
     this.instance.prepare(this,props,wrapped,renderer);
-    this.instance.onInit()
+    this.instance.onInit();
   }
   
   connectedCallback(){
@@ -23,8 +23,8 @@ export class RumiousComponentElement extends HTMLElement{
   
   
   disconnectCallback(){
-    this.instance.onDestroy()
-    this.instance.requestCleanUp()
+    this.instance.onDestroy();
+    this.instance.requestCleanUp();
   }
 }
 

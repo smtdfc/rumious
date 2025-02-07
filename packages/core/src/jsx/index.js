@@ -5,7 +5,7 @@ import {registerDirective} from '../render/directives.js';
 
 
 function createDirective(type,name,value) {
-  return registerDirective(type,name,value)
+  return registerDirective(type,name,value);
 }
 
 function createElement(type, props, ...children) {

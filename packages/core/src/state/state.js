@@ -2,8 +2,6 @@ import { RumiousReactor } from './reactive.js';
 import { RumiousReducer } from './reducer.js';
 import { produceState } from './produce.js';
 
-const ROOT_STATE = Symbol('ROOT_STATE');
-
 export class RumiousState {
   constructor(target, reactor = null) {
     this.value = target;
@@ -18,9 +16,9 @@ export class RumiousState {
   reducer(...args) {
     let computedObj;
     if (args.length === 1) {
-      computedObj = new RumiousReducer(this, "", args[0])
+      computedObj = new RumiousReducer(this, "", args[0]);
     } else {
-      computedObj = new RumiousReducer(this, args[0], args[1])
+      computedObj = new RumiousReducer(this, args[0], args[1]);
     }
     return computedObj.trigger.bind(computedObj);
   }

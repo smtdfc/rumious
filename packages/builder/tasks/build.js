@@ -4,7 +4,7 @@ const { exec } = require('child_process');
 const { generateConfigFile } = require("../helpers/rollup.js");
 
 module.exports = {
-  "dev": async (argv) => {
+  "dev": async () => {
     console.log(`🚀 Initializing development environment...`);
 
     let currentDir = process.env.PWD;
@@ -20,7 +20,6 @@ module.exports = {
     }
 
     // Determine entry point and output directory from configuration
-    let entryPoint = path.join(currentDir, configs.entryPoint ?? "index.jsx");
     let outputDir = path.join(currentDir, configs.outputDir ?? "dist");
 
     // Clear the output directory if it exists
@@ -69,7 +68,7 @@ module.exports = {
       }
     });
   },
-  "prod": async (argv) => {
+  "prod": async () => {
     console.log("🚀 Preparing production environment... ");
     let currentDir = process.env.PWD;
     let configs;
@@ -84,8 +83,7 @@ module.exports = {
     }
 
     // Determine entry point and output directory from configuration
-    let entryPoint = path.join(currentDir, configs.entryPoint ?? "index.jsx");
-    let outputDir = path.join(currentDir, configs.outputDir ?? "dist");
+   let outputDir = path.join(currentDir, configs.outputDir ?? "dist");
 
     // Clear the output directory if it exists
     if (fs.existsSync(outputDir)) {
@@ -135,4 +133,4 @@ module.exports = {
     });
 
   }
-}
+};

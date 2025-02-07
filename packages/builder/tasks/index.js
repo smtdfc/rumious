@@ -1,4 +1,4 @@
 module.exports = {
-  init:require("./init.js"),
-  build: require("./build.js")
+  init:require('./init.js'),
+  build: require('./build.js')
 };

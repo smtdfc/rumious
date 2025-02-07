@@ -1,5 +1,4 @@
 const fs = require('fs');
-const path = require('path');
 
 module.exports.generateConfigFile = function(filePath, input, output, prod = false) {
 
@@ -21,7 +20,7 @@ module.exports.generateConfigFile = function(filePath, input, output, prod = fal
         chunkFileNames: 'r_[hash].js', 
         entryFileNames: 'bundle.min.js',
         preserveModules: true, 
-        ${!prod?`sourcemap: true,`:""}
+        ${!prod?'sourcemap: true,':''}
       },
       plugins: [
         resolve(),
@@ -40,7 +39,7 @@ module.exports.generateConfigFile = function(filePath, input, output, prod = fal
           mangle: true, 
           output: {
             comments: false, 
-          },`:""}
+          },`:''}
           maxWorkers: {
             value: os.cpus().length || 1,
           }
@@ -50,4 +49,4 @@ module.exports.generateConfigFile = function(filePath, input, output, prod = fal
 `;
 
   fs.writeFileSync(filePath, configContent, 'utf8');
-}
+};

@@ -8,11 +8,11 @@ export class RumiousElement {
 
 export class RumiousElementList{
   constructor(list){
-    this.type = "ELEMENT_LIST"
-    this.children = list
+    this.type = 'ELEMENT_LIST';
+    this.children = list;
   }
   
   forEach(callback ){
-    this.children.forEach(callback)
+    this.children.forEach(callback);
   }
 }
