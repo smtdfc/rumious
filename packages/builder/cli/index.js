@@ -29,6 +29,3 @@ const argv = yargs(hideBin(process.argv))
   .help()
   .argv;
 
-if (!argv._.length) {
-  yargs.showHelp();
-}
