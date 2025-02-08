@@ -1,11 +1,10 @@
-const path = require('path');
-const fs = require('fs-extra');
-const { exec } = require('child_process');
+import path from 'path';
+import fs from 'fs-extra';
+import { exec } from 'child_process';
 
-module.exports = function() {
-
-  let currentDir = process.env.PWD;
-  let templatePath = path.join(__dirname, '../templates');
+export default function init() {
+  const currentDir = process.env.PWD;
+  const templatePath = path.join(path.dirname(new URL(import.meta.url).pathname), '../templates');
   console.log('🚀 Initializing files  ... ! ');
 
   if (!fs.existsSync(templatePath)) {
@@ -31,4 +30,4 @@ module.exports = function() {
     .catch(err => {
       console.error(`🚨 Error during copy operation: ${err.message}`);
     });
-};
+}
