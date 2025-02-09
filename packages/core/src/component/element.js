@@ -1,4 +1,3 @@
-
 export class RumiousComponentElement extends HTMLElement {
   constructor() {
     super();
@@ -6,8 +5,8 @@ export class RumiousComponentElement extends HTMLElement {
     this.ref = null;
   }
 
-  cleanUp(){}
-  
+  cleanUp() {}
+
   setRef(ref) {
     this.ref = ref;
   }
@@ -33,13 +32,14 @@ export class RumiousComponentElement extends HTMLElement {
 }
 
 export function createComponentElement(name = "a-component") {
-  let key = Math.floor(Math.random()*9999)*Date.now().toString(32)
-  window.customElements.define(name+key, class extends RumiousComponentElement{
-    static tag=name+key;
-    cleanUp(){
-      window.customElements(name+key, HTMLUnknownElement);
-    }
-  });
+  if (!window.customElements.get(name)) {
+    window.customElements.define(name, class extends RumiousComponentElement {
+      static tag = name;
+      cleanUp() {
+        window.customElements(name, HTMLUnknownElement);
+      }
+    });
+  }
   
   return document.createElement(name);
 }
