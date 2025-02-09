@@ -3,11 +3,12 @@ import { renderComponent } from '../component/render.js';
 import { RumiousDirective } from './directives.js';
 
 function handleComponentElement(element, container, render,renderContext) {
-  const dom = renderComponent(element.props.component, element.props, element.children, render);
+  const dom = renderComponent(element.component, element.props, element.children, render);
   Object.entries(element.props || {}).forEach(([, propValue]) => {
     if (propValue instanceof RumiousDirective) {
       handleDirective(dom, propValue, renderContext,'component');
     }
+    
   });
   container.appendChild(dom);
   return container;

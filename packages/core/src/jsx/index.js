@@ -25,7 +25,9 @@ function createTextElement(text) {
 }
 
 function createComponent(type, props, children) {
-  return new RumiousElement("COMPONENT", { component: type, ...props },new RumiousElementList(normalizeChildren(children)));
+  let component = new RumiousElement("COMPONENT", { ...props },new RumiousElementList(normalizeChildren(children)));
+  component.component = type;
+  return component;
 }
 
 function createFragment(...children) {
