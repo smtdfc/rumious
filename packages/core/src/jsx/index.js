@@ -4,11 +4,11 @@ import {registerDirective} from '../render/directives.js';
 
 
 
-function createDirective(type,name,value) {
+export function createDirective(type,name,value) {
   return registerDirective(type,name,value);
 }
 
-function createElement(type, props, ...children) {
+export function createElement(type, props, ...children) {
   if (isComponent(type)) {
     return createComponent(type, props, children);
   }
@@ -20,11 +20,11 @@ function createElement(type, props, ...children) {
   return new RumiousElement(type, props || {}, normalizeChildren(children));
 }
 
-function createTextElement(text) {
+export function createTextElement(text) {
   return new RumiousElement("TEXT_ELEMENT", { nodeValue: text }, []);
 }
 
-function createComponent(type, props, children) {
+export function createComponent(type, props, children) {
   let component = new RumiousElement("COMPONENT", { ...props },new RumiousElementList(normalizeChildren(children)));
   component.component = type;
   return component;

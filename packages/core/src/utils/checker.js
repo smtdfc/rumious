@@ -6,3 +6,7 @@ export function isCamelCase(str) {
 export function isFunction(object) {
   return typeof object === 'function';
 }
+
+export function isPrimitive(value) {
+  return value === null || (typeof value !== "object" && typeof value !== "function");
+}

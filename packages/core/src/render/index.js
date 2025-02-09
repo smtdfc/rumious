@@ -1,14 +1,16 @@
-import { isCamelCase } from '../utils/checker.js';
+import { isCamelCase, isPrimitive } from '../utils/checker.js';
 import { renderComponent } from '../component/render.js';
 import { RumiousDirective } from './directives.js';
+import { createTextElement } from '../jsx/index.js';
+import { RumiousElement } from '../dom/element.js';
 
-function handleComponentElement(element, container, render,renderContext) {
+function handleComponentElement(element, container, render, renderContext) {
   const dom = renderComponent(element.component, element.props, element.children, render);
   Object.entries(element.props || {}).forEach(([, propValue]) => {
     if (propValue instanceof RumiousDirective) {
-      handleDirective(dom, propValue, renderContext,'component');
+      handleDirective(dom, propValue, renderContext, 'component');
     }
-    
+
   });
   container.appendChild(dom);
   return container;
@@ -55,7 +57,7 @@ export function render(element, container, renderContext = {}) {
   let dom;
 
   if (element.type === 'COMPONENT') {
-    return handleComponentElement(element, container, render,renderContext);
+    return handleComponentElement(element, container, render, renderContext);
   }
 
   if (element.type === 'FRAGMENT' || element.type === 'ELEMENT_LIST') {
@@ -68,7 +70,20 @@ export function render(element, container, renderContext = {}) {
     dom = handleRegularElement(element, renderContext);
   }
 
-  element.children.forEach(child => render(child, dom, renderContext));
-  container.appendChild(dom);
-  return container;
+  if (isPrimitive(element)) {
+    render(createTextElement(element), container, renderContext);
+    return container;
+  } else {
+    if (element instanceof Array) {
+      element.forEach(item => render(item, container, renderContext))
+      return container;
+    } else if (element instanceof RumiousElement) {
+      element.children.forEach(child => render(child, dom, renderContext));
+      container.appendChild(dom);
+      return container;
+    } else {
+      render(createTextElement(JSON.stringify(element)), container, renderContext);
+      return container;
+    }
+  }
 }
