@@ -20,6 +20,10 @@ export class RumiousComponent {
     return {};
   }
 
+  render(template){
+    return this.renderer(template, document.createDocumentFragment(), this.renderContext);
+  }
+  
   requestRender() {
     let template = this.template();
     let fragment = this.renderer(template, document.createDocumentFragment(), this.renderContext);
