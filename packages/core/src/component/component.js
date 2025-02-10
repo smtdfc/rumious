@@ -1,9 +1,10 @@
-import {RumiousRenderContext} from '../render/context.js';
+import { RumiousRenderContext } from '../render/context.js';
 
 export class RumiousComponent {
   constructor() {
     this.element = null;
     this.props = {};
+    this.forwardRefs = {};
     this.renderContext = new RumiousRenderContext(this);
     this.renderer = null;
     this.wrapped = null;
@@ -20,10 +21,10 @@ export class RumiousComponent {
     return {};
   }
 
-  render(template){
+  render(template) {
     return this.renderer(template, document.createDocumentFragment(), this.renderContext);
   }
-  
+
   requestRender() {
     let template = this.template();
     let fragment = this.renderer(template, document.createDocumentFragment(), this.renderContext);
@@ -50,6 +51,6 @@ export class RumiousComponent {
   onDestroy() {}
 }
 
-export function isComponent(component){
+export function isComponent(component) {
   return Object.getPrototypeOf(component) === RumiousComponent;
 }

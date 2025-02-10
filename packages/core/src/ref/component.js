@@ -3,9 +3,8 @@ export class RumiousComponentRef {
     this.target = component;
   }
 
-  
   set(component) {
-    this.target = component;
+    this.target = component.forwardRefs;
     component.setRef(this);
   }
 }

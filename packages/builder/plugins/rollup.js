@@ -18,7 +18,7 @@ function importJson(filePath) {
 }
 
 function validateConfigs(configs) {
-  
+  return configs;
 }
 
 export default function rumious(options = {}) {

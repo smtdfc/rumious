@@ -9,7 +9,7 @@ import { dev, prod } from './build.js';
 
 dotenv.config();
 
-const argv = yargs(hideBin(process.argv))
+yargs(hideBin(process.argv))
   .command('init', 'Create a Rumious application', {
     name: {
       description: 'App name',
