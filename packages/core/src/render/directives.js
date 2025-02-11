@@ -88,6 +88,28 @@ export class RumiousPropsBindingDirective extends RumiousDirective {
       case "html":
         dom.innerHTML = this.normalizeValue(value);
         break;
+
+      case "text":
+        dom.textContent = this.normalizeValue(value);
+        break;
+      
+      case "show":
+        dom.style.display = this.normalizeValue(value) ? "block" : "none";
+        break;
+        
+      case "hide":
+        dom.style.display = this.normalizeValue(value) ? "none" :"block";
+        break;
+        
+      case "classname":
+        dom.className = this.normalizeValue(value);
+        break;
+
+      case "style":
+        dom.style = value;
+        break;
+      
+      
     }
   }
 }

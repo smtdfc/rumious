@@ -7,6 +7,8 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import terser from "@rollup/plugin-terser";
 import rumious from '../plugins/rollup.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
@@ -36,25 +38,33 @@ function importJson(filePath) {
 }
 
 
-export function rollupGenerateConfig(configFile, produce=null) {
-  const options = parseArgs(process.argv);
+export function rollupGenerateConfig(configFile, produce = null) {
+  const options = {
+    prod: process.env.NODE_ENV === "production"
+  }
+
   const configs = importJson(configFile);
   const cwd = process.cwd();
-  const minifyConfigs = options.mode == "prod" ?
-  {
-    compress: {
-      drop_console: true,
-      passes: 3,
-    },
-    mangle: true,
-    output: {
-      comments: false,
-    },
-  } : {};
-  const rollupConfigs =  {
+  const minifyConfigs = options.prod  ? [
+    terser({
+      maxWorkers: {
+        value: os.cpus().length || 1,
+      },
+
+      compress: {
+        drop_console: true,
+        passes: 3,
+      },
+      mangle: true,
+      output: {
+        comments: false,
+      },
+    })
+  ] : [];
+  let rollupConfigs = {
     input: path.join(cwd, configs.entryPoint ?? "index.jsx"),
     output: {
-      dir: path.join(__dirname, configs.outputDir ?? "public/dist"),
+      dir: path.join(cwd, configs.outputDir ?? "public/dist"),
       format: 'es',
       chunkFileNames: 'r_[hash].js',
       entryFileNames: 'bundle.min.js',
@@ -74,16 +84,11 @@ export function rollupGenerateConfig(configFile, produce=null) {
           './node_modules/rumious-babel-preset/index.js',
         ],
       }),
-      terser({
-        ...minifyConfigs,
-        maxWorkers: {
-          value: os.cpus().length || 1,
-        }
-      }),
+      ...minifyConfigs,
       rumious(),
     ],
   }
-  
-  if(produce) rollupConfigs = produce(rollupConfigs);
+
+  if (produce) rollupConfigs = produce(rollupConfigs);
   return rollupConfigs;
 }

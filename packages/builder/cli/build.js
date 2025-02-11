@@ -68,7 +68,7 @@ export const prod = async () => {
   let outputDir = path.join(currentDir, configs.outputDir ?? "dist");
 
   console.log(`🚀 Bundling the application...`);
-  const task = exec(`rollup -c ./rollup.configs.mjs --mode=prod`, { cwd: path.join(currentDir) });
+  const task = exec(`NODE_ENV=production rollup -c ./rollup.configs.mjs `, { cwd: path.join(currentDir) });
 
   // Output Rollup process stdout
   task.stdout.on('data', (data) => {
