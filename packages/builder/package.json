@@ -31,7 +31,8 @@
     "index.js",
     "cli/**",
     "templates/**",
-    "plugins/**"
+    "plugins/**",
+    "helpers/**"
   ],
   "repository": {
     "type": "git",

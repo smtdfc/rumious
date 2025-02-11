@@ -28,18 +28,6 @@ export const dev = async (argv) => {
   // Determine entry point and output directory from configuration
   let outputDir = path.join(currentDir, configs.outputDir ?? "dist");
 
-  // Clear the output directory if it exists
-  if (fs.existsSync(outputDir)) {
-    console.log(`⚠️ Output directory exists at ${outputDir}. Removing previous build...`);
-    try {
-      fs.rmdirSync(outputDir, { recursive: true });
-      console.log(`✅ Successfully removed the existing output directory: ${outputDir}`);
-    } catch (err) {
-      console.error(`🚨 Failed to remove output directory: ${err}`);
-      return;
-    }
-  }
-
   console.log(`🚀 Bundling the application...`);
   const task = exec(`rollup -c ./rollup.configs.mjs ${argv.watch ? "--watch" : ""}`, { cwd: path.join(currentDir) });
 
@@ -79,20 +67,8 @@ export const prod = async () => {
   // Determine entry point and output directory from configuration
   let outputDir = path.join(currentDir, configs.outputDir ?? "dist");
 
-  // Clear the output directory if it exists
-  if (fs.existsSync(outputDir)) {
-    console.log(`⚠️ Output directory exists at ${outputDir}. Removing previous build...`);
-    try {
-      fs.rmdirSync(outputDir, { recursive: true });
-      console.log(`✅ Successfully removed the existing output directory: ${outputDir}`);
-    } catch (err) {
-      console.error(`🚨 Failed to remove output directory: ${err}`);
-      return;
-    }
-  }
-
   console.log(`🚀 Bundling the application...`);
-  const task = exec(`rollup -c ./rollup.configs.mjs`, { cwd: path.join(currentDir) });
+  const task = exec(`rollup -c ./rollup.configs.mjs --mode=prod`, { cwd: path.join(currentDir) });
 
   // Output Rollup process stdout
   task.stdout.on('data', (data) => {
