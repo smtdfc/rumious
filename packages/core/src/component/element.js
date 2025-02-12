@@ -31,7 +31,7 @@ export class RumiousComponentElement extends HTMLElement {
   }
 }
 
-export function createComponentElement(name = "a-component") {
+export function createComponentElement(name = 'a-component') {
   if (!window.customElements.get(name)) {
     window.customElements.define(name, class extends RumiousComponentElement {
       static tag = name;

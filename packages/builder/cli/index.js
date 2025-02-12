@@ -10,6 +10,7 @@ import { dev, prod } from './build.js';
 dotenv.config();
 
 yargs(hideBin(process.argv))
+  .scriptName('Rumious builder CLI')
   .command('init', 'Create a Rumious application', {
     name: {
       description: 'App name',

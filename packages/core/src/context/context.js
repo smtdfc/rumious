@@ -40,6 +40,9 @@ export class RumiousContext {
 }
 
 export function createContext(globalName='',data={}){
+  if(!data || typeof data != 'object'){
+    throw 'Rumious context: Initial value must be object !';
+  }
   if(!window.RUMIOUS_CONTEXTS[globalName]) window.RUMIOUS_CONTEXTS[globalName] = new RumiousContext(data);
   return window.RUMIOUS_CONTEXTS[globalName];
 }

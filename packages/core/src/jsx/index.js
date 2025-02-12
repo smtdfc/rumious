@@ -21,21 +21,21 @@ export function createElement(type, props, ...children) {
 }
 
 export function createTextElement(text) {
-  return new RumiousElement("TEXT_ELEMENT", { nodeValue: text }, []);
+  return new RumiousElement('TEXT_ELEMENT', { nodeValue: text }, []);
 }
 
 export function createComponent(type, props, children) {
-  let component = new RumiousElement("COMPONENT", { ...props },new RumiousElementList(normalizeChildren(children)));
+  let component = new RumiousElement('COMPONENT', { ...props },new RumiousElementList(normalizeChildren(children)));
   component.component = type;
   return component;
 }
 
 function createFragment(...children) {
-  return new RumiousElement("FRAGMENT", {}, normalizeChildren(children));
+  return new RumiousElement('FRAGMENT', {}, normalizeChildren(children));
 }
 
 function normalizeChildren(children) {
-  return children.map(child => (typeof child === "object" ? child : createTextElement(child)));
+  return children.map(child => (typeof child === 'object' ? child : createTextElement(child)));
 }
 
 window.RUMIOUS_JSX_SUPPORT = {

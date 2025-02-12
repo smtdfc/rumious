@@ -3,6 +3,7 @@ import { renderComponent } from '../component/render.js';
 import { RumiousDirective } from './directives.js';
 import { createTextElement } from '../jsx/index.js';
 import { RumiousElement } from '../dom/element.js';
+import {RumiousContentInjector} from './injector.js';
 
 function handleComponentElement(element, container, render, renderContext) {
   const dom = renderComponent(element.component, element.props, element.children, render);
@@ -55,21 +56,7 @@ export function render(element, container, renderContext = {}) {
   if (!element) return container;
 
   let dom;
-
-  if (element.type === 'COMPONENT') {
-    return handleComponentElement(element, container, render, renderContext);
-  }
-
-  if (element.type === 'FRAGMENT' || element.type === 'ELEMENT_LIST') {
-    return handleFragmentOrElementList(element, container, renderContext);
-  }
-
-  if (element.type === 'TEXT_ELEMENT') {
-    dom = handleTextElement(element);
-  } else {
-    dom = handleRegularElement(element, renderContext);
-  }
-
+  
   if (isPrimitive(element)) {
     render(createTextElement(element), container, renderContext);
     return container;
@@ -78,8 +65,30 @@ export function render(element, container, renderContext = {}) {
       element.forEach(item => render(item, container, renderContext))
       return container;
     } else if (element instanceof RumiousElement) {
+      if (element.type === 'COMPONENT') {
+        return handleComponentElement(element, container, render, renderContext);
+      }
+
+      if (element.type === 'FRAGMENT' || element.type === 'ELEMENT_LIST') {
+        return handleFragmentOrElementList(element, container, renderContext);
+      }
+
+      if (element.type === 'TEXT_ELEMENT') {
+        dom = handleTextElement(element);
+      } else {
+        dom = handleRegularElement(element, renderContext);
+      }
+
       element.children.forEach(child => render(child, dom, renderContext));
       container.appendChild(dom);
+      return container;
+    }else if(element instanceof RumiousContentInjector){
+      if(container instanceof HTMLDocument){
+        throw 'Rumious Render: Unsuppot inject content in HTMLDocument !';
+      }
+      
+      element.target = container;
+      element.inject();
       return container;
     } else {
       render(createTextElement(JSON.stringify(element)), container, renderContext);

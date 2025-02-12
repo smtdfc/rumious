@@ -1,4 +1,4 @@
-export  function styleHelper(styles) {
+export function styleHelper(styles) {
   function camelToKebabCase(str) {
     return str.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`);
   }
@@ -6,12 +6,12 @@ export  function styleHelper(styles) {
   let css = '';
 
   for (const selector in styles) {
-    if (styles.hasOwnProperty(selector)) {
+    if (Object.prototype.hasOwnProperty.call(styles, selector)) {
       css += `${selector} {`;
 
       const properties = styles[selector];
       for (const property in properties) {
-        if (properties.hasOwnProperty(property)) {
+        if (Object.prototype.hasOwnProperty.call(properties, property)) {
           const kebabCaseProperty = camelToKebabCase(property);
           css += `${kebabCaseProperty}: ${properties[property]};`;
         }
@@ -23,4 +23,3 @@ export  function styleHelper(styles) {
 
   return css.trim();
 }
-

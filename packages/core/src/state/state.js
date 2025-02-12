@@ -16,14 +16,14 @@ export class RumiousState {
   reducer(...args) {
     let computedObj;
     if (args.length === 1) {
-      computedObj = new RumiousReducer(this, "", args[0]);
+      computedObj = new RumiousReducer(this, '', args[0]);
     } else {
       computedObj = new RumiousReducer(this, args[0], args[1]);
     }
     return computedObj.trigger.bind(computedObj);
   }
 
-  setObjectByPath(path = "", value) {
+  setObjectByPath(path = '', value) {
     if (path.length == 0) {
       this.value = value;
       return;

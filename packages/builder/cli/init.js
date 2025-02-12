@@ -1,6 +1,5 @@
 import path from 'path';
 import fs from 'fs-extra';
-import { exec } from 'child_process';
 
 export default function init() {
   const currentDir = process.env.PWD;
