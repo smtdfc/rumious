@@ -2,7 +2,9 @@ import { RumiousRenderContext } from '../render/context.js';
 
 export class RumiousComponent {
   constructor() {
+    this.asynchronousRender=false;
     this.element = null;
+    this.app = null;
     this.props = {};
     this.forwardRefs = {};
     this.renderContext = new RumiousRenderContext(this);
@@ -15,6 +17,7 @@ export class RumiousComponent {
     this.props = props;
     this.renderer = renderer;
     this.wrapped = wrapped;
+    this.renderContext.app = this.app;
   }
 
   template() {

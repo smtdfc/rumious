@@ -26,7 +26,7 @@ export function rollupGenerateConfig(configFile, produce = null) {
 
   const configs = importJson(configFile);
   const cwd = process.cwd();
-  const minifyConfigs = options.prod  ? [
+  const minifyConfigs = options.prod ? [
     terser({
       maxWorkers: {
         value: os.cpus().length || 1,
@@ -49,7 +49,10 @@ export function rollupGenerateConfig(configFile, produce = null) {
       format: 'es',
       chunkFileNames: 'r_[hash].js',
       entryFileNames: 'bundle.min.js',
-      preserveModules: true,
+    },
+    treeshake: {
+      moduleSideEffects: false,
+
     },
     watch: {
       include: '/**',

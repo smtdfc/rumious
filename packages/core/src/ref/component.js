@@ -5,7 +5,6 @@ export class RumiousComponentRef {
 
   set(component) {
     this.target = component.forwardRefs;
-    component.setRef(this);
   }
 }
 

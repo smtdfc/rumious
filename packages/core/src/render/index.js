@@ -6,7 +6,7 @@ import { RumiousElement } from '../dom/element.js';
 import {RumiousContentInjector} from './injector.js';
 
 function handleComponentElement(element, container, render, renderContext) {
-  const dom = renderComponent(element.component, element.props, element.children, render);
+  const dom = renderComponent(element.component, element.props, element.children, render,renderContext);
   Object.entries(element.props || {}).forEach(([, propValue]) => {
     if (propValue instanceof RumiousDirective) {
       handleDirective(dom, propValue, renderContext, 'component');
@@ -82,6 +82,9 @@ export function render(element, container, renderContext = {}) {
       element.children.forEach(child => render(child, dom, renderContext));
       container.appendChild(dom);
       return container;
+    }else if(element instanceof HTMLElement){
+      container.appendChild(element);
+      return container;
     }else if(element instanceof RumiousContentInjector){
       if(container instanceof HTMLDocument){
         throw 'Rumious Render: Unsuppot inject content in HTMLDocument !';
@@ -96,3 +99,5 @@ export function render(element, container, renderContext = {}) {
     }
   }
 }
+
+export * from './injector.js';

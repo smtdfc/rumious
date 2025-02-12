@@ -1,11 +1,13 @@
 {
   "name": "rumious-babel-preset",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Rumious Preset for Babel",
   "keywords": [
     "rumious",
     "rumiousjs",
-    "smtdfc"
+    "smtdfc",
+    "babel-preset",
+    "rumious-babel-preset"
   ],
   "scripts": {
     "release": "npm publish --access public && npm pkg fix"

@@ -30,12 +30,7 @@ export default [
     ],
     plugins: [
       resolve(),
-      commonjs(),
-      terser({
-        maxWorkers: {
-          value: os.cpus().length || 1,
-        }
-      })
+      commonjs()
     ],
   },
   {

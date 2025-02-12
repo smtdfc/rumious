@@ -5,41 +5,44 @@ export class RumiousComponentElement extends HTMLElement {
     this.ref = null;
   }
 
-  cleanUp() {}
-
-  setRef(ref) {
-    this.ref = ref;
+  cleanUp() {
+    Object.setPrototypeOf(this, HTMLUnknownElement.prototype);
+    this.remove();
   }
 
-  init(componentConstructor, props, wrapped = {}, renderer) {
+  init(componentConstructor, props, wrapped = {}, renderer, app) {
     this.instance = new componentConstructor();
     this.instance.element = this;
+    this.instance.app = app;
     this.instance.prepare(this, props, wrapped, renderer);
     this.instance.onInit();
   }
 
   connectedCallback() {
-    this.instance.onCreate();
-    this.instance.requestRender();
-    this.instance.forwardRef = this.ref ?? {};
+    if (this.instance.asynchronousRender) {
+      (async () => {
+        this.instance.onCreate();
+        this.instance.requestRender();
+      })();
+    } else {
+      this.instance.onCreate();
+      this.instance.requestRender();
+    }
   }
 
-  disconnectCallback() {
+  disconnectedCallback() {
     this.instance.onDestroy();
     this.instance.requestCleanUp();
     this.cleanUp();
   }
 }
 
-export function createComponentElement(name = 'a-component') {
+export function createComponentElement(name = 'r-component') {
   if (!window.customElements.get(name)) {
     window.customElements.define(name, class extends RumiousComponentElement {
       static tag = name;
-      cleanUp() {
-        window.customElements(name, HTMLUnknownElement);
-      }
     });
   }
-  
+
   return document.createElement(name);
 }
