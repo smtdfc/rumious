@@ -1,6 +1,5 @@
 export class RumiousRenderContext {
   constructor(target) {
-    console.log(target);
     this.target = target;
     this.app = target.app;
     this.hooks = {
