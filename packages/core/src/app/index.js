@@ -28,4 +28,13 @@ export class RumiousApp {
     render(element, this.root, this.renderContext);
     this.renderContext.runHooks('onRendered', this.renderContext);
   }
+  
+  /**
+   * Add module for app
+   * 
+   * @param {RumiousModule} module - The module .
+   */
+  addModule(module) {
+   }
+
 }
