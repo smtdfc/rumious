@@ -56,17 +56,11 @@
     "collapse": true,
     "navLevel": 3,
     "menu": {
-      "Project Website": {
-        "href": "https://myproject.com",
+      "Github": {
+        "href": "https://github.com/smtdfc/rumious",
         "target": "_blank",
         "class": "menu-item",
         "id": "website_link"
-      },
-      "Forum": {
-        "href": "https://myproject.com.forum",
-        "target": "_blank",
-        "class": "menu-item",
-        "id": "forum_link"
       }
     }
   }
