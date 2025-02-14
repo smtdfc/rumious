@@ -21,7 +21,8 @@
     "babel-preset-minify": "^0.5.2",
     "eslint-config-prettier": "^10.0.1",
     "rollup": "^3.28.1",
-    "jsdoc":"^4.0.0"
+    "jsdoc":"^4.0.0",
+    "docdash":"^2.0.2"
   },
   "version": "1.0.0",
   "main": "index.js",

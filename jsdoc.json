@@ -18,11 +18,55 @@
     "destination": "./docs",
     "recurse": true,
     "private": false,
-    "readme":"./README.md"
+    "readme": "./README.md",
+    "template": "node_modules/docdash"
   },
   "templates": {
     "default": {
       "outputSourceFiles": false
+    }
+  },
+  "docdash": {
+    "sectionOrder": [
+      "Classes",
+      "Modules",
+      "Externals",
+      "Events",
+      "Namespaces",
+      "Mixins",
+      "Tutorials",
+      "Interfaces"
+    ],
+    "disqus": "",
+    "openGraph": {
+      "title": "",
+      "type": "website",
+      "image": "",
+      "site_name": "",
+      "url": ""
+    },
+    "meta": {
+      "title": "",
+      "description": "",
+      "keyword": ""
+    },
+    "search": true,
+    "commonNav": true,
+    "collapse": true,
+    "navLevel": 3,
+    "menu": {
+      "Project Website": {
+        "href": "https://myproject.com",
+        "target": "_blank",
+        "class": "menu-item",
+        "id": "website_link"
+      },
+      "Forum": {
+        "href": "https://myproject.com.forum",
+        "target": "_blank",
+        "class": "menu-item",
+        "id": "forum_link"
+      }
     }
   }
 }
