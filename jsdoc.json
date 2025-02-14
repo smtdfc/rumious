@@ -1,0 +1,28 @@
+{
+  "source": {
+    "include": [
+      "packages/core"
+    ],
+    "exclude": [
+      "packages/core/src/render/index.js",
+      "packages/core/src/render/context.js",
+      "packages/core/src/render/directives.js",
+      "test/",
+      "packages/core/src/utils/",
+      "node_modules/",
+      "packages/core/dist/"
+    ],
+    "excludePattern": "node_modules"
+  },
+  "opts": {
+    "destination": "./docs",
+    "recurse": true,
+    "private": false,
+    "readme":"./README.md"
+  },
+  "templates": {
+    "default": {
+      "outputSourceFiles": false
+    }
+  }
+}

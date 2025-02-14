@@ -10,7 +10,6 @@ export const dev = async (argv) => {
 
   let currentDir = process.env.PWD;
  
-
   console.log('🚀 Bundling the application...');
   const task = exec(`rollup -c ./rollup.configs.mjs ${argv.watch ? '--watch' : ''}`, { cwd: path.join(currentDir) });
 
