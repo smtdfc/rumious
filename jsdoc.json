@@ -35,20 +35,21 @@
       "Namespaces",
       "Mixins",
       "Tutorials",
-      "Interfaces"
+      "Interfaces",
+      "Global"
     ],
     "disqus": "",
     "openGraph": {
-      "title": "",
+      "title": "Rumious API Reference",
       "type": "website",
       "image": "",
       "site_name": "",
       "url": ""
     },
     "meta": {
-      "title": "",
-      "description": "",
-      "keyword": ""
+      "title": "Rumious API Reference",
+      "description": "Rumious API Reference",
+      "keyword": "rumious"
     },
     "search": true,
     "commonNav": true,
