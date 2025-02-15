@@ -16,6 +16,7 @@ export class RumiousApp {
   constructor(root = document.createElement('span'), configs = {}) {
     this.root = root;
     this.app = this;
+    this.modules = [];
     this.configs = configs;
     this.renderContext = new RumiousRenderContext(this);
   }
@@ -36,8 +37,12 @@ export class RumiousApp {
    * Add module for app
    * 
    * @param {RumiousModule} module - The module .
+   * @param {Object} [configs={}] - Configuration options for the module.
+   * @returns {Object} - Module instance 
    */
-  addModule(module) {
+  addModule(module,configs={}) {
+    let moduleInstance = module.init(this,configs);
+    return moduleInstance;
    }
 
 }
