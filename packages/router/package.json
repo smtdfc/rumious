@@ -1,0 +1,31 @@
+{
+  "name": "rumious-router",
+  "version": "0.0.1",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+
+  },
+  "peerDependencies": {
+    "rumious": "*"
+  },
+  "files": [
+    "index.js",
+    "dist/**"
+  ],
+  "keywords":[
+    "rumious",
+    "rumious-router",
+    "router"
+   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smtdfc/rumious.git"
+  },
+  "homepage": "https://github.com/smtdfc/rumious#readme",
+  "author": "smtdfc",
+  "license": "MIT",
+  "description": "A client router module for rumious  "
+}

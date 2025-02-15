@@ -85,8 +85,7 @@ export function render(element, container, renderContext = {}) {
     if (container instanceof HTMLDocument) {
       throw 'Rumious Render: Unsupported inject content in HTMLDocument!';
     }
-    element.target = container;
-    element.inject();
+    element.injectInto(container);
     return container;
   }
   

@@ -1,3 +1,5 @@
+import { RumiousComponent } from '../component/component.js';
+
 /**
  * Class for injecting HTML or text content into a target DOM element.
  *  
@@ -7,32 +9,34 @@ export class RumiousContentInjector {
    * @constructor
    * @param {HTMLElement|null} target - The target element where content will be injected.
    */
-  constructor(target) {
-    this.target = target;
+  constructor() {
     /** @type {Array<{type: 'html' | 'text', contents: string}>} */
     this.contents = [];
   }
   
-  /**
-   * Injects the stored content into the target element.
-   * Clears the existing content before injecting new content.
-   */
-  inject() {
-    if (!this.target) {
-      console.warn('Target element is null, cannot inject content.');
-      return;
-    }
-    
-    this.target.innerHTML = '';
+  commit(type='html',contents){
+    this.contents.push({
+      type,
+      contents
+    })
+  }
+  
+  reset(){
+    this.contents = [];
+  }
+  
+  injectInTo(target) {
+    target.innerHTML = '';
     this.contents.forEach((inject_) => {
       if (inject_.type === 'html') {
-        this.target.innerHTML += inject_.contents;
+        target.innerHTML += inject_.contents;
       } else {
-        this.target.textContent = inject_.contents;
+        target.textContent = inject_.contents;
       }
     });
   }
 }
+
 
 /**
  * Creates a new content injector with HTML content.
