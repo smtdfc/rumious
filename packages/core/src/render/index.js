@@ -3,22 +3,24 @@ import { renderComponent } from '../component/render.js';
 import { RumiousDirective } from './directives.js';
 import { createTextElement } from '../jsx/index.js';
 import { RumiousElement } from '../dom/element.js';
-import {RumiousContentInjector} from './injector.js';
+import { RumiousContentInjector } from './injector.js';
 
-function handleComponentElement(element, container, render, renderContext) {
-  const dom = renderComponent(element.component, element.props, element.children, render,renderContext);
-  Object.entries(element.props || {}).forEach(([, propValue]) => {
+function setElementProps(dom, props, renderContext) {
+  for (const [name, propValue] of Object.entries(props || {})) {
     if (propValue instanceof RumiousDirective) {
-      handleDirective(dom, propValue, renderContext, 'component');
+      propValue.init(dom, renderContext);
+    } else if (name.startsWith('on') && isCamelCase(name)) {
+      dom.addEventListener(name.substring(2).toLowerCase(), propValue);
+    } else {
+      dom.setAttribute(name, propValue);
     }
-
-  });
-  container.appendChild(dom);
-  return container;
+  }
 }
 
-function handleFragmentOrElementList(element, container, renderContext) {
-  element.children.forEach(child => render(child, container, renderContext));
+function handleComponentElement(element, container, render, renderContext) {
+  const dom = renderComponent(element.component, element.props, element.children, render, renderContext);
+  setElementProps(dom, element.props, renderContext);
+  container.appendChild(dom);
   return container;
 }
 
@@ -28,76 +30,67 @@ function handleTextElement(element) {
 
 function handleRegularElement(element, renderContext) {
   const dom = document.createElement(element.type);
-  Object.entries(element.props || {}).forEach(([name, propValue]) => {
-    if (name.startsWith('on') && isCamelCase(name)) {
-      dom.addEventListener(name.substring(2).toLowerCase(), propValue);
-    } else {
-      setElementProps(dom, name, propValue, renderContext);
-    }
-  });
-  return dom;
-}
-
-function handleDirective(dom, directive, renderContext) {
-  directive.init(dom, renderContext);
-}
-
-function setElementProps(dom, name, propValue, renderContext) {
-  if (dom.nodeType === Node.TEXT_NODE) {
-    dom.nodeValue = propValue;
-  } else if (propValue instanceof RumiousDirective) {
-    handleDirective(dom, propValue, renderContext, 'element');
-  } else {
-    dom.setAttribute(name, propValue);
+  setElementProps(dom, element.props, renderContext);
+  
+  for (const child of element.children) {
+    render(child, dom, renderContext);
   }
+  
+  return dom;
 }
 
 export function render(element, container, renderContext = {}) {
   if (!element) return container;
-
-  let dom;
   
   if (isPrimitive(element)) {
-    render(createTextElement(element), container, renderContext);
-    return container;
-  } else {
-    if (element instanceof Array) {
-      element.forEach(item => render(item, container, renderContext))
-      return container;
-    } else if (element instanceof RumiousElement) {
-      if (element.type === 'COMPONENT') {
-        return handleComponentElement(element, container, render, renderContext);
-      }
-
-      if (element.type === 'FRAGMENT' || element.type === 'ELEMENT_LIST') {
-        return handleFragmentOrElementList(element, container, renderContext);
-      }
-
-      if (element.type === 'TEXT_ELEMENT') {
-        dom = handleTextElement(element);
-      } else {
-        dom = handleRegularElement(element, renderContext);
-      }
-
-      element.children.forEach(child => render(child, dom, renderContext));
-      container.appendChild(dom);
-      return container;
-    }else if(element instanceof HTMLElement){
-      container.appendChild(element);
-      return container;
-    }else if(element instanceof RumiousContentInjector){
-      if(container instanceof HTMLDocument){
-        throw 'Rumious Render: Unsuppot inject content in HTMLDocument !';
-      }
-      
-      element.target = container;
-      element.inject();
-      return container;
-    } else {
-      render(createTextElement(JSON.stringify(element)), container, renderContext);
-      return container;
-    }
+    return render(createTextElement(element), container, renderContext);
   }
+  
+  if (Array.isArray(element)) {
+    for (const item of element) {
+      render(item, container, renderContext);
+    }
+    return container;
+  }
+  
+  if (element instanceof RumiousElement) {
+    let dom;
+    
+    switch (element.type) {
+      case 'COMPONENT':
+        return handleComponentElement(element, container, render, renderContext);
+      case 'FRAGMENT':
+      case 'ELEMENT_LIST':
+        for (const child of element.children) {
+          render(child, container, renderContext);
+        }
+        return container;
+      case 'TEXT_ELEMENT':
+        dom = handleTextElement(element);
+        break;
+      default:
+        dom = handleRegularElement(element, renderContext);
+    }
+    
+    container.appendChild(dom);
+    return container;
+  }
+  
+  if (element instanceof HTMLElement) {
+    container.appendChild(element);
+    return container;
+  }
+  
+  if (element instanceof RumiousContentInjector) {
+    if (container instanceof HTMLDocument) {
+      throw 'Rumious Render: Unsupported inject content in HTMLDocument!';
+    }
+    element.target = container;
+    element.inject();
+    return container;
+  }
+  
+  return render(createTextElement(JSON.stringify(element)), container, renderContext);
 }
 
 export * from './injector.js';

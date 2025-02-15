@@ -19,7 +19,7 @@ export class RumiousContentInjector {
    */
   inject() {
     if (!this.target) {
-      console.warn("Target element is null, cannot inject content.");
+      console.warn('Target element is null, cannot inject content.');
       return;
     }
     

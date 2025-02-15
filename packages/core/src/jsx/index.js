@@ -1,4 +1,8 @@
-/**
+import { isComponent } from '../component/component.js';
+import {RumiousElement,RumiousElementList} from '../dom/element.js';
+import {registerDirective} from '../render/directives.js';
+
+/*
  * Creates and registers a new directive with the given type, name, and value.
  * 
  * @param {string} type - The type of the directive (e.g., 'attribute', 'event', etc.).

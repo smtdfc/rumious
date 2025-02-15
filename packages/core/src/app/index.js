@@ -1,3 +1,6 @@
+import { RumiousRenderContext } from '../render/context.js';
+import { render } from '../render/index.js';
+
 /**
  * Represents the Rumious Application.
  * Manages the lifecycle of the application, including rendering and context hooks.

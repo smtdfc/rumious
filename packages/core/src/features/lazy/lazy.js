@@ -62,6 +62,7 @@ export class RumiousLazyLoader {
   }
 }
 
+const lazyLoadCache = new Map();
 /**
  * A utility function to create or retrieve a cached instance of RumiousLazyLoader.
  * 
