@@ -28,6 +28,7 @@ export default [
         sourcemap: false,
       },
     ],
+    external:["rumious"],
     plugins: [
       resolve(),
       commonjs()
@@ -53,6 +54,7 @@ export default [
         sourcemap: false,
       },
     ],
+    external:["rumious"],
     plugins: [
       resolve(),
       commonjs(),
