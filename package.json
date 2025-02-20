@@ -2,7 +2,7 @@
   "name": "smtdfc-rumious",
   "private": true,
   "scripts": {
-    "gen:docs":"jsdoc -c jsdoc.json",
+    "gen:docs":"jsdoc -c jsdoc.json packages/core",
     "build:core": "npm run build --workspace packages/core",
     "test": "rollup -c ./test/rollup.config.mjs --watch "
   },
