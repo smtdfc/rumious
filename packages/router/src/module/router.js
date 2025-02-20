@@ -1,47 +1,91 @@
-import { createContext } from "rumious";
+import { createContext, RumiousDymanicInjector } from 'rumious';
 
 export class RumiousRouterModule {
-  constructor(app, configs = {}) {
+  constructor(app, options = {}) {
     this.app = app;
-    this.configs = configs;
-    this.routes = configs.routes ?? [];
-    this.strategy = configs.strategy;
+    this.routes = options.routes ?? [];
+    this.strategy = new options.strategy(this);
     this.context = createContext(`router_${Date.now()}`, {});
+    this.injectors = [new RumiousDymanicInjector()];
+    this.currentPaths = [];
+    this.params = {};
   }
   
-  resolve(url = new URL("/", window.location.origin)) {
-    let pathSplited = url.pathname.split("/").filter(Boolean);
+  static init(app, options) {
+    return new RumiousRouterModule(app, options);
+  }
+  
+  get rootInjector() {
+    return this.injectors[0];
+  }
+  
+  resolve(url = new URL('/', window.location.origin)) {
+    const segments = url.pathname.split('/').slice(1);
+    let params = {};
+    let matchedComponents = [];
     let currentRoutes = this.routes;
-    let routeData = {};
-    let components = [];
-    let depth = 0;
+    let matchedPaths = [];
     
-    for (let pathSegment of pathSplited) {
-      depth++;
-      let matchedRoute = null;
+    for (const segment of segments) {
+      let matchedRoute = currentRoutes.find(route =>
+        route.path === segment || route.path === '*' || route.path.startsWith(':')
+      );
       
-      for (let route of currentRoutes) {
-        if (route.path.startsWith(":")) {
-          let paramName = route.path.slice(1);
-          routeData[paramName] = pathSegment;
-          matchedRoute = route;
-          break;
-        } else if (route.path === "*" || route.path === pathSegment) {
-          matchedRoute = route;
-          break;
-        }
+      if (!matchedRoute) return { type: 'error', name: 'not_found' };
+      
+      if (matchedRoute.path.startsWith(':')) {
+        params[matchedRoute.path.slice(1)] = segment;
       }
       
-      if (!matchedRoute) return { type: "error", name: "not_found" };
+      matchedPaths.push(matchedRoute.path);
+      matchedComponents.push(matchedRoute.component);
       
-      components.push({ component: matchedRoute.component });
-      if (matchedRoute.exact && depth < pathSplited.length) {
-        return { type: "error", name: "not_found" };
+      if (matchedRoute.exact && matchedPaths.length < segments.length) {
+        return { type: 'error', name: 'not_found' };
       }
       
       currentRoutes = matchedRoute.routes ?? [];
     }
     
-    return { type: "route", components: components, params: routeData };
+    return { type: 'route', paths: matchedPaths, components: matchedComponents, params };
+  }
+  
+  render(routeData) {
+    if (routeData.type === 'error') return;
+    
+    const { components, paths } = routeData;
+    let changeIndex = this.currentPaths.findIndex((path, i) => path !== paths[i]);
+    if (changeIndex === -1) changeIndex = this.currentPaths.length;
+    
+    this.currentPaths = paths;
+    
+    while (this.injectors.length < components.length) {
+      this.injectors.push(new RumiousDymanicInjector());
+    }
+    
+    const injectComponent = (index) => {
+      if (index >= components.length) return null;
+      
+      const injector = this.injectors[index];
+      injector.commit([{
+        type: "component",
+        value: components[index],
+        props: {
+          router: this,
+          routeSlot: injectComponent(index + 1)
+        }
+      }]);
+      
+      return injector;
+    };
+    
+    injectComponent(changeIndex);
+    this.injectors[changeIndex]?.inject(true);
+  }
+  
+  start() {
+    if (this.strategy && typeof this.strategy.start === 'function') {
+      this.strategy.start();
+    }
   }
 }

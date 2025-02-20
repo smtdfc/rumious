@@ -3,7 +3,7 @@ import { renderComponent } from '../component/render.js';
 import { RumiousDirective } from './directives.js';
 import { createTextElement } from '../jsx/index.js';
 import { RumiousElement } from '../dom/element.js';
-import { RumiousContentInjector } from './injector.js';
+import { RumiousDymanicInjector } from './injector.js';
 
 function setElementProps(dom, props, renderContext) {
   for (const [name, propValue] of Object.entries(props || {})) {
@@ -81,11 +81,13 @@ export function render(element, container, renderContext = {}) {
     return container;
   }
   
-  if (element instanceof RumiousContentInjector) {
+  if (element instanceof RumiousDymanicInjector) {
     if (container instanceof HTMLDocument) {
       throw 'Rumious Render: Unsupported inject content in HTMLDocument!';
     }
-    element.injectInto(container);
+    
+    element.setTarget(container,render,renderContext);
+    element.inject(true);
     return container;
   }
   

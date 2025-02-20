@@ -24,11 +24,11 @@ export default [
       {
         file: path.join(__dirname, 'dist/index.js'),
         format: 'iife',
-        name: 'Rumious',
+        name: 'RumiousRouter',
         sourcemap: false,
       },
     ],
-    external:["rumious"],
+    external:['rumious'],
     plugins: [
       resolve(),
       commonjs()
@@ -50,11 +50,11 @@ export default [
       {
         file: path.join(__dirname, 'dist/index.min.js'),
         format: 'iife',
-        name: 'Rumious',
+        name: 'RumiousRouter',
         sourcemap: false,
       },
     ],
-    external:["rumious"],
+    external:['rumious'],
     plugins: [
       resolve(),
       commonjs(),
