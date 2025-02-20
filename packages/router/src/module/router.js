@@ -50,7 +50,7 @@ export class RumiousRouterModule {
     return { type: 'route', paths: matchedPaths, components: matchedComponents, params };
   }
   
-  render(routeData) {
+  async render(routeData) {
     if (routeData.type === 'error') return;
     
     const { components, paths } = routeData;
@@ -58,6 +58,12 @@ export class RumiousRouterModule {
     if (changeIndex === -1) changeIndex = this.currentPaths.length;
     
     this.currentPaths = paths;
+    
+    for (var i = 0; i < components.length; i++) {
+      if (typeof components[i] === 'function') {
+        components[i] = await components[i]();
+      }
+    }
     
     while (this.injectors.length < components.length) {
       this.injectors.push(new RumiousDymanicInjector());
@@ -83,6 +89,9 @@ export class RumiousRouterModule {
     this.injectors[changeIndex]?.inject(true);
   }
   
+  redirect(path = "/", replace = false) {
+    this.strategy.redirect(path, replace);
+  }
   start() {
     if (this.strategy && typeof this.strategy.start === 'function') {
       this.strategy.start();
