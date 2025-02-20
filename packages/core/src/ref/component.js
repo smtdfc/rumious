@@ -1,7 +1,7 @@
 /**
  * A class that provides a reference to a Rumious component
  * and access to the component's forwardRefs.
- *  
+ *  @module rumious
  */
 export class RumiousComponentRef {
   /**
@@ -26,7 +26,7 @@ export class RumiousComponentRef {
 
 /**
  * Creates and returns a new RumiousComponentRef instance for the specified Rumious component.
- * 
+ * @module rumious
  * @param {Object} component - The Rumious component for which a reference will be created.
  * @returns {RumiousComponentRef} A new instance of RumiousComponentRef for the component.
  */

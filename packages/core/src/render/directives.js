@@ -2,7 +2,7 @@ import { isFunction } from '../utils/checker.js';
 
 /**
  * Base class for Rumious directives.
- *  
+ *  @module rumious
  */
 export class RumiousDirective {
   /**
@@ -28,7 +28,7 @@ export class RumiousDirective {
 
 /**
  * Handles event binding directives.
- *  
+ *  @module rumious
  */
 export class RumiousEventBindingDirective extends RumiousDirective {
   /**
@@ -74,7 +74,7 @@ export class RumiousEventBindingDirective extends RumiousDirective {
 
 /**
  * Handles property binding directives.
- *  
+ *  @module rumious
  */
 export class RumiousPropsBindingDirective extends RumiousDirective {
   /**
@@ -160,8 +160,7 @@ export class RumiousPropsBindingDirective extends RumiousDirective {
 
 /**
  * Handles reference directives.
- *  
-
+ *  @module rumious
  */
 export class RumiousRefDirective extends RumiousDirective {
   /**
@@ -189,7 +188,7 @@ export class RumiousRefDirective extends RumiousDirective {
 
 /**
  * Handles children reference directives.
- *  
+ * @module rumious
  */
 export class RumiousChildrensRefDirective extends RumiousDirective {
   /**
@@ -262,6 +261,7 @@ const directives = {
 
 /**
  * Registers a directive.
+ * @module rumious
  * @param {string} type - The directive type.
  * @param {string} name - The directive name.
  * @param {any} value - The directive value.

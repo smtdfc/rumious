@@ -1,6 +1,7 @@
 import { createElement } from '../jsx/index.js';
 
 /**
+ * @module rumious
  * @typedef {Object} ContentItem
  * @property {'html' | 'text' | 'component'} type - Loại nội dung.
  * @property {*} value - Giá trị của nội dung.
@@ -9,6 +10,7 @@ import { createElement } from '../jsx/index.js';
  */
 
 /**
+ * @module rumious
  * @typedef {Object} TargetItem
  * @property {Element} element - Phần tử DOM mục tiêu.
  * @property {*} context - Ngữ cảnh cho renderer.
@@ -17,6 +19,7 @@ import { createElement } from '../jsx/index.js';
 
 /**
  * Class representing a dynamic content injector for injecting HTML, text, or components into target elements.
+ * @module rumious
  */
 export class RumiousDymanicInjector {
   constructor() {
@@ -119,6 +122,7 @@ export class RumiousDymanicInjector {
 
 /**
  * Creates an injector with HTML content.
+ * @module rumious
  * @param {string} html - The HTML string to inject.
  * @returns {RumiousDymanicInjector} - A new injector instance with the HTML content.
  */
@@ -130,6 +134,7 @@ export function injectHTML(html) {
 
 /**
  * Creates an injector with plain text content.
+ * @module rumious
  * @param {string} text - The text string to inject.
  * @returns {RumiousDymanicInjector} - A new injector instance with the text content.
  */

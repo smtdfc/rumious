@@ -2,14 +2,16 @@ import { isComponent } from '../component/component.js';
 import {RumiousElement,RumiousElementList} from '../dom/element.js';
 import {registerDirective} from '../render/directives.js';
 
-/*
+/**
  * Creates and registers a new directive with the given type, name, and value.
- * 
+ * @module rumious
+ * @ignore
  * @param {string} type - The type of the directive (e.g., 'attribute', 'event', etc.).
  * @param {string} name - The name of the directive.
  * @param {any} value - The value to associate with the directive.
  * @returns {Function} A function that registers the directive.
- */
+ **/
+ 
 export function createDirective(type, name, value) {
   return registerDirective(type, name, value);
 }
@@ -20,7 +22,8 @@ export function createDirective(type, name, value) {
  * If the type is a component, it creates a component element.
  * If the type is a fragment, it creates a fragment element.
  * Otherwise, it creates a standard DOM element.
- * 
+ * @module rumious
+ * @ignore
  * @param {string|Function} type - The type of element to create (e.g., 'div', 'span', or a component constructor).
  * @param {Object} props - The properties to assign to the element.
  * @param {...any} children - The children of the element (can be other elements, text, or components).
@@ -40,7 +43,8 @@ export function createElement(type, props, ...children) {
 
 /**
  * Creates a text element with the specified text content.
- * 
+ * @module rumious
+ * @ignore
  * @param {string} text - The text content of the text element.
  * @returns {RumiousElement} The created text element.
  */
@@ -50,7 +54,8 @@ export function createTextElement(text) {
 
 /**
  * Creates a component element with the specified component type, properties, and children.
- * 
+ * @module rumious
+ * @ignore
  * @param {Function} type - The component constructor.
  * @param {Object} props - The properties to assign to the component.
  * @param {Array} children - The children elements to assign to the component.
@@ -64,7 +69,8 @@ export function createComponent(type, props, children) {
 
 /**
  * Creates a fragment element with the specified children.
- * 
+ * @module rumious
+ * @ignore
  * @param {...any} children - The children elements to assign to the fragment.
  * @returns {RumiousElement} The created fragment element.
  */
@@ -74,6 +80,7 @@ function createFragment(...children) {
 
 /**
  * Normalizes the children of an element, ensuring that each child is either a text element or another element.
+ * @module rumious
  * @ignore
  * @param {Array} children - The children elements to normalize.
  * @returns {Array} An array of normalized children.

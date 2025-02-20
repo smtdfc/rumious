@@ -1,7 +1,7 @@
 /**
  * A class that provides a reference to a DOM element, enabling manipulation,
  * event handling, and child element management.
- *  
+ *  @module rumious
  */
 export class RumiousElementRef {
   /**
@@ -89,7 +89,7 @@ export class RumiousElementRef {
 
 /**
  * Creates and returns a new RumiousElementRef instance for the specified DOM element.
- * 
+ * @module rumious
  * @param {HTMLElement} element - The DOM element for which a reference will be created.
  * @returns {RumiousElementRef} A new instance of RumiousElementRef for the element.
  */

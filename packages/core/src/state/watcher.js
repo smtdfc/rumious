@@ -1,5 +1,6 @@
 /**
  * Registers a callback function to react to changes in the given state.
+ * @module rumious
  * @param {RumiousState} state - The reactive state to watch.
  * @param {Function} callback - The function to execute when the state changes.
  */
@@ -9,6 +10,7 @@ export function watch(state, callback) {
 
 /**
  * Unregisters a previously registered callback from the state.
+ * @module rumious
  * @param {RumiousState} state - The reactive state to unwatch.
  * @param {Function} callback - The function to remove from the state bindings.
  */

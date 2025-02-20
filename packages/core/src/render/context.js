@@ -1,7 +1,7 @@
 /**
  * Represents the rendering context for a Rumious component.
  * Provides access to the component, its hooks, and helper methods.
- *  
+ *  @module rumious
  */
 export class RumiousRenderContext {
   /**

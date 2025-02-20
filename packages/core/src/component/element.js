@@ -1,7 +1,7 @@
 /**
  * Represents a custom element that wraps around a Rumious component.
  * This class extends the native HTMLElement and manages the lifecycle of the component instance.
- * 
+ * @module rumious
  * @extends HTMLElement
  */
 export class RumiousComponentElement extends HTMLElement {
@@ -71,7 +71,7 @@ export class RumiousComponentElement extends HTMLElement {
 /**
  * Creates and returns a new custom element of type RumiousComponentElement.
  * If the custom element has not been defined previously, it will be defined with the given name.
- * 
+ * @module rumious
  * @param {string} [name='r-component'] - The name of the custom element.
  * @returns {HTMLElement} A new instance of the custom element.
  */

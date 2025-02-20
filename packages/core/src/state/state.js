@@ -4,7 +4,7 @@ import { produceState } from './produce.js';
 
 /**
  * Represents a reactive state in Rumious
- *  
+ * @module rumious
  */
 export class RumiousState {
   /**
@@ -101,6 +101,7 @@ export class RumiousState {
 
 /**
  * Creates a new reactive state.
+ * @module rumious
  * @param {any} value - The initial value of the state.
  * @returns {RumiousState} The newly created state.
  */
@@ -110,6 +111,7 @@ export function createState(value) {
 
 /**
  * Checks if an object is an instance of RumiousState.
+ * @module rumious
  * @param {any} obj - The object to check.
  * @returns {boolean} True if the object is a RumiousState, false otherwise.
  */

@@ -1,7 +1,6 @@
 /**
  * Represents an element with a type, properties, and children, used in the Rumious .
- * 
- *   
+ * @module rumious
  */
 export class RumiousElement {
   /**
@@ -20,7 +19,7 @@ export class RumiousElement {
 
 /**
  * Represents a list of elements in the Rumious .
- * 
+ * @module rumious
  */
 export class RumiousElementList {
   /**

@@ -1,8 +1,7 @@
 /**
  * Represents a lazy loader that defers the execution of a callback until it is requested.
  * Once the callback is executed, its result is cached and subsequent requests will immediately return the result.
- * 
- *    
+ * @module rumious
  */
 export class RumiousLazyLoader {
   /**
@@ -65,7 +64,7 @@ export class RumiousLazyLoader {
 const lazyLoadCache = new Map();
 /**
  * A utility function to create or retrieve a cached instance of RumiousLazyLoader.
- * 
+ * @module rumious
  * @param {Function} callback - The function that will be lazily loaded and executed.
  * @param {Object} [options={}] - Options to configure the lazy loader.
  * @returns {RumiousLazyLoader} The lazy loader instance.

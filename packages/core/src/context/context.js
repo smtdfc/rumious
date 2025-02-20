@@ -7,8 +7,8 @@ if (!window.RUMIOUS_CONTEXTS) {
 /**
  * Represents a context that manages state and events for a specific application or component.
  * The context allows you to store data, listen to events, and trigger events.
+ * @module rumious
  * 
- *   
  */
 export class RumiousContext {
   /**
@@ -83,11 +83,10 @@ export class RumiousContext {
 
 /**
  * Creates context 
- * 
+ * @module rumious
  * @param {string} [globalName=''] - The name of the global context.
  * @param {Object} [data={}] - The initial data to be stored in the context.
  * @returns {RumiousContext} The created or retrieved context instance.
- * 
  * @throws {string} If the initial data is not an object.
  */
 export function createContext(globalName = '', data = {}) {

@@ -4,7 +4,7 @@ import { createElement } from '../../jsx/index.js';
 /**
  * Represents a component that handles lazy loading and error handling for asynchronous operations.
  * Displays a fallback component while waiting for the loader to complete, then renders the result or error.
- * 
+ * @module rumious
  * @extends RumiousComponent
  */
 export class Pending extends RumiousComponent {
