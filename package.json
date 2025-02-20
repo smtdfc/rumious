@@ -2,9 +2,9 @@
   "name": "smtdfc-rumious",
   "private": true,
   "scripts": {
-    "gen:docs":"jsdoc -c jsdoc.json packages/core",
+    "gen:docs": "NODE_OPTIONS='--max-old-space-size=8192' jsdoc -c jsdoc.json",
     "build:core": "npm run build --workspace packages/core",
-    "test": "rollup -c ./test/rollup.config.mjs --watch "
+    "test": "rollup -c ./test/rollup.config.mjs --watch"
   },
   "workspaces": [
     "packages/**"
@@ -21,8 +21,8 @@
     "babel-preset-minify": "^0.5.2",
     "eslint-config-prettier": "^10.0.1",
     "rollup": "^3.28.1",
-    "jsdoc":"^4.0.0",
-    "docdash":"^2.0.2"
+    "jsdoc": "^4.0.0",
+    "docdash": "^2.0.2"
   },
   "version": "1.0.0",
   "main": "index.js",
