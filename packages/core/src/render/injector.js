@@ -1,19 +1,34 @@
 import { createElement } from '../jsx/index.js';
 
 /**
+ * @typedef {Object} ContentItem
+ * @property {'html' | 'text' | 'component'} type - Loại nội dung.
+ * @property {*} value - Giá trị của nội dung.
+ * @property {object} [props] - Thuộc tính tùy chọn.
+ * @property {*} [child] - Nội dung con (nếu có).
+ */
+
+/**
+ * @typedef {Object} TargetItem
+ * @property {Element} element - Phần tử DOM mục tiêu.
+ * @property {*} context - Ngữ cảnh cho renderer.
+ * @property {Function} renderer - Hàm dùng để render component.
+ */
+
+/**
  * Class representing a dynamic content injector for injecting HTML, text, or components into target elements.
  */
 export class RumiousDymanicInjector {
   constructor() {
     /**
      * List of contents to be injected.
-     * @type {Array<{type: 'html' | 'text' | 'component', value: any, props?: object, child?: any}>}
+     * @type {Array<ContentItem>}
      */
     this.contents = [];
     
     /**
      * List of target elements where the content will be injected.
-     * @type {Array<{element: Element, context: any, renderer: Function}>}
+     * @type {Array<TargetItem>}
      */
     this.targets = [];
     
@@ -26,7 +41,7 @@ export class RumiousDymanicInjector {
   
   /**
    * Commits new content to be injected.
-   * @param {Array<{type: 'html' | 'text' | 'component', value: any, props?: object, child?: any}>} contents - The content to be stored for injection.
+   * @param {Array<ContentItem>} contents - The content to be stored for injection.
    */
   commit(contents = []) {
     this.contents = contents;
@@ -36,7 +51,7 @@ export class RumiousDymanicInjector {
    * Sets a target element to inject content into.
    * @param {Element} target - The target element.
    * @param {Function} renderer - Function used to render components.
-   * @param {any} context - Additional context for rendering.
+   * @param {*} context - Additional context for rendering.
    */
   setTarget(target, renderer, context) {
     this.targets.push({ element: target, context, renderer });

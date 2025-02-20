@@ -68,7 +68,7 @@ export class RumiousRouterModule {
       
       const injector = this.injectors[index];
       injector.commit([{
-        type: "component",
+        type: 'component',
         value: components[index],
         props: {
           router: this,

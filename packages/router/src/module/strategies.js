@@ -9,18 +9,18 @@ class HashStrategy {
   
   resolve(url) {
     let result = this.router.resolve(url);
-    if (result.type === "error") return console.log(result);
+    if (result.type === 'error') return console.log(result);
     this.router.params = result.params;
     this.router.render(result);
   }
   
   start() {
     let currentPath = window.location.hash.slice(1);
-    if (currentPath.length == 0) currentPath = "/home/abc";
+    if (currentPath.length == 0) currentPath = '/home/abc';
     let url = new URL(currentPath, window.location.origin);
     window.addEventListener('hashchange', () => {
       currentPath = window.location.hash.slice(1);
-      if (currentPath.length == 0) currentPath = "/home/abc";
+      if (currentPath.length == 0) currentPath = '/home/abc';
       url = new URL(currentPath, window.location.origin);
       this.resolve(url);
     })
