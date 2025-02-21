@@ -21,11 +21,11 @@ export const genComponent = async (argv) => {
   if (await checkFileExists(configFilePath)) {
     configs = await importJson(configFilePath);
   }
-  
+  const splited = componentName.split("/")
   const componentsFilePath = path.join(configs.source ?? cwd, `components/${componentName}.jsx`)
   await ensureFileExists(
     componentsFilePath,
-    (await readFile(templatePath)).replace(`ExampleComponent`, `${componentName}`)
+    (await readFile(templatePath)).replace(`ExampleComponent`, `${splited[splited.length - 1]}`)
   );
   
 };
