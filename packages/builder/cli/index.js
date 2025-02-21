@@ -6,6 +6,7 @@ import { hideBin } from 'yargs/helpers';
 
 import init from './init.js';
 import { dev, prod } from './build.js';
+import { genComponent, genPage } from './generate.js';
 
 dotenv.config();
 
@@ -27,6 +28,17 @@ yargs(hideBin(process.argv))
     },
   }, dev)
   .command('build:prod', 'Build for the production environment', {}, prod)
+  .command('generate <type> <name>', 'Generate a component or page', (yargs) => {
+    return yargs.positional('type', {
+      describe: 'Type of item to generate (component or page)',
+      choices: ['component', 'page'],
+    });
+  }, (argv) => {
+    if (argv.type === 'component') {
+      genComponent(argv);
+    } else if (argv.type === 'page') {
+      genPage(argv);
+    }
+  })
   .help()
   .argv;
-

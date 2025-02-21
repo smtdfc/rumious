@@ -9,15 +9,11 @@ import rumious from '../plugins/rollup.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-
-
-
 function importJson(filePath) {
   const fullPath = path.resolve(filePath);
   const rawData = fs.readFileSync(fullPath, 'utf-8');
   return JSON.parse(rawData);
 }
-
 
 export function rollupGenerateConfig(configFile, produce = null) {
   const options = {

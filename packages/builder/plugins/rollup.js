@@ -13,7 +13,7 @@ function importJson(filePath) {
     return JSON.parse(rawData);
   } catch (error) {
     console.error(`Error reading JSON file at ${filePath}:`, error);
-    return {}; // Return an empty object in case of error
+    return {}; 
   }
 }
 
