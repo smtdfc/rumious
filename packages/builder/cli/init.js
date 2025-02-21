@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 
 export default function init() {
   const currentDir = process.cwd();
-  const templatePath = path.join(path.dirname(new URL(import.meta.url).pathname), '../templates/project');
+  const templatePath = path.join(path.dirname(new URL(import.meta.url).pathname), './templates/project');
   console.log('🚀 Initializing files  ... ! ');
 
   if (!fs.existsSync(templatePath)) {

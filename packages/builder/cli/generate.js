@@ -6,7 +6,7 @@ import {
   checkFileExists,
   importJson,
   readFile
-} from '../utils/files.js';
+} from './utils/files.js';
 
 const cwd = process.cwd();
 

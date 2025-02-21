@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import path from 'path';
-import { exec_command } from '../utils/exec.js';
+import { exec_command } from './utils/exec.js';
 
 export const dev = async (argv) => {
   console.log('🚀 Initializing development environment...');
