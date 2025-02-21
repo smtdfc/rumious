@@ -3,7 +3,7 @@
  * 
  * @param {Object} styles - An object containing CSS selectors as keys and their corresponding properties as values.
  * @returns {string} The generated CSS string.
- * @module rumious
+ * 
  * @example
  * const styles = {
  *   '.button': {

@@ -1,6 +1,6 @@
 /**
  * A class that represents a reducer for managing state changes in Rumious.
- * @module rumious
+ * 
  */
 export class RumiousReducer {
   /**

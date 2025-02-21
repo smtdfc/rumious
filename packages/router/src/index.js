@@ -1,5 +1,5 @@
 /**
- * @module rumious-router
+ * 
  * 
  **/
 

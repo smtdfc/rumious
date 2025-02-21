@@ -1,7 +1,7 @@
 /**
  * A class that provides a reference to the children of a DOM element, enabling 
  * manipulation and querying of the child elements.
- * @module rumious
+ * 
  */
 export class RumiousChildrensRef {
   /**
@@ -79,7 +79,7 @@ export class RumiousChildrensRef {
 
 /**
  * Creates and returns a new RumiousChildrensRef instance for the specified DOM element.
- * @module rumious
+ * 
  * @param {HTMLElement} element - The DOM element whose children will be referenced.
  * @returns {RumiousChildrensRef} A new instance of RumiousChildrensRef for the element.
  */

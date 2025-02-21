@@ -1,6 +1,6 @@
 /**
  * A class that handles reactivity by managing bindings to a target object.
- * @module rumious
+ * 
  */
 export class RumiousReactor {
   /**

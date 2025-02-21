@@ -3,7 +3,7 @@ import { RumiousRenderContext } from '../render/context.js';
 /**
  * Represents a Rumious component that can be rendered with dynamic content.
  * Manages element properties, rendering logic, and lifecycle hooks for components.
- * @module rumious
+ * 
  */
 export class RumiousComponent {
   /**
@@ -111,7 +111,7 @@ export class RumiousComponent {
 
 /**
  * Determines if the given object is an instance of RumiousComponent.
- * @module rumious
+ * 
  * @param {Object} component - The object to check.
  * @returns {boolean} True if the object is a RumiousComponent, false otherwise.
  */

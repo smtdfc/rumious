@@ -1,5 +1,5 @@
 /**
- * @module rumious
+ * 
 **/
 
 export * from './jsx/index.js';
