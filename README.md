@@ -38,6 +38,7 @@ This command will generate a project directory with the basic structure and conf
 Navigate to the *index.jsx* file and add the following code:
 
 ```js
+import {RumiousApp} from "rumious";
 const app = new RumiousApp(document.getElementById("root"));
 
 app.render(
