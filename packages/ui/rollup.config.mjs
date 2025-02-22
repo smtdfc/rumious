@@ -77,7 +77,7 @@ export default [
     scss({
       sass: require('sass'),
       fileName: 'index.min.css',
-      outputStyle: 'compressed',
+      outputStyle: "compressed",
       output: path.join(__dirname, 'dist')
     })
   ],
