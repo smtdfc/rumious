@@ -1,4 +1,11 @@
 # ⚡ Rumious
+![npm](https://img.shields.io/npm/v/rumious)  
+![downloads](https://img.shields.io/npm/dt/rumious)  
+![bundle size](https://img.shields.io/bundlephobia/min/rumious)
+![GitHub stars](https://img.shields.io/github/stars/smtdfc/rumious?style=social)
+![Language](https://img.shields.io/github/languages/top/smtdfc/rumious)
+![GitHub license](https://img.shields.io/github/license/smtdfc/rumious)
+
 
 **Rumious** is a UI library based on **Web Components**, enabling you to build modern interfaces without relying on Virtual DOM or heavy frameworks.
 
