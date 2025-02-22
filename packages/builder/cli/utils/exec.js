@@ -1,8 +1,8 @@
 import { exec } from 'child_process';
 
 export function exec_command(command, options) {
-  return new Promise((resolve, reject) => {
-    const task = exec(`rollup -c ./rollup.configs.mjs ${argv.watch ? '--watch' : ''}`, { cwd: options.cwd });
+  return new Promise((resolve, ) => {
+    const task = exec(command, { cwd: options.cwd });
     
     task.stdout.on('data', (data) => {
       if(options.showLog) console.log(`${data}`);

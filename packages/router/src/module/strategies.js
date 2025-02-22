@@ -17,28 +17,28 @@ class HashStrategy {
     if (this.lastPath === url.pathname) return;
     this.lastPath = url.pathname;
     
-    this.router.triggerEvent("change", { router: this, url });
+    this.router.triggerEvent('change', { router: this, url });
     
     try {
       let result = this.router.resolve(url);
       
       if (result.type === 'error') {
-        this.router.triggerEvent("error", { router: this, url, error: result });
+        this.router.triggerEvent('error', { router: this, url, error: result });
         return;
       }
       
       this.router.params = result.params;
-      this.router.triggerEvent("solved", { router: this, url, result });
+      this.router.triggerEvent('solved', { router: this, url, result });
       
       let renderResult = await this.router.render(result);
       if (renderResult.type === 'error') {
-        this.router.triggerEvent("error", { router: this, url, error: renderResult });
+        this.router.triggerEvent('error', { router: this, url, error: renderResult });
       } else {
-        this.router.triggerEvent("loaded", { router: this, url, result });
+        this.router.triggerEvent('loaded', { router: this, url, result });
       }
     } catch (error) {
-      console.error("Router resolve error:", error);
-      this.router.triggerEvent("error", { router: this, url, error });
+      console.error('Router resolve error:', error);
+      this.router.triggerEvent('error', { router: this, url, error });
     }
   }
   
@@ -78,28 +78,28 @@ class HistoryStrategy {
     if (this.lastPath === url.pathname) return;
     this.lastPath = url.pathname;
     
-    this.router.triggerEvent("change", { router: this, url });
+    this.router.triggerEvent('change', { router: this, url });
     
     try {
       let result = this.router.resolve(url);
       
       if (result.type === 'error') {
-        this.router.triggerEvent("error", { router: this, url, error: result });
+        this.router.triggerEvent('error', { router: this, url, error: result });
         return;
       }
       
       this.router.params = result.params;
-      this.router.triggerEvent("solved", { router: this, url, result });
+      this.router.triggerEvent('solved', { router: this, url, result });
       
       let renderResult = await this.router.render(result);
       if (renderResult.type === 'error') {
-        this.router.triggerEvent("error", { router: this, url, error: renderResult });
+        this.router.triggerEvent('error', { router: this, url, error: renderResult });
       } else {
-        this.router.triggerEvent("loaded", { router: this, url, result });
+        this.router.triggerEvent('loaded', { router: this, url, result });
       }
     } catch (error) {
-      console.error("Router resolve error:", error);
-      this.router.triggerEvent("error", { router: this, url, error });
+      console.error('Router resolve error:', error);
+      this.router.triggerEvent('error', { router: this, url, error });
     }
   }
   
@@ -138,28 +138,28 @@ class MemoryStrategy {
     if (this.currentPath === url.pathname) return;
     this.currentPath = url.pathname;
     
-    this.router.triggerEvent("change", { router: this, url });
+    this.router.triggerEvent('change', { router: this, url });
     
     try {
       let result = this.router.resolve(url);
       
       if (result.type === 'error') {
-        this.router.triggerEvent("error", { router: this, url, error: result });
+        this.router.triggerEvent('error', { router: this, url, error: result });
         return;
       }
       
       this.router.params = result.params;
-      this.router.triggerEvent("solved", { router: this, url, result });
+      this.router.triggerEvent('solved', { router: this, url, result });
       
       let renderResult = await this.router.render(result);
       if (renderResult.type === 'error') {
-        this.router.triggerEvent("error", { router: this, url, error: renderResult });
+        this.router.triggerEvent('error', { router: this, url, error: renderResult });
       } else {
-        this.router.triggerEvent("loaded", { router: this, url, result });
+        this.router.triggerEvent('loaded', { router: this, url, result });
       }
     } catch (error) {
-      console.error("Router resolve error:", error);
-      this.router.triggerEvent("error", { router: this, url, error });
+      console.error('Router resolve error:', error);
+      this.router.triggerEvent('error', { router: this, url, error });
     }
   }
   

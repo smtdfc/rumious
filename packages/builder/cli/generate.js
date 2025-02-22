@@ -13,7 +13,7 @@ const cwd = process.cwd();
 export const genComponent = async (argv) => {
   const componentName = argv.name;
   const templatePath = path.join(path.dirname(new URL(import.meta.url).pathname), '../templates/files/component.jsx');
-  const configFilePath = path.join(cwd, "rumious.configs.json");
+  const configFilePath = path.join(cwd, 'rumious.configs.json');
   let configs = {
     source: cwd,
   }
@@ -21,11 +21,11 @@ export const genComponent = async (argv) => {
   if (await checkFileExists(configFilePath)) {
     configs = await importJson(configFilePath);
   }
-  const splited = componentName.split("/")
+  const splited = componentName.split('/')
   const componentsFilePath = path.join(configs.source ?? cwd, `components/${componentName}.jsx`)
   await ensureFileExists(
     componentsFilePath,
-    (await readFile(templatePath)).replace(`ExampleComponent`, `${splited[splited.length - 1]}`)
+    (await readFile(templatePath)).replace('ExampleComponent', `${splited[splited.length - 1]}`)
   );
   
 };
@@ -33,7 +33,7 @@ export const genComponent = async (argv) => {
 export const genPage = async (argv) => {
   const pageName = argv.name;
   const templatePath = path.join(path.dirname(new URL(import.meta.url).pathname), '../templates/files/page.jsx');
-  const configFilePath = path.join(cwd, "rumious.configs.json");
+  const configFilePath = path.join(cwd, 'rumious.configs.json');
   let configs = {
     source: cwd,
   }

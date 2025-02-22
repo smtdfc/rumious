@@ -31,7 +31,7 @@ export async function ensureDirectoryExists(dirPath) {
 
 
 export async function ensureFileExists(filePath, defaultContent = '') {
-  try {
+  
     const dir = path.dirname(filePath);
     await fs.mkdir(dir, { recursive: true });
     
@@ -40,9 +40,7 @@ export async function ensureFileExists(filePath, defaultContent = '') {
     } catch {
       await fs.writeFile(filePath, defaultContent, 'utf-8');
     }
-  } catch (error) {
-    throw error;
-  }
+
 }
 
 export async function readFile(filePath) {
@@ -50,7 +48,7 @@ export async function readFile(filePath) {
     const data = await fs.readFile(filePath, 'utf-8');
     return data;
   } catch (error) {
-    return null;
+    return error;
   }
 }
 

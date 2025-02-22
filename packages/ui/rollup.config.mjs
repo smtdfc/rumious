@@ -33,7 +33,7 @@ export default [
     resolve(),
     commonjs(),
     scss({
-      fileName: "index.css",
+      fileName: 'index.css',
       output: path.join(__dirname, 'dist')
     })
   ],
@@ -76,8 +76,8 @@ export default [
     }),
     scss({
       sass: require('sass'),
-      fileName: "index.min.css",
-      outputStyle: "compressed",
+      fileName: 'index.min.css',
+      outputStyle: 'compressed',
       output: path.join(__dirname, 'dist')
     })
   ],

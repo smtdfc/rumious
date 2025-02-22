@@ -28,7 +28,7 @@ export const prod = async () => {
   let currentDir = process.cwd();
   
   console.log('🚀 Bundling the application...');
-  const code = await exec_command(`NODE_ENV=production rollup -c ./rollup.configs.mjs `, {
+  const code = await exec_command('NODE_ENV=production rollup -c ./rollup.configs.mjs ', {
     cwd: path.join(currentDir),
     showLog: true,
     showErr: true

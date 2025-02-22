@@ -89,7 +89,7 @@ export class RumiousRouterModule {
       let diffResult = pathDiff(pattern, url.pathname);
       if (diffResult) {
         return {
-          type: "success",
+          type: 'success',
           routeConfigs,
           params: diffResult,
           pattern,
@@ -97,7 +97,7 @@ export class RumiousRouterModule {
         };
       }
     }
-    return { type: "error", name: "not_found" };
+    return { type: 'error', name: 'not_found' };
   }
 
   async solveWrapper(url) {
@@ -120,12 +120,12 @@ export class RumiousRouterModule {
     let components = routeConfigs.components;
     let useWrapper = routeConfigs.wrap ?? true;
     if (routeConfigs.protect && !await routeConfigs.protect()) {
-      return { type: "error", name: "not_allowed" };
+      return { type: 'error', name: 'not_allowed' };
     }
 
     if (routeConfigs.redirect) {
       this.redirect(
-        typeof routeConfigs.redirect === "function" ? await routeConfigs.redirect() : routeConfigs.redirect
+        typeof routeConfigs.redirect === 'function' ? await routeConfigs.redirect() : routeConfigs.redirect
       );
       return {};
     }
@@ -164,7 +164,7 @@ export class RumiousRouterModule {
     return {};
   }
 
-  redirect(path = "/", replace = false) {
+  redirect(path = '/', replace = false) {
     this.strategy.redirect(path, replace);
   }
 
