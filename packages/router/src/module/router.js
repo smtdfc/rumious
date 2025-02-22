@@ -1,139 +1,173 @@
 import { createContext, RumiousDymanicInjector } from 'rumious';
 
+class RouterLazyLoad {
+  constructor(callback) {
+    this.callback = callback;
+    this.component = null;
+  }
+
+  async load() {
+    if (!this.component) {
+      this.component = (await this.callback()).Page;
+    }
+    return this.component;
+  }
+}
+
+export function routerLazy(callback) {
+  return new RouterLazyLoad(callback);
+}
+
+function pathDiff(pattern, path) {
+  let params = {};
+  let patternParts = pattern.split('/');
+  let pathParts = path.split('/');
+
+  let i = 0, j = 0;
+  while (i < patternParts.length && j < pathParts.length) {
+    if (patternParts[i] === '*') return params;
+    if (patternParts[i].startsWith(':')) {
+      params[patternParts[i].slice(1)] = pathParts[j];
+    } else if (patternParts[i] !== pathParts[j]) {
+      return null;
+    }
+    i++;
+    j++;
+  }
+
+  return i === patternParts.length && j === pathParts.length ? params : null;
+}
+
+function diffLayout(a, b) {
+  let len = Math.min(a.length, b.length);
+  for (let i = 0; i < len; i++) {
+    if (a[i] !== b[i]) return { pos: i, change: b.slice(i) };
+  }
+  return a.length < b.length ? { pos: a.length, change: b.slice(a.length) } : { pos: -1 };
+}
+
 export class RumiousRouterModule {
   constructor(app, options = {}) {
     this.app = app;
-    this.routes = options.routes ?? [];
+    this.routes = options.routes ?? {};
+    this.wrappers = options.wrappers ?? {};
     this.strategy = new options.strategy(this);
     this.context = createContext(`router_${Date.now()}`, {});
     this.injectors = [new RumiousDymanicInjector()];
-    this.currentPaths = [];
+    this.currentComponents = [];
     this.params = {};
     this.events = {};
     this.shouldReinject = false;
   }
-  
+
   static init(app, options) {
     return new RumiousRouterModule(app, options);
   }
-  
+
   get rootInjector() {
     return this.injectors[0];
   }
-  
+
   on(name, callback) {
     if (!this.events[name]) this.events[name] = [];
-    this.events[name].push(callback)
+    this.events[name].push(callback);
   }
-  
+
   off(name, callback) {
     if (!this.events[name]) return;
     this.events[name] = this.events[name].filter(cb => cb !== callback);
   }
-  
-  
+
   triggerEvent(name, data) {
     if (!this.events[name]) return;
     this.events[name].forEach(callback => callback(data));
   }
-  
+
   resolve(url = new URL('/', window.location.origin)) {
-    const segments = url.pathname.split('/').slice(1);
-    let params = {};
-    let matchedComponents = [];
-    let currentRoutes = this.routes;
-    let matchedPaths = [];
-    let configs = [];
-    for (const segment of segments) {
-      let matchedRoute = currentRoutes.find(route =>
-        route.path === segment || route.path === '*' || route.path.startsWith(':')
-      );
-      
-      if (!matchedRoute) return { type: 'error', name: 'not_found' };
-      
-      if (matchedRoute.path.startsWith(':')) {
-        params[matchedRoute.path.slice(1)] = segment;
+    for (let pattern in this.routes) {
+      let routeConfigs = this.routes[pattern];
+      let diffResult = pathDiff(pattern, url.pathname);
+      if (diffResult) {
+        return {
+          type: "success",
+          routeConfigs,
+          params: diffResult,
+          pattern,
+          url
+        };
       }
-      
-      matchedPaths.push(matchedRoute.path);
-      matchedComponents.push(matchedRoute.component);
-      
-      if (matchedRoute.exact && matchedPaths.length < segments.length) {
-        return { type: 'error', name: 'not_found' };
-      }
-      
-      configs.push({
-        protect: matchedRoute.protect,
-        redirect: matchedRoute.redirect,
-        callback: matchedRoute.callback,
-        loader: matchedRoute.loader,
-      });
-      
-      currentRoutes = matchedRoute.routes ?? [];
     }
-    
-    return { type: 'route', paths: matchedPaths, components: matchedComponents, params, configs };
+    return { type: "error", name: "not_found" };
   }
-  
+
+  async solveWrapper(url) {
+    if (this.cachedWrappers?.url === url.pathname) return this.cachedWrappers.components;
+
+    let components = [];
+    for (let pattern in this.wrappers) {
+      if (pathDiff(pattern, url.pathname)) {
+        components.push(...this.wrappers[pattern]);
+      }
+    }
+
+    this.cachedWrappers = { url: url.pathname, components };
+    return components;
+  }
+
   async render(routeData) {
-    if (routeData.type === 'error') return;
-    
-    const { components, paths, configs } = routeData;
-    let changeIndex = this.currentPaths.findIndex((path, i) => path !== paths[i]);
-    if (changeIndex === -1) changeIndex = this.currentPaths.length;
-    
-    this.currentPaths = paths;
-    
-    for (const { protect, redirect } of configs) {
-      if (typeof protect === 'function' && !(await protect())) {
-        this.shouldReinject = true;
-        return { type: "error", name: "not_allowed" };
+    let { routeConfigs, url, params } = routeData;
+    this.params = params;
+    let components = routeConfigs.components;
+    let useWrapper = routeConfigs.wrap ?? true;
+    if (routeConfigs.protect && !await routeConfigs.protect()) {
+      return { type: "error", name: "not_allowed" };
+    }
+
+    if (routeConfigs.redirect) {
+      this.redirect(
+        typeof routeConfigs.redirect === "function" ? await routeConfigs.redirect() : routeConfigs.redirect
+      );
+      return {};
+    }
+
+    let wrappers = useWrapper ? await this.solveWrapper(url) : [];
+    for (let i = 0; i < components.length; i++) {
+      if (components[i] instanceof RouterLazyLoad) {
+        components[i] = await components[i].load();
       }
-      
-      if (redirect) {
-        this.redirect(typeof redirect === 'function' ? redirect() : redirect);
-      }
     }
-    
-    if (this.shouldReinject) {
-      this.shouldReinject = false;
-      changeIndex = 0;
-    }
-    
-    for (var i = changeIndex; i < components.length; i++) {
-      if (configs[i].loader) components[i] = await configs[i].loader({ router: this })
-    }
-    
-    while (this.injectors.length < components.length) {
+
+    let layouts = [...wrappers, ...components];
+    let diffResult = diffLayout(this.currentComponents, layouts);
+    if (diffResult.pos < 0) diffResult.pos = 0;
+    while (this.injectors.length < layouts.length) {
       this.injectors.push(new RumiousDymanicInjector());
     }
-    
+
+    this.currentComponents = layouts;
     const injectComponent = (index) => {
-      if (index >= components.length) return null;
+      if (index >= layouts.length) return null;
       const injector = this.injectors[index];
       injector.commit([{
         type: 'component',
-        value: components[index],
+        value: layouts[index],
         props: {
           router: this,
           routeSlot: injectComponent(index + 1)
         }
       }]);
-      
       return injector;
     };
 
-
-    injectComponent(changeIndex);
-    
-    this.injectors[changeIndex].inject(true);
+    injectComponent(diffResult.pos);
+    this.injectors[diffResult.pos].inject(true);
     return {};
   }
-  
+
   redirect(path = "/", replace = false) {
     this.strategy.redirect(path, replace);
   }
-  
+
   start() {
     if (this.strategy && typeof this.strategy.start === 'function') {
       this.strategy.start();

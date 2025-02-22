@@ -14,7 +14,7 @@ export const genComponent = async (argv) => {
   const componentName = argv.name;
   const templatePath = path.join(path.dirname(new URL(import.meta.url).pathname), '../templates/files/component.jsx');
   const configFilePath = path.join(cwd, "rumious.configs.json");
-  const configs = {
+  let configs = {
     source: cwd,
   }
   
@@ -34,7 +34,7 @@ export const genPage = async (argv) => {
   const pageName = argv.name;
   const templatePath = path.join(path.dirname(new URL(import.meta.url).pathname), '../templates/files/page.jsx');
   const configFilePath = path.join(cwd, "rumious.configs.json");
-  const configs = {
+  let configs = {
     source: cwd,
   }
   
