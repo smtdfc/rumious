@@ -8,3 +8,23 @@ $colors: (
   light: var(--light-color),
   dark: var(--dark-color)
 );
+
+$colorInBgMap: (
+  primary: var(--light-color),
+  secondary: var(--light-color),
+  success: var(--light-color),
+  danger: var(--light-color),
+  warning: var(--dark-color),
+  info: var(--dark-color),
+  light: var(--dark-color),
+  dark: var(--light-color)
+);
+
+$actionColors: (
+  hover:var(--hover-color)
+);
+
+$mainColor: (
+  text: var(--main-text-color),
+  background: var(--main-bg-color)
+);

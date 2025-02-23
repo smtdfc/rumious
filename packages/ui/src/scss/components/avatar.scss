@@ -1,0 +1,24 @@
+$avatar-sizes: (
+  xxs: 4px,
+  xs: 10px,
+  sm: 20px,
+  smd: 35px,
+  md: 50px,
+  mdl: 75px,
+  lg: 100px,
+  lgl: 150px,
+  xl: 200px,
+);
+
+.avatar {
+  object-fit: cover;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+@each $size, $value in $avatar-sizes {
+  .avatar-#{$size} {
+    width: $value;
+    height: $value;
+  }
+}

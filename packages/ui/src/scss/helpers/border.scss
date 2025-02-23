@@ -1,34 +1,6 @@
 @use "../abstracts/index" as *;
 
+$border-styles: solid, dashed, dotted, double, groove, ridge, inset, outset;
 
-.border-primary {
-  border-color: $primary !important;
-}
-
-.border-secondary {
-  border-color: $secondary !important;
-}
-
-.border-success {
-  border-color: $success !important;
-}
-
-.border-danger {
-  border-color: $danger !important;
-}
-
-.border-warning {
-  border-color: $warning !important;
-}
-
-.border-info {
-  border-color: $info !important;
-}
-
-.border-light {
-  border-color: $light !important;
-}
-
-.border-dark {
-  border-color: $dark !important;
-}
+@include generate-class('border',$colors,'border-color');
+@include generate-class('border',$border-styles,'border-style');

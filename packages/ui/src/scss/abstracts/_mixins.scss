@@ -1,5 +1,29 @@
-@mixin generate-css-vars($map) {
+@use "sass:meta";
+
+@mixin generate-css-vars($map, $suffix: '') {
   @each $key, $value in $map {
-    --#{$key}: #{$value};
+    --#{$key}#{$suffix}: #{$value};
+  }
+}
+
+@mixin generate-class($prefix, $map-or-list, $attribute) {
+  @if meta.type-of($map-or-list)=="map" {
+    @each $key, $value in $map-or-list {
+      .#{$prefix}-#{$key} {
+        #{$attribute}: $value;
+      }
+    }
+  }
+  
+  @else if meta.type-of($map-or-list)=="list" or meta.type-of(nth($map-or-list, 1))=="string" {
+    @each $item in $map-or-list {
+      .#{$prefix}-#{$item} {
+        #{$attribute}: $item;
+      }
+    }
+  }
+  
+  @else {
+    @warn "Invalid iterable object !";
   }
 }
