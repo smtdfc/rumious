@@ -1,33 +1,11 @@
 @use "../abstracts/index" as *;
 
-.bg-primary {
-  background-color: $primary !important;
+@mixin bg-color($name, $color) {
+  .bg-#{$name} {
+    background-color: $color !important;
+  }
 }
 
-.bg-secondary {
-  background-color: $secondary !important;
-}
-
-.bg-success {
-  background-color: $success !important;
-}
-
-.bg-danger {
-  background-color: $danger !important;
-}
-
-.bg-warning {
-  background-color: $warning !important;
-}
-
-.bg-info {
-  background-color: $info !important;
-}
-
-.bg-light {
-  background-color: $light !important;
-}
-
-.bg-dark {
-  background-color: $dark !important;
+@each $name, $color in $colors {
+  @include bg-color($name, $color);
 }

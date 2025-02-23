@@ -1,34 +1,11 @@
 @use "../abstracts/index" as *;
 
-
-.text-primary {
-  color: $primary !important;
+@mixin text-color($name, $color) {
+  .text-#{$name} {
+    color: $color !important;
+  }
 }
 
-.text-secondary {
-  color: $secondary !important;
-}
-
-.text-success {
-  color: $success !important;
-}
-
-.text-danger {
-  color: $danger !important;
-}
-
-.text-warning {
-  color: $warning !important;
-}
-
-.text-info {
-  color: $info !important;
-}
-
-.text-light {
-  color: $light !important;
-}
-
-.text-dark {
-  color: $dark !important;
+@each $name, $color in $colors {
+  @include text-color($name, $color);
 }

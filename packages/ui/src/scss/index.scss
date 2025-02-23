@@ -1,1 +1,6 @@
+@use "abstracts/index" as *;
 @use "helpers/index" as helpers;
+
+:root {
+  @include generate-css-vars($theme);
+}
