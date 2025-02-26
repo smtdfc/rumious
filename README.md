@@ -7,7 +7,7 @@
 ![GitHub license](https://img.shields.io/github/license/smtdfc/rumious)
 
 
-**Rumious** is a UI library based on **Web Components**, enabling you to build modern interfaces without relying on Virtual DOM or heavy frameworks.
+**Rumious** is a UI framework based on **Web Components**, enabling you to build modern interfaces without relying on Virtual DOM
 
 ## 🚀 Key Features
 - **Web Components** – Fully compatible with any framework or works independently.
