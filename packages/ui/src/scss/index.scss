@@ -2,6 +2,28 @@
 @use "helpers/index" as helpers;
 @use "components/index";
 
+body{
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 4px; 
+  height: 4px; 
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #A9A9A9C2;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
 :root {
   @include generate-css-vars($theme,'-color');
 }
