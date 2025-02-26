@@ -59,9 +59,10 @@ Once you've created your app, you can build it and start testing it locally.
 To build your project, run:
 ```sh
 rumious build:dev
+npx http-server . -p 3000
 ```
 
-After the build is complete, open your browser and go to http://localhost to see the result of your app.
+After the build is complete, open your browser and go to http://localhost:3000 to see the result of your app.
 
 ---
 
