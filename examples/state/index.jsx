@@ -1,4 +1,3 @@
-// Import necessary components from Rumious  
 import { RumiousApp, RumiousComponent, createState } from 'rumious';
 
 // Define a custom component by extending RumiousComponent  

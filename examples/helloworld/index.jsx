@@ -1,4 +1,3 @@
-// Import the RumiousApp class from Rumious  
 import { RumiousApp } from 'rumious';
 
 // Create a new Rumious app and attach it to the element with id "root"  
