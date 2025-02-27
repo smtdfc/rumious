@@ -6,6 +6,14 @@
   }
 }
 
+@mixin color($name, $color) {
+  .color-#{$name} {
+    color: $color !important;
+  }
+}
+
+
 @each $name, $color in $colors {
   @include bg-color($name, $color);
+  @include color($name,$color);
 }
