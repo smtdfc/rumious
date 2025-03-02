@@ -12,7 +12,6 @@
   }
 }
 
-
 @each $name, $color in $colors {
   @include bg-color($name, $color);
   @include color($name,$color);
