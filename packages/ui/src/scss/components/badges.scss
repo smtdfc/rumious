@@ -1,0 +1,65 @@
+@use "sass:map";
+@use "../abstracts/index" as *;
+
+$badge-bg: map.get($mainColor, background);
+$badge-color: map.get($mainColor, text);
+$badge-radius: 10px;
+$badge-font-size: 10px;
+$badge-padding: 5px;
+$badge-border-width: 1px;
+
+.badge {
+  --badge-bg: #{$badge-bg};
+  --badge-color: #{$badge-color};
+  --badge-radius: #{$badge-radius};
+  --badge-font-size: #{$badge-font-size};
+  --badge-padding: #{$badge-padding};
+  --badge-border-width: #{$badge-border-width};
+  
+  padding: var(--badge-padding);
+  border-radius: var(--badge-radius);
+  font-size: var(--badge-font-size);
+  font-weight: bold;
+  color: var(--badge-color);
+  background-color: var(--badge-bg);
+  display: inline-block;
+  text-align: center;
+}
+
+.badge-square {
+  border-radius: 0px;
+}
+
+.badge-outline {
+  border: solid var(--badge-border-width);
+}
+
+$badge-variants: (
+  primary,
+  secondary,
+  info,
+  success,
+  warning,
+  danger,
+  light,
+  dark
+);
+
+@each $variant in $badge-variants {
+  .badge-filled.badge-#{$variant} {
+    --badge-bg: #{map.get($colors, $variant)};
+    --badge-color: #{map.get($colorInBgMap, $variant)};
+  }
+  
+  .badge-tint.badge-#{$variant} {
+    --badge-bg: #{map.get($colorsTransparent, $variant)};
+    --badge-color: #{map.get($colorInBgMap, $variant)};
+
+  }
+  
+  .badge-outline.badge-#{$variant} {
+    --badge-bg: transparent;
+    --badge-color: var(--color-#{$variant});
+    border-color: var(--color-#{$variant});
+  }
+}

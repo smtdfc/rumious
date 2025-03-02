@@ -1,4 +1,6 @@
-$theme: (
+$alpha: 0.5;
+
+$colors: (
   primary: #0d6efd,
   secondary: #6c757d,
   success: #198754,
@@ -7,7 +9,20 @@ $theme: (
   info: #0dcaf0,
   light: #f8f9fa,
   dark: #212529,
+  purple: #6f42c1,
+  teal: #20c997,
+  cyan: #00bcd4,
+  pink: #ff69b4,
+  orange: #ff8c00,
+  brown: #8b4513
+);
+
+$theme: (
   'main-text': black,
-  'main-bg':white,
+  'main-bg': white,
   hover: rgba(0, 0, 0, 0.03)
 );
+
+@each $name, $color in $colors {
+  $theme: map-merge($theme, (#{$name}: $color, #{$name}-transparent: rgba($color, $alpha)));
+}
