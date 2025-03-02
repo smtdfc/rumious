@@ -1,28 +1,36 @@
-$alpha: 0.5;
+@use "sass:map";
 
-$colors: (
-  primary: #0d6efd,
-  secondary: #6c757d,
-  success: #198754,
-  danger: #dc3545,
-  warning: #ffc107,
-  info: #0dcaf0,
-  light: #f8f9fa,
-  dark: #212529,
-  purple: #6f42c1,
-  teal: #20c997,
-  cyan: #00bcd4,
-  pink: #ff69b4,
-  orange: #ff8c00,
-  brown: #8b4513
-);
+$alpha: 0.2 !default;
 
 $theme: (
-  'main-text': black,
-  'main-bg': white,
-  hover: rgba(0, 0, 0, 0.03)
+  "primary": #0d6efd,
+  "secondary": #6c757d,
+  "success": #198754,
+  "danger": #dc3545,
+  "warning": #ffc107,
+  "info": #0dcaf0,
+  "light": #f8f9fa,
+  "dark": #212529,
+  "main-text": black,
+  "main-bg": white,
+  "hover": rgba(0, 0, 0, 0.03),
+  "purple": #6f42c1,
+  "teal": #20c997,
+  "cyan": #00bcd4,
+  "pink": #ff69b4,
+  "orange": #ff8c00,
+  "brown": #8b4519
 );
 
-@each $name, $color in $colors {
-  $theme: map-merge($theme, (#{$name}: $color, #{$name}-transparent: rgba($color, $alpha)));
+
+$theme-transparent: (
+);
+
+@each $key, $color in $theme {
+  $new-key: "" + $key + "-transparent"; 
+  $theme-transparent: map.merge($theme-transparent,
+      ($new-key: rgba($color, $alpha)));
 }
+
+$theme: map.merge($theme, $theme-transparent);
+

@@ -1,42 +1,3 @@
-// Điều chỉnh mức trong suốt
-$alpha: 0.2;
-
-// Định nghĩa màu chính
-$colors: (
-  primary: var(--primary-color),
-  secondary: var(--secondary-color),
-  success: var(--success-color),
-  danger: var(--danger-color),
-  warning: var(--warning-color),
-  info: var(--info-color),
-  light: var(--light-color),
-  dark: var(--dark-color),
-  purple: var(--purple-color),
-  teal: var(--teal-color),
-  cyan: var(--cyan-color),
-  pink: var(--pink-color),
-  orange: var(--orange-color),
-  brown: var(--brown-color)
-);
-
-// Định nghĩa màu nền chữ tương ứng
-$colorInBgMap: (
-  primary: var(--light-color),
-  secondary: var(--light-color),
-  success: var(--light-color),
-  danger: var(--light-color),
-  warning: var(--dark-color),
-  info: var(--dark-color),
-  light: var(--dark-color),
-  dark: var(--light-color),
-  purple: var(--light-color),
-  teal: var(--dark-color),
-  cyan: var(--dark-color),
-  pink: var(--light-color),
-  orange: var(--dark-color),
-  brown: var(--light-color)
-);
-
 
 $colors: (
   primary: var(--primary-color),
@@ -47,12 +8,12 @@ $colors: (
   info: var(--info-color),
   light: var(--light-color),
   dark: var(--dark-color),
-  purple: var(--purple-color),
-  teal: var(--teal-color),
-  cyan: var(--cyan-color),
-  pink: var(--pink-color),
-  orange: var(--orange-color),
-  brown: var(--brown-color)
+  'purple': var(--purple-color),
+  'teal': var(--teal-color),
+  'cyan': var(--cyan-color),
+  'pink': var(--pink-color),
+  'orange': var(--orange-color),
+  'brown': var(--brown-color)
 );
 
 $colorInBgMap: (
@@ -64,12 +25,47 @@ $colorInBgMap: (
   info: var(--dark-color),
   light: var(--dark-color),
   dark: var(--light-color),
-  purple: var(--light-color),
-  teal: var(--dark-color),
-  cyan: var(--dark-color),
-  pink: var(--light-color),
-  orange: var(--dark-color),
-  brown: var(--light-color)
+  'purple': var(--light-color),
+  'teal': var(--dark-color),
+  'cyan': var(--dark-color),
+  'pink': var(--light-color),
+  'orange': var(--dark-color),
+  'brown': var(--light-color)
+);
+
+
+$colors: (
+  primary: var(--primary-color),
+  secondary: var(--secondary-color),
+  success: var(--success-color),
+  danger: var(--danger-color),
+  warning: var(--warning-color),
+  info: var(--info-color),
+  light: var(--light-color),
+  dark: var(--dark-color),
+  'purple': var(--purple-color),
+  'teal': var(--teal-color),
+  'cyan': var(--cyan-color),
+  'pink': var(--pink-color),
+  'orange': var(--orange-color),
+  'brown': var(--brown-color)
+);
+
+$colorInBgMap: (
+  primary: var(--light-color),
+  secondary: var(--light-color),
+  success: var(--light-color),
+  danger: var(--light-color),
+  warning: var(--dark-color),
+  info: var(--dark-color),
+  light: var(--dark-color),
+  dark: var(--light-color),
+  'purple': var(--light-color),
+  'teal': var(--dark-color),
+  'cyan': var(--dark-color),
+  'pink': var(--light-color),
+  'orange': var(--dark-color),
+  'brown': var(--light-color)
 );
 
 $colorsTransparent: (
@@ -81,12 +77,12 @@ $colorsTransparent: (
   info: var(--info-transparent-color),
   light: var(--light-transparent-color),
   dark: var(--dark-transparent-color),
-  purple: var(--purple-transparent-color),
-  teal: var(--teal-transparent-color),
-  cyan: var(--cyan-transparent-color),
-  pink: var(--pink-transparent-color),
-  orange: var(--orange-transparent-color),
-  brown: var(--brown-transparent-color)
+  'purple': var(--purple-transparent-color),
+  'teal': var(--teal-transparent-color),
+  'cyan': var(--cyan-transparent-color),
+  'pink': var(--pink-transparent-color),
+  'orange': var(--orange-transparent-color),
+  'brown': var(--brown-transparent-color)
 );
 
 $actionColors: (
@@ -109,5 +105,5 @@ $actionColors: (
 
 $mainColor: (
   text: var(--main-text-color),
-  background: var(--main-bg-color)
+  'background': var(--main-bg-color)
 );

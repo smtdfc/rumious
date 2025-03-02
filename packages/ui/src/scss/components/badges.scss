@@ -54,12 +54,11 @@ $badge-variants: (
   .badge-tint.badge-#{$variant} {
     --badge-bg: #{map.get($colorsTransparent, $variant)};
     --badge-color: #{map.get($colorInBgMap, $variant)};
-
   }
   
   .badge-outline.badge-#{$variant} {
     --badge-bg: transparent;
-    --badge-color: var(--color-#{$variant});
-    border-color: var(--color-#{$variant});
+    --badge-color: #{map.get($colors, $variant)};
+    border-color: #{map.get($colors, $variant)};
   }
 }
