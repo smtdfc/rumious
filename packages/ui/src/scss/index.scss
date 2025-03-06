@@ -2,14 +2,25 @@
 @use "helpers/index" as helpers;
 @use "components/index";
 
-body{
-  margin: 0px;
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #EDEDED transparent;
+}
+
 ::-webkit-scrollbar {
-  width: 4px; 
-  height: 4px; 
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -25,6 +36,7 @@ body{
 ::-webkit-scrollbar-thumb:hover {
   background: #888;
 }
+
 :root {
-  @include generate-css-vars($theme,'-color');
+  @include generate-css-vars($theme, "-color");
 }
