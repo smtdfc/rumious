@@ -66,6 +66,12 @@
     border-radius: 20px;
   }
   
+  &-btn-icon-group{
+    display: flex;
+    align-content: center;
+    column-gap:10px;
+  }
+  
   &.btn-icon {
     border-radius: 50%;
     padding: 0.5rem;
