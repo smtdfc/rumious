@@ -3,6 +3,7 @@ export class RumiousUIOverlay {
     this.element = element;
   }
   
+  static name="overlay"
   static generator(element) {
     return new RumiousUIOverlay(element);
   }

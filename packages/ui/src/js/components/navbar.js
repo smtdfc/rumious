@@ -3,6 +3,7 @@ export class RumiousUINavbar{
     this.element = element;
   }
   
+  static name="navbar"
   static generator(element ){
     return new RumiousUINavbar(element);
   }

@@ -3,6 +3,7 @@ export class RumiousUISidebar {
     this.element = element;
   }
   
+  static name="sidebar"
   static generator(element) {
     return new RumiousUISidebar(element);
   }

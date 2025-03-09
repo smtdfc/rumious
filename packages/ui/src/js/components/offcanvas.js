@@ -16,6 +16,7 @@ export class RumiousUIOffcanvas {
     )
   }
   
+  static name="offcanvas"
   static generator(element) {
     return new RumiousUIOffcanvas(element);
   }

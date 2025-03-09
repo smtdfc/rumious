@@ -3,6 +3,7 @@ export class RumiousUIAccordion {
     this.element = element;
   }
   
+  static name="accordion"
   static generator(element) {
     return new RumiousUIAccordion(element);
   }
