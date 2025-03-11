@@ -9,30 +9,30 @@ export class RumiousUIOffcanvas {
       this.element,
       {
         overlay: new RumiousUIOverlay(createElement(
-          "span",
-          "overlay"
+          'span',
+          'overlay'
         ))
       }
     )
   }
   
-  static name="offcanvas"
+  static name='offcanvas'
   static generator(element) {
     return new RumiousUIOffcanvas(element);
   }
   
   open() {
-    this.element.classList.add("open");
+    this.element.classList.add('open');
     this.data?.overlay?.open()
   }
   
   close() {
-    this.element.classList.remove("open");
+    this.element.classList.remove('open');
     this.data?.overlay?.close()
   }
   
   toggle() {
-    if (this.element.classList.contains("open")) {
+    if (this.element.classList.contains('open')) {
       this.close();
     } else {
       this.open();

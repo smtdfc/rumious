@@ -18,8 +18,8 @@ function parseCommand(command) {
   const [, action, componentType, target, ...optionGroups] = match;
   
   const options = optionGroups
-    .filter(opt => opt && opt.startsWith("("))
-    .map(opt => opt.slice(1, -1).replace(/^:/, ""));
+    .filter(opt => opt && opt.startsWith('('))
+    .map(opt => opt.slice(1, -1).replace(/^:/, ''));
   
   return { action, componentType, target, options };
 }
@@ -33,14 +33,13 @@ export class RumiousUIModule {
   
   initListener() {
     
-    window.addEventListener("click", (e) => {
+    window.addEventListener('click', (e) => {
       let target = e.target;
       let datasets = target.dataset;
       if (datasets.ui) {
         let { target, action, componentType } = parseCommand(datasets.ui);
         let element = document.querySelector(target);
         let Component = findComponent(componentType);
-        console.log(Component)
         actions[action](
           Component,
           element

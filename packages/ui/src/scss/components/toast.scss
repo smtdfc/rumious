@@ -1,0 +1,77 @@
+@use "sass:map";
+@use "../abstracts/index" as *;
+
+$toast-bg: map.get($colors, primary);
+$toast-color: map.get($colorInBgMap, primary);
+
+.toast-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+}
+
+@keyframes toastFadeIn {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+
+@keyframes toastFadeOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+.toast {
+  --toast-bg:#{$toast-bg};
+  --toast-color:#{$toast-color};
+  display: flex;
+  align-items: center;
+  width: auto;
+  box-sizing: border-box;
+  background: var(--toast-bg);
+  color: var(--toast-color);
+  margin: 0.2rem;
+  padding: 0.8rem;
+  border-radius: 10px;
+  max-width: 90vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.toast.show {
+  animation: toastFadeIn 0.5s forwards;
+}
+
+.toast.hide {
+  animation: toastFadeOut 0.5s forwards;
+}
+
+@each $key, $value in $colors {
+  @if map.has-key($colorInBgMap, $key) {
+    .toast-#{$key} {
+      --toast-bg: #{map.get($colors, $key)};
+      --toast-color: #{map.get($colorInBgMap, $key)};
+    }
+  }
+}
