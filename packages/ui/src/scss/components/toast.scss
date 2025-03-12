@@ -13,6 +13,7 @@ $toast-color: map.get($colorInBgMap, primary);
   display: flex;
   flex-flow: column;
   align-items: center;
+  z-index:-1;
 }
 
 @keyframes toastFadeIn {
@@ -48,9 +49,10 @@ $toast-color: map.get($colorInBgMap, primary);
   background: var(--toast-bg);
   color: var(--toast-color);
   margin: 0.2rem;
-  padding: 0.8rem;
+  padding: 1rem;
   border-radius: 10px;
   max-width: 90vw;
+  min-width: 60vw;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

@@ -3,24 +3,28 @@ import {RumiousUIToast} from './components/index.js';
 
 export class ToastGenerator{
   static containerID = `rumiousui_${generateId()}`
-  ensureContainer(){
+  static ensureContainer(){
     let element = document.getElementById(ToastGenerator.containerID);
     if(!element){
       element = document.createElement('div');
+      element.className="toast-container";
       element.setAttribute('id',ToastGenerator.containerID);
       document.body.appendChild(element);
+      
     }
+    return element;
   }
   
-  show(message, options={}){
+  static show(message, options={}){
+    let container= this.ensureContainer()
     let toast = RumiousUIToast.create(
       message,
       options.type ?? 'primary'
     );
-    
+    container.appendChild(toast.element);
     toast.show();
     setTimeout(()=>{
-      toast.close()
-    },options.duration ?? 500)
+      toast.hide(options.remove)
+    },options.duration ?? 5000)
   }
 }
