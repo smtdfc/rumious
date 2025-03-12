@@ -5,3 +5,4 @@ export * from './sidebar.js';
 export * from './accordion.js';
 export * from './modal.js';
 export * from './toast.js';
+export * from './tab.js';

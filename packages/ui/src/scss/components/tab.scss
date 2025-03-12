@@ -1,0 +1,51 @@
+@use "sass:map";
+@use "../abstracts/index" as *;
+
+$tab-item-color: map.get($mainColor, text);
+$tab-item-active-color: map.get($colors, primary);
+$tab-item-hover-color: $tab-item-active-color;
+$tab-item-active-border: $tab-item-active-color;
+
+.tab {
+  --tab-item-color: #{$tab-item-color};
+  --tab-item-active-color: #{$tab-item-active-color};
+  --tab-item-hover-color: #{$tab-item-hover-color};
+  --tab-item-active-border: #{$tab-item-active-border};
+  
+  display: flex;
+  column-gap: 20px;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  overflow-x: auto;
+  box-sizing: border-box;
+  
+  .tab-item {
+    background: none;
+    border: none;
+    color: var(--tab-item-color);
+    cursor: pointer;
+    position: relative;
+    font-size: 16px;
+    padding: 10px 15px;
+    white-space: nowrap;
+    pointer-events: auto;
+
+    &:hover {
+      color: var(--tab-item-hover-color);
+    }
+    
+    &.active {
+      color: var(--tab-item-active-color);
+      
+      &::after {
+        content: '';
+        position: absolute;
+        inset: auto 0 -3px 0;
+        height: 3px;
+        border-radius: 3px;
+        background: var(--tab-item-active-border);
+        view-transition-name: my-custom-transition;
+      }
+    }
+  }
+}

@@ -38,4 +38,23 @@ export class RumiousUIOffcanvas {
       this.open();
     }
   }
+  
+  action(info) {
+  switch (info.type) {
+    case 'toggle':
+      this.toggle()
+      break;
+      
+    case 'open':
+      this.open()
+      break;
+      
+    case 'close':
+      this.close()
+      break;
+      
+    default:
+      throw 'Unsupported action !'
+  }
+}
 }

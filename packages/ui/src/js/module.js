@@ -1,5 +1,4 @@
 import * as components from './components/index.js';
-import * as actions from './actions.js';
 
 function findComponent(type) {
   
@@ -34,16 +33,20 @@ export class RumiousUIModule {
   initListener() {
     
     window.addEventListener('click', (e) => {
-      let target = e.target;
-      let datasets = target.dataset;
+      let trigger = e.target;
+      let datasets = trigger.dataset;
       if (datasets.ui) {
-        let { target, action, componentType } = parseCommand(datasets.ui);
+        let { target, action, componentType,options } = parseCommand(datasets.ui);
         let element = document.querySelector(target);
         let Component = findComponent(componentType);
-        actions[action](
-          Component,
-          element
-        )
+        if (!Component) return;
+        Component.generator(element, options).action({
+          type: action,
+          trigger: trigger,
+          target:element,
+          component:Component,
+          options
+        });
       }
     })
     

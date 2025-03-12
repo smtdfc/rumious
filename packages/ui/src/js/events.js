@@ -6,6 +6,8 @@ window.addEventListener('click', function(e) {
     return;
   }
   
+  
+  
   if (target.tagName.toLowerCase() === 'a') {
     let parentSubMenu = target.closest('.sub-menu');
     

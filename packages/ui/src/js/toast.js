@@ -7,7 +7,7 @@ export class ToastGenerator{
     let element = document.getElementById(ToastGenerator.containerID);
     if(!element){
       element = document.createElement('div');
-      element.className="toast-container";
+      element.className='toast-container';
       element.setAttribute('id',ToastGenerator.containerID);
       document.body.appendChild(element);
       
