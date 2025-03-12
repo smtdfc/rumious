@@ -29,7 +29,7 @@ $tab-item-active-border: $tab-item-active-color;
     padding: 10px 15px;
     white-space: nowrap;
     pointer-events: auto;
-
+    
     &:hover {
       color: var(--tab-item-hover-color);
     }
@@ -47,5 +47,13 @@ $tab-item-active-border: $tab-item-active-color;
         view-transition-name: my-custom-transition;
       }
     }
+  }
+}
+
+.tab-content {
+  display: none;
+
+  &.active {
+    display: block;
   }
 }
