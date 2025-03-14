@@ -64,6 +64,10 @@ export class RumiousUITab {
       this.metadata.activeItemb = element;
       this.updateIndicator(element);
       element.classList.add("active")
+      
+      if(element.datasets.panel){
+        document.querySelector(element.dataset.panel).classList.add("active");
+      }
     }
     
     action(info) {
