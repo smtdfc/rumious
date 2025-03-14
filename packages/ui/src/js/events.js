@@ -1,3 +1,5 @@
+import {RumiousUITab} from './components/index.js';
+
 window.addEventListener('click', function(e) {
   let target = e.target;
   
@@ -15,4 +17,11 @@ window.addEventListener('click', function(e) {
       parentSubMenu.classList.toggle('open');
     }
   }
+});
+
+window.addEventListener('load', () => {
+  document.querySelectorAll(".tabs-container").forEach(element => {
+    let tab = new RumiousUITab(element);
+    tab.active(tab.getActiveItem());
+  });
 });
