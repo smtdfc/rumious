@@ -54,7 +54,7 @@ export class RumiousUITab {
       Array.from(this.element.children).forEach(element => {
         element.classList.remove('active');
         if (element.dataset.panel) {
-          document.querySelector(element.dataset.panel).classList.remove();
+          document.querySelector(element.dataset.panel).classList.remove("active");
         }
       });
     }
@@ -65,7 +65,7 @@ export class RumiousUITab {
       this.updateIndicator(element);
       element.classList.add("active")
       
-      if(element.datasets.panel){
+      if(element.dataset.panel){
         document.querySelector(element.dataset.panel).classList.add("active");
       }
     }
