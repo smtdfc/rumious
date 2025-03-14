@@ -46,3 +46,11 @@ $tab-item-active-border: $tab-item-active-color;
   background-color: var(--tab-item-active-border);
   transition: left 0.3s ease, width 0.3s ease;
 }
+
+.tab-content{
+  display: none;
+  
+  &.active{
+    display: block;
+  }
+}
