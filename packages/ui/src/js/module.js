@@ -9,18 +9,13 @@ function findComponent(type) {
 
 
 function parseCommand(command) {
-  const regex = /^(\w+):(\w+):([^()]+)((:[^)]+))*$/;
-  const match = command.match(regex);
+  const parts = command.split(':');
   
-  if (!match) return null;
+  if (parts.length < 3) return null;
   
-  const [, action, componentType, target, ...optionGroups] = match;
+  const [action, componentType, target, ...optionGroups] = parts;
   
-  const options = optionGroups
-    .filter(opt => opt && opt.startsWith('('))
-    .map(opt => opt.slice(1, -1).replace(/^:/, ''));
-  
-  return { action, componentType, target, options };
+  return { action, componentType, target, options: optionGroups };
 }
 
 export class RumiousUIModule {

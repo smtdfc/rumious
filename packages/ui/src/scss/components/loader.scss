@@ -11,7 +11,7 @@ $speeds: (
   slow: 2s
 );
 
-$sizes: (
+$loader-sizes: (
   sm:30px,
   md:40px,
   lg:50px,
@@ -46,7 +46,7 @@ $sizes: (
 }
 
 
-@each $size, $value in $sizes {
+@each $size, $value in $loader-sizes {
   .loader-#{$size} {
     --loader-size:#{$value};
   }

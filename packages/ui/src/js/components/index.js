@@ -6,3 +6,4 @@ export * from './accordion.js';
 export * from './modal.js';
 export * from './toast.js';
 export * from './tab.js';
+export * from './progressbar.js';

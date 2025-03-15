@@ -23,8 +23,7 @@ $theme: (
 );
 
 
-$theme-transparent: (
-);
+$theme-transparent: ();
 
 @each $key, $color in $theme {
   $new-key: "" + $key + "-transparent"; 
