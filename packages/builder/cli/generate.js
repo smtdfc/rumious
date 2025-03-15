@@ -16,13 +16,13 @@ export const genComponent = async (argv) => {
   const configFilePath = path.join(cwd, 'rumious.configs.json');
   let configs = {
     source: cwd,
-  }
+  };
   
   if (await checkFileExists(configFilePath)) {
     configs = await importJson(configFilePath);
   }
-  const splited = componentName.split('/')
-  const componentsFilePath = path.join(configs.source ?? cwd, `components/${componentName}.jsx`)
+  const splited = componentName.split('/');
+  const componentsFilePath = path.join(configs.source ?? cwd, `components/${componentName}.jsx`);
   await ensureFileExists(
     componentsFilePath,
     (await readFile(templatePath)).replace('ExampleComponent', `${splited[splited.length - 1]}`)
@@ -36,13 +36,13 @@ export const genPage = async (argv) => {
   const configFilePath = path.join(cwd, 'rumious.configs.json');
   let configs = {
     source: cwd,
-  }
+  };
   
   if (await checkFileExists(configFilePath)) {
     configs = await importJson(configFilePath);
   }
   
-  const pagesFilePath = path.join(configs.source ?? cwd, `pages/${pageName}.jsx`)
+  const pagesFilePath = path.join(configs.source ?? cwd, `pages/${pageName}.jsx`);
   await ensureFileExists(
     pagesFilePath,
     await readFile(templatePath)

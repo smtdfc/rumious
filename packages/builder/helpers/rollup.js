@@ -18,7 +18,7 @@ function importJson(filePath) {
 export function rollupGenerateConfig(configFile, produce = null) {
   const options = {
     prod: process.env.NODE_ENV === 'production'
-  }
+  };
 
   const configs = importJson(configFile);
   const cwd = process.cwd();
@@ -67,7 +67,7 @@ export function rollupGenerateConfig(configFile, produce = null) {
       ...minifyConfigs,
       rumious(),
     ],
-  }
+  };
 
   if (produce) rollupConfigs = produce(rollupConfigs);
   return rollupConfigs;

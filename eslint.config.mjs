@@ -20,7 +20,8 @@ export default [
       }
     },
     rules: {
-      'quotes': ['error', 'single', { 'avoidEscape': true }]
+      'quotes': ['error', 'single', { 'avoidEscape': true }],
+      'semi':['error','always']
     }
   },
 ];

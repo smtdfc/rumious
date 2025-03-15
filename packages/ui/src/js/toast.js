@@ -2,7 +2,7 @@ import {generateId} from './utils/key.js';
 import {RumiousUIToast} from './components/index.js';
 
 export class ToastGenerator{
-  static containerID = `rumiousui_${generateId()}`
+  static containerID = `rumiousui_${generateId()}`;
   static ensureContainer(){
     let element = document.getElementById(ToastGenerator.containerID);
     if(!element){
@@ -16,7 +16,7 @@ export class ToastGenerator{
   }
   
   static show(message, options={}){
-    let container= this.ensureContainer()
+    let container= this.ensureContainer();
     let toast = RumiousUIToast.create(
       message,
       options.type ?? 'primary'
@@ -24,7 +24,7 @@ export class ToastGenerator{
     container.appendChild(toast.element);
     toast.show();
     setTimeout(()=>{
-      toast.hide(options.remove)
-    },options.duration ?? 5000)
+      toast.hide(options.remove);
+    },options.duration ?? 5000);
   }
 }

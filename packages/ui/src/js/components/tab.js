@@ -5,17 +5,17 @@ import { generateId } from '../utils/key.js';
 export class RumiousUITab {
     constructor(element) {
       this.element = element;
-      this.indicator = this.element.querySelector(".tab-indicator") ?? createElement("div","tab-indicator");
+      this.indicator = this.element.querySelector('.tab-indicator') ?? createElement('div','tab-indicator');
       this.metadata = createOrGetData(this.element, {
         id: generateId(),
         isObserve: false,
-        activeItem: this.getActiveItem() ?? createElement("div","tab")
-      })
+        activeItem: this.getActiveItem() ?? createElement('div','tab')
+      });
       
       if (!this.metadata.isObserve) this._setup();
     }
     
-    static name = 'tab'
+    static name = 'tab';
     
     static generator(element) {
       return new RumiousUITab(element);
@@ -54,7 +54,7 @@ export class RumiousUITab {
       Array.from(this.element.children).forEach(element => {
         element.classList.remove('active');
         if (element.dataset.panel) {
-          document.querySelector(element.dataset.panel).classList.remove("active");
+          document.querySelector(element.dataset.panel).classList.remove('active');
         }
       });
     }
@@ -63,10 +63,10 @@ export class RumiousUITab {
       this.inactiveAll();
       this.metadata.activeItemb = element;
       this.updateIndicator(element);
-      element.classList.add("active")
+      element.classList.add('active');
       
       if(element.dataset.panel){
-        document.querySelector(element.dataset.panel).classList.add("active");
+        document.querySelector(element.dataset.panel).classList.add('active');
       }
     }
     
@@ -78,7 +78,7 @@ export class RumiousUITab {
           break;
           
         default:
-          throw 'Unsupported action !'
+          throw 'Unsupported action !';
       }
     }
     

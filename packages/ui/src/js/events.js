@@ -20,7 +20,7 @@ window.addEventListener('click', function(e) {
 });
 
 window.addEventListener('load', () => {
-  document.querySelectorAll(".tabs-container").forEach(element => {
+  document.querySelectorAll('.tabs-container').forEach(element => {
     let tab = new RumiousUITab(element);
     tab.active(tab.getActiveItem());
   });

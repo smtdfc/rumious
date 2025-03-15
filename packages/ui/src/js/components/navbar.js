@@ -3,7 +3,7 @@ export class RumiousUINavbar{
     this.element = element;
   }
   
-  static name='navbar'
+  static name='navbar';
   static generator(element ){
     return new RumiousUINavbar(element);
   }
@@ -27,19 +27,19 @@ export class RumiousUINavbar{
   action(info) {
   switch (info.type) {
     case 'toggle':
-      this.toggle()
+      this.toggle();
       break;
       
     case 'open':
-      this.open()
+      this.open();
       break;
       
     case 'close':
-      this.close()
+      this.close();
       break;
       
     default:
-      throw 'Unsupported action !'
+      throw 'Unsupported action !';
   }
 }
 }

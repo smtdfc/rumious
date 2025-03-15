@@ -3,7 +3,7 @@ export class RumiousUIAccordion {
     this.element = element;
   }
   
-  static name='accordion'
+  static name='accordion';
   static generator(element) {
     return new RumiousUIAccordion(element);
   }
@@ -27,19 +27,19 @@ export class RumiousUIAccordion {
   action(info){
     switch (info.type) {
       case 'toggle':
-        this.toggle()
+        this.toggle();
         break;
       
       case 'open':
-        this.open()
+        this.open();
         break;
       
       case 'close':
-        this.close()
+        this.close();
         break;
       
       default:
-        throw 'Unsupported action !'
+        throw 'Unsupported action !';
     }
   }
 }

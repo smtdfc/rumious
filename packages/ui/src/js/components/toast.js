@@ -3,7 +3,7 @@ export class RumiousUIToast {
     this.element = element;
   }
   
-  static name = 'toast'
+  static name = 'toast';
   static generator(element) {
     return new RumiousUIToast(element);
   }
@@ -25,8 +25,8 @@ export class RumiousUIToast {
     this.element.classList.add('hide');
     if (remove) {
       setTimeout(() => {
-        this.element.remove()
-      }, 500)
+        this.element.remove();
+      }, 500);
     }
   }
   
@@ -41,19 +41,19 @@ export class RumiousUIToast {
   action(info) {
     switch (info.type) {
       case 'toggle':
-        this.toggle()
+        this.toggle();
         break;
         
       case 'show':
-        this.open()
+        this.open();
         break;
         
       case 'hide':
-        this.close(...info.options)
+        this.close(...info.options);
         break;
         
       default:
-        throw 'Unsupported action !'
+        throw 'Unsupported action !';
     }
   }
 }

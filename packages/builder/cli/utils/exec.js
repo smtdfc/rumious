@@ -13,7 +13,7 @@ export function exec_command(command, options) {
     });
     
     task.on('close', (code) => {
-      resolve(code)
+      resolve(code);
     });
-  })
+  });
 }

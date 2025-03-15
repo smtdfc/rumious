@@ -3,7 +3,7 @@ export class RumiousUISidebar {
     this.element = element;
   }
   
-  static name='sidebar'
+  static name='sidebar';
   static generator(element) {
     return new RumiousUISidebar(element);
   }
@@ -27,19 +27,19 @@ export class RumiousUISidebar {
   action(info) {
   switch (info.type) {
     case 'toggle':
-      this.toggle()
+      this.toggle();
       break;
       
     case 'open':
-      this.open()
+      this.open();
       break;
       
     case 'close':
-      this.close()
+      this.close();
       break;
       
     default:
-      throw 'Unsupported action !'
+      throw 'Unsupported action !';
   }
 }
 }

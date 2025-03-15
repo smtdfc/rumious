@@ -3,7 +3,7 @@ export class RumiousUIOverlay {
     this.element = element;
   }
   
-  static name='overlay'
+  static name='overlay';
   static generator(element) {
     return new RumiousUIOverlay(element);
   }
@@ -27,19 +27,19 @@ export class RumiousUIOverlay {
   action(info) {
   switch (info.type) {
     case 'toggle':
-      this.toggle()
+      this.toggle();
       break;
       
     case 'open':
-      this.open()
+      this.open();
       break;
       
     case 'close':
-      this.close()
+      this.close();
       break;
       
     default:
-      throw 'Unsupported action !'
+      throw 'Unsupported action !';
   }
 }
 }
