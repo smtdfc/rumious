@@ -45,6 +45,7 @@ $tab-item-active-border: $tab-item-active-color;
   height: 2px;
   background-color: var(--tab-item-active-border);
   transition: left 0.3s ease, width 0.3s ease;
+  border-radius:5px;
 }
 
 .tab-content{
