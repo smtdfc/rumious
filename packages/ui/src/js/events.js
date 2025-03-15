@@ -1,4 +1,5 @@
 import {RumiousUITab} from './components/index.js';
+import {createElement} from './utils/element.js';
 
 window.addEventListener('click', function(e) {
   let target = e.target;
@@ -22,6 +23,6 @@ window.addEventListener('click', function(e) {
 window.addEventListener('load', () => {
   document.querySelectorAll('.tabs-container').forEach(element => {
     let tab = new RumiousUITab(element);
-    tab.active(tab.getActiveItem());
+    tab.active(tab.getActiveItem() || createElement('div'));
   });
 });

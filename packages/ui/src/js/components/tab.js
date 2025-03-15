@@ -35,7 +35,7 @@ export class RumiousUITab {
       observer.observe(this.element, { childList: true });
     }
     
-    updateIndicator(anchor = new HTMLDivElement()) {
+    updateIndicator(anchor = createElement('div')) {
       const containerRect = this.element.getBoundingClientRect();
       const anchorRect = anchor.getBoundingClientRect();
       const left = anchorRect.left - containerRect.left + this.element.scrollLeft;
