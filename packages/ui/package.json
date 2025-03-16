@@ -27,8 +27,11 @@
   "bugs": {
     "url": "https://github.com/smtdfc/rumious/issues"
   },
-  "homepage": "https://github.com/smtdfc/rumious#readme",
+  "homepage": "https://github.com/smtdfc/rumious/tree/main/packages/ui",
   "devDependencies": {
-
+    
+  },
+  "peerDependencies": {
+    "rumious": "*"
   }
 }
