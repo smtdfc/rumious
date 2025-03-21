@@ -11,33 +11,6 @@ export default [
     input: path.join(__dirname, 'src/index.js'),
     output: [
       {
-        file: path.join(__dirname, 'dist/index.esm.js'),
-        format: 'esm',
-        sourcemap: path.join(__dirname, 'dist/index.map'), 
-        sourcemapExcludeSources: true,
-      },
-      {
-        file: path.join(__dirname, 'dist/index.cjs.js'),
-        format: 'cjs',
-        sourcemap: false, 
-      },
-      {
-        file: path.join(__dirname, 'dist/index.js'),
-        format: 'iife',
-        name: 'RumiousRouter',
-        sourcemap: false,
-      },
-    ],
-    external:['rumious'],
-    plugins: [
-      resolve(),
-      commonjs()
-    ],
-  },
-  {
-    input: path.join(__dirname, 'src/index.js'),
-    output: [
-      {
         file: path.join(__dirname, 'dist/index.esm.min.js'),
         format: 'esm',
         sourcemap: false,
@@ -52,6 +25,9 @@ export default [
         format: 'iife',
         name: 'RumiousRouter',
         sourcemap: false,
+        globals:{
+          rumious:"Rumious"
+        }
       },
     ],
     external:['rumious'],

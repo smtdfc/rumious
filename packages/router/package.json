@@ -1,25 +1,24 @@
 {
   "name": "rumious-router",
-  "version": "0.0.1",
-  "main": "index.js",
+  "version": "0.0.2",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "dependencies": {
-
+    "build": "rollup -c rollup.config.mjs"
   },
   "peerDependencies": {
     "rumious": "*"
   },
+  "main": "dist/index.cjs.min.js",
+  "module": "dist/index.esm.min.js",
+  "unpkg": "dist/index.min.js",
   "files": [
     "index.js",
     "dist/**"
   ],
-  "keywords":[
+  "keywords": [
     "rumious",
     "rumious-router",
     "router"
-   ],
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/smtdfc/rumious.git"

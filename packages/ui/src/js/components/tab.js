@@ -61,7 +61,7 @@ export class RumiousUITab {
     
     active(element) {
       this.inactiveAll();
-      this.metadata.activeItemb = element;
+      this.metadata.activeItem = element;
       this.updateIndicator(element);
       element.classList.add('active');
       

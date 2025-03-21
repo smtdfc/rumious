@@ -1,6 +1,6 @@
 {
   "name": "rumious",
-  "version": "0.0.9",
+  "version": "0.0.8",
   "description": "The simple library for build UI",
   "keywords": [
     "rumious",
@@ -9,8 +9,8 @@
   ],
   "author": "smtdfc",
   "license": "MIT",
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.esm.js",
+  "main": "dist/index.cjs.min.js",
+  "module": "dist/index.esm.min.js",
   "unpkg": "dist/index.min.js",
   "scripts": {
     "build": "rollup -c rollup.config.mjs"

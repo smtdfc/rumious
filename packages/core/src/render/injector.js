@@ -74,7 +74,7 @@ export class RumiousDymanicInjector {
       }
     });
     
-    observer.observe(target, { childList: false, subtree: false });
+    observer.observe(target.parentNode, { childList: true });
     
     this.observers.set(target, observer);
   }
