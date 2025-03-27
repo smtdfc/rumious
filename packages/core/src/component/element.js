@@ -15,7 +15,7 @@ export class RumiousComponentElement extends HTMLElement {
     this.instance = null;
     this.ref = null;
   }
-
+  
   /**
    * Cleans up the custom element by resetting its prototype and removing it from the DOM.
    */
@@ -23,7 +23,7 @@ export class RumiousComponentElement extends HTMLElement {
     Object.setPrototypeOf(this, HTMLUnknownElement.prototype);
     this.remove();
   }
-
+  
   /**
    * Initializes the component element with a given component constructor, props, wrapped children, renderer, and app.
    * 
@@ -40,23 +40,70 @@ export class RumiousComponentElement extends HTMLElement {
     this.instance.prepare(this, props, wrapped, renderer);
     this.instance.onInit();
   }
-
+  
   /**
    * Lifecycle callback called when the element is added to the DOM.
    * Calls the component's `onCreate` and `requestRender` methods.
    */
   connectedCallback() {
-    if (this.instance.asynchronousRender) {
-      (async () => {
+    switch (this.instance.renderOptions.mode) {
+      case 'linear':
         this.instance.onCreate();
         this.instance.requestRender();
-      })();
-    } else {
-      this.instance.onCreate();
-      this.instance.requestRender();
+        break;
+
+      case 'async':
+        (async ()=>{
+          this.instance.onCreate();
+          this.instance.requestRender();
+        })()
+        break;
+
+      case 'animate':
+        requestAnimationFrame(async ()=>{
+          this.instance.onCreate();
+          this.instance.requestRender();
+        })
+        break;
+
+      case 'idle':
+        requestIdleCallback(async ()=>{
+          this.instance.onCreate();
+          this.instance.requestRender();
+        })
+        break;
+        
+      case 'defer':
+        setTimeout(async () => {
+          this.instance.onCreate();
+          this.instance.requestRender();
+        },0)
+        break;
+      
+      case 'delay':
+        setTimeout(async () => {
+          this.instance.onCreate();
+          this.instance.requestRender();
+        },this.instance.renderOptions.time)
+        break;
+
+      case 'visible': {
+        const observer = new IntersectionObserver((entries, obs) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              obs.disconnect();
+              this.instance.onCreate();
+              this.instance.requestRender();
+            }
+          }
+        });
+
+        observer.observe(this);
+        break;
+      }
     }
   }
-
+  
   /**
    * Lifecycle callback called when the element is removed from the DOM.
    * Calls the component's `onDestroy` and `requestCleanUp` methods, then cleans up the element.
@@ -81,6 +128,6 @@ export function createComponentElement(name = 'r-component') {
       static tag = name;
     });
   }
-
+  
   return document.createElement(name);
 }

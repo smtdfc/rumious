@@ -68,7 +68,7 @@ export function render(element, container, renderContext = {}) {
       case 'TEXT_ELEMENT':
         dom = handleTextElement(element);
         break;
-      default:
+     default:
         dom = handleRegularElement(element, renderContext);
     }
     

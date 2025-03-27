@@ -12,7 +12,9 @@ export class RumiousComponent {
    * @constructor
    */
   constructor() {
-    this.asynchronousRender = false;
+    this.renderOptions= {
+      mode:"linear",
+    };
     this.element = null;
     this.app = null;
     this.props = {};
