@@ -19,7 +19,6 @@ function setElementProps(dom, props, renderContext) {
 
 function handleComponentElement(element, container, render, renderContext) {
   const dom = renderComponent(element.component, element.props, element.children, render, renderContext);
-  setElementProps(dom, element.props, renderContext);
   container.appendChild(dom);
   return container;
 }
