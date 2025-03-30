@@ -26,7 +26,7 @@ export default [
         name: 'RumiousRouter',
         sourcemap: false,
         globals:{
-          rumious:"Rumious"
+          rumious:'Rumious'
         }
       },
     ],

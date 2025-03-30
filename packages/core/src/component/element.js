@@ -56,35 +56,35 @@ export class RumiousComponentElement extends HTMLElement {
         (async ()=>{
           this.instance.onCreate();
           this.instance.requestRender();
-        })()
+        })();
         break;
 
       case 'animate':
         requestAnimationFrame(async ()=>{
           this.instance.onCreate();
           this.instance.requestRender();
-        })
+        });
         break;
 
       case 'idle':
         requestIdleCallback(async ()=>{
           this.instance.onCreate();
           this.instance.requestRender();
-        })
+        });
         break;
         
       case 'defer':
         setTimeout(async () => {
           this.instance.onCreate();
           this.instance.requestRender();
-        },0)
+        },0);
         break;
       
       case 'delay':
         setTimeout(async () => {
           this.instance.onCreate();
           this.instance.requestRender();
-        },this.instance.renderOptions.time)
+        },this.instance.renderOptions.time);
         break;
 
       case 'visible': {

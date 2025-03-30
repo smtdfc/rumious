@@ -13,7 +13,7 @@ export class RumiousComponent {
    */
   constructor() {
     this.renderOptions= {
-      mode:"linear",
+      mode:'linear',
     };
     this.element = null;
     this.app = null;

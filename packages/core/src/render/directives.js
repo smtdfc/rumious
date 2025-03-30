@@ -152,6 +152,13 @@ export class RumiousPropsBindingDirective extends RumiousDirective {
       case 'visible':
         dom.style.visibility = this.normalizeValue(value) ? 'visible' : 'hidden';
         break;
+      case 'value':
+        dom.value = this.normalizeValue(value);
+        break;
+      case 'checked':
+        dom.checked = this.normalizeValue(value);
+        break;
+        
       default:
         dom.setAttribute(this.name, this.normalizeValue(value));
     }
@@ -187,6 +194,40 @@ export class RumiousRefDirective extends RumiousDirective {
 }
 
 /**
+ * Handles model binding directives
+ */
+export class RumiousModelDirective extends RumiousDirective {
+  /**
+   * Initializes the model binding directive.
+   * 
+   * @param {HTMLElement} dom - The DOM element to bind the model to.
+   * @param {object} renderContext - The context in which the directive is rendered.
+   */
+  async init(dom, renderContext) {
+    let state;
+    
+    if (this.value.type === 'expression') {
+      state = this.value.value;
+    } else if (this.value.type === 'dynamic_value') {
+      state = renderContext.find(this.value.value.objectName);
+    }
+    
+    const updateState = () => {
+      if (dom.type === 'checkbox') {
+        state.set(dom.checked);
+      } else if (dom.type === 'radio') {
+        if (dom.checked) state.set(dom.value);
+      } else {
+        state.set(dom.value);
+      }
+    };
+    
+    dom.addEventListener('input', updateState);
+    dom.addEventListener('change', updateState);
+  }
+}
+
+/**
  * Handles children reference directives.
  * 
  */
@@ -214,6 +255,8 @@ export class RumiousChildrensRefDirective extends RumiousDirective {
   }
 }
 
+
+
 /**
  * Directives registry.
  */
@@ -221,8 +264,8 @@ const directives = {
   /**
    * Creates an event binding directive.
    * @param {string} event - The event name.
-   * @param {any} value - The event handler.
-   * @returns {RumiousEventBindingDirective}
+   * @param {Function} value - The event handler function.
+   * @returns {RumiousEventBindingDirective} The event binding directive instance.
    */
   on(event, value) {
     return new RumiousEventBindingDirective('on', event, value);
@@ -232,7 +275,7 @@ const directives = {
    * Creates a property binding directive.
    * @param {string} attr - The attribute name.
    * @param {any} value - The attribute value.
-   * @returns {RumiousPropsBindingDirective}
+   * @returns {RumiousPropsBindingDirective} The property binding directive instance.
    */
   bind(attr, value) {
     return new RumiousPropsBindingDirective('bind', attr, value);
@@ -241,8 +284,8 @@ const directives = {
   /**
    * Creates a reference directive.
    * @param {any} _ - Unused parameter.
-   * @param {any} value - The reference object.
-   * @returns {RumiousRefDirective}
+   * @param {HTMLElement} value - The reference object.
+   * @returns {RumiousRefDirective} The reference directive instance.
    */
   ref(_, value) {
     return new RumiousRefDirective('ref', _, value);
@@ -251,13 +294,26 @@ const directives = {
   /**
    * Creates a children reference directive.
    * @param {any} _ - Unused parameter.
-   * @param {any} value - The reference object.
-   * @returns {RumiousChildrensRefDirective}
+   * @param {HTMLElement[]} value - The reference object for multiple children.
+   * @returns {RumiousChildrensRefDirective} The children reference directive instance.
    */
   childsRef(_, value) {
     return new RumiousChildrensRefDirective('childsRef', _, value);
-  }
+  },
+  
+  /**
+   * Creates a model binding directive.
+   * @param {any} _ - Unused parameter.
+   * @param {object} value - The state object to bind the model to.
+   * @returns {RumiousModelDirective} The model binding directive instance.
+   */
+  model(_, value) {
+    return new RumiousModelDirective('model', _, value);
+  },
+  
+  
 };
+
 
 /**
  * Registers a directive.
