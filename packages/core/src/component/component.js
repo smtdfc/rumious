@@ -62,7 +62,8 @@ export class RumiousComponent {
   /**
    * Requests a render update by generating and appending a new fragment to the element.
    */
-  requestRender() {
+  async requestRender() {
+    await this.onBeforeRender();
     let template = this.template();
     let fragment = this.renderer(template, document.createDocumentFragment(), this.renderContext);
     this.element.appendChild(fragment);
@@ -94,7 +95,12 @@ export class RumiousComponent {
    * Lifecycle hook for component creation.
    */
   onCreate() {}
-
+  
+  /**
+   * Lifecycle hook for before rendering.
+   */
+  async onBeforeRender() {}
+  
   /**
    * Lifecycle hook for after rendering.
    */
