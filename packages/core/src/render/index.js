@@ -4,6 +4,8 @@ import { RumiousDirective } from './directives.js';
 import { createTextElement } from '../jsx/index.js';
 import { RumiousElement } from '../dom/element.js';
 import { RumiousDymanicInjector } from './injector.js';
+import { RumiousArraySync } from './sync.js';
+
 
 function setElementProps(dom, props, renderContext) {
   for (const [name, propValue] of Object.entries(props || {})) {
@@ -67,7 +69,7 @@ export function render(element, container, renderContext = {}) {
       case 'TEXT_ELEMENT':
         dom = handleTextElement(element);
         break;
-     default:
+      default:
         dom = handleRegularElement(element, renderContext);
     }
     
@@ -85,8 +87,18 @@ export function render(element, container, renderContext = {}) {
       throw 'Rumious Render: Unsupported inject content in HTMLDocument!';
     }
     
-    element.setTarget(container,render,renderContext);
+    element.setTarget(container, render, renderContext);
     element.inject(true);
+    return container;
+  }
+  
+  if (element instanceof RumiousArraySync) {
+    if (container instanceof HTMLDocument) {
+      throw 'Rumious Render: Unsupported sync data of array  in HTMLDocument!';
+    }
+    
+    element.setTarget(container, render, renderContext);
+    element.sync();
     return container;
   }
   

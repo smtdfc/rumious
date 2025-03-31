@@ -81,12 +81,12 @@ export class RumiousState {
   set(...args) {
     if (args.length === 1) {
       this.value = args[0];
-      this.reactor.react({type:"SET_VALUE",value:args[0]});
+      this.reactor.react({type:'SET_VALUE',value:args[0]});
     } else {
       let path = args[0];
       let value = args[1];
       this.setObjectByPath(path, value);
-      this.reactor.react({type:"SET_VALUE",path,value});
+      this.reactor.react({type:'SET_VALUE',path,value});
     }
   }
   
