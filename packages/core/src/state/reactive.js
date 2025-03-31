@@ -16,8 +16,8 @@ export class RumiousReactor {
   /**
    * Triggers all registered bindings (callbacks) to react to changes in the target.
    */
-  react() {
-    this.bindings.forEach((callback) => callback());
+  react(commit) {
+    this.bindings.forEach((callback) => callback(commit));
   }
   
   /**

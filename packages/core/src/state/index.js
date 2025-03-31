@@ -1,3 +1,4 @@
+export * from './array.js';
 export * from './state.js';
 export * from './watcher.js';
 export * from './reactive.js';
