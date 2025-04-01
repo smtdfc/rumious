@@ -5,17 +5,13 @@ if (!window.RUMIOUS_CONTEXTS) {
 }
 
 /**
- * Represents a context that manages state and events for a specific application or component.
- * The context allows you to store data, listen to events, and trigger events.
- * 
- * 
+ * Manages state and event handling for an application or component.
+ * Allows storing data, listening to events, and triggering events.
  */
 export class RumiousContext {
   /**
-   * Creates an instance of RumiousContext.
-   * Initializes the context with given data and sets up an empty events object.
-   * @constructor
-   * @param {Object} [data={}] - Initial data to be stored in the context.
+   * Creates a new context instance with initial data and an event registry.
+   * @param {Object} [data={}] - Initial state data for the context.
    */
   constructor(data = {}) {
     this.data = data;
@@ -23,10 +19,9 @@ export class RumiousContext {
   }
   
   /**
-   * Registers an event listener for a specific event.
-   * 
-   * @param {string} event - The name of the event.
-   * @param {Function} listener - The function to be called when the event is emitted.
+   * Registers an event listener for a given event name.
+   * @param {string} event - The event name.
+   * @param {Function} listener - Callback function executed when the event is emitted.
    */
   on(event, listener) {
     if (!this.events[event]) {
@@ -36,10 +31,9 @@ export class RumiousContext {
   }
   
   /**
-   * Removes an event listener for a specific event.
-   * 
-   * @param {string} event - The name of the event.
-   * @param {Function} listener - The listener to remove.
+   * Removes a specific event listener.
+   * @param {string} event - The event name.
+   * @param {Function} listener - The listener function to remove.
    */
   off(event, listener) {
     if (!this.events[event]) return;
@@ -47,10 +41,9 @@ export class RumiousContext {
   }
   
   /**
-   * Emits an event and calls all registered listeners with the given arguments.
-   * 
-   * @param {string} event - The name of the event.
-   * @param {...any} args - Arguments to be passed to the listener functions.
+   * Emits an event, invoking all registered listeners with the provided arguments.
+   * @param {string} event - The event name.
+   * @param {...any} args - Arguments to pass to the listener functions.
    */
   emit(event, ...args) {
     if (!this.events[event]) return;
@@ -58,23 +51,20 @@ export class RumiousContext {
   }
   
   /**
-   * Sets a value in the context state under the given key.
-   * 
-   * @param {string} key - The key under which the value should be stored.
+   * Stores a value in the context under the specified key.
+   * @param {string} key - The key for storing the value.
    * @param {any} value - The value to store.
-   * @returns {Object} The created state object for the value.
+   * @returns {any} The stored value.
    */
   set(key, value) {
-    let state = createState(value);
-    this.data[key] = state;
-    return state;
+    this.data[key] = value;
+    return value;
   }
   
   /**
-   * Retrieves a value from the context state by the given key.
-   * 
-   * @param {string} key - The key of the value to retrieve.
-   * @returns {any} The value stored under the given key.
+   * Retrieves a stored value from the context.
+   * @param {string} key - The key associated with the value.
+   * @returns {any} The value stored under the key.
    */
   get(key) {
     return this.data[key];
@@ -82,17 +72,18 @@ export class RumiousContext {
 }
 
 /**
- * Creates context 
- * 
- * @param {string} [globalName=''] - The name of the global context.
- * @param {Object} [data={}] - The initial data to be stored in the context.
- * @returns {RumiousContext} The created or retrieved context instance.
- * @throws {string} If the initial data is not an object.
+ * Creates or retrieves a global context instance.
+ * @param {string} [globalName=''] - The unique name for the global context.
+ * @param {Object} [data={}] - Initial state data for the context.
+ * @returns {RumiousContext} The existing or newly created context instance.
+ * @throws {Error} If the initial data is not an object.
  */
 export function createContext(globalName = '', data = {}) {
   if (!data || typeof data !== 'object') {
-    throw 'Rumious context: Initial value must be object !';
+    throw new Error('Rumious context: Initial value must be an object!');
   }
-  if (!window.RUMIOUS_CONTEXTS[globalName]) window.RUMIOUS_CONTEXTS[globalName] = new RumiousContext(data);
+  if (!window.RUMIOUS_CONTEXTS[globalName]) {
+    window.RUMIOUS_CONTEXTS[globalName] = new RumiousContext(data);
+  }
   return window.RUMIOUS_CONTEXTS[globalName];
 }
