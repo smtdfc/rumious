@@ -9,7 +9,8 @@ export class RumiousUITab {
       this.metadata = createOrGetData(this.element, {
         id: generateId(),
         isObserve: false,
-        activeItem: this.getActiveItem() ?? createElement('div','tab')
+        activeItem: this.getActiveItem() ?? createElement('div','tab'),
+        index:0
       });
       
       if (!this.metadata.isObserve) this._setup();
@@ -59,7 +60,9 @@ export class RumiousUITab {
       });
     }
     
-    setTabByIndex(index){
+    setTabByIndex(index, force=false){
+      if(this.metadata.index === index && !force) return;
+      this.metadata.index = index;
       this.active(this.element.children[index]);
     }
     
