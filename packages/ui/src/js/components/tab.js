@@ -59,6 +59,10 @@ export class RumiousUITab {
       });
     }
     
+    setTabByIndex(index){
+      this.active(this.element.children[index]);
+    }
+    
     active(element) {
       this.inactiveAll();
       this.metadata.activeItem = element;
