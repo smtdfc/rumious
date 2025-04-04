@@ -4,7 +4,7 @@ class RouterLazyLoad {
   constructor(callback) {
     this.callback = callback;
     this.component = null;
-    this.currentPattern = null;
+    
   }
 
   async load() {
@@ -59,6 +59,7 @@ export class RumiousRouterModule {
     this.params = {};
     this.events = {};
     this.shouldReinject = false;
+    this.currentPattern = null;
   }
 
   static init(app, options) {
