@@ -4,6 +4,7 @@ class RouterLazyLoad {
   constructor(callback) {
     this.callback = callback;
     this.component = null;
+    this.currentPattern = null;
   }
 
   async load() {

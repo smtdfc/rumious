@@ -26,7 +26,7 @@ class HashStrategy {
         this.router.triggerEvent('error', { router: this, url, error: result });
         return;
       }
-      
+      this.router.currentPattern = result.pattern;
       this.router.params = result.params;
       this.router.triggerEvent('solved', { router: this, url, result });
       
@@ -88,6 +88,7 @@ class HistoryStrategy {
         return;
       }
       
+      this.router.currentPattern = result.pattern;
       this.router.params = result.params;
       this.router.triggerEvent('solved', { router: this, url, result });
       
@@ -148,6 +149,7 @@ class MemoryStrategy {
         return;
       }
       
+      this.router.currentPattern = result.pattern;
       this.router.params = result.params;
       this.router.triggerEvent('solved', { router: this, url, result });
       
