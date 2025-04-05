@@ -89,6 +89,17 @@ class RumiousArrayState extends RumiousState {
       this.reactor.react({ type: 'INSERT_ELEMENT', index: idx, value });
     }
   }
+  
+  /**
+   * Finds an element in the array that satisfies the provided testing function.
+   * 
+   * @param {Function} callback - A function that is called for every element in the array. 
+   * It should return a truthy value for the element you are searching for.
+   * @returns {*} The first element in the array that satisfies the provided testing function, or `undefined` if no such element is found.
+   */
+  find(callback) {
+    return this.value.find(callback);
+  }
 }
 
 /**
