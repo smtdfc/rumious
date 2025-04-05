@@ -96,7 +96,9 @@ export function render(element, container, renderContext = {}) {
     if (container instanceof HTMLDocument) {
       throw 'Rumious Render: Unsupported sync data of array  in HTMLDocument!';
     }
-    
+		renderContext.cleans.push(()=>{
+			element.clean();
+		});
     element.setTarget(container, render, renderContext);
     element.sync();
     return container;

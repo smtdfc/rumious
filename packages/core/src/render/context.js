@@ -12,6 +12,7 @@ export class RumiousRenderContext {
   constructor(target) {
     this.target = target;
     this.app = target.app;
+    this.cleans = [];
     this.hooks = {
       onRendered: [],
       onBeforeRender: []
