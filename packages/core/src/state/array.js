@@ -17,7 +17,7 @@ class RumiousArrayState extends RumiousState {
    */
   constructor(target, reactor = null) {
     if (!(target instanceof Array)) {
-      throw Error('RumiousStateArray: The initial value must be an array.');
+      throw Error('RumiousArrayState: The initial value must be an array.');
     }
     super(target, reactor);
   }
