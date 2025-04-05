@@ -11,13 +11,15 @@ export class RumiousReactor {
   constructor(target = null, bindings = []) {
     this.target = target;
     this.bindings = bindings;
+    this.priorityBinding = {};
   }
   
   /**
    * Triggers all registered bindings (callbacks) to react to changes in the target.
    */
   react(commit) {
-    this.bindings.forEach((callback) => callback(commit));
+  	Object.keys(this.priorityBinding).forEach(bindingID=> this.priorityBinding[bindingID]?.(commit));
+    this.bindings.forEach((callback) => callback?.(commit));
   }
   
   /**

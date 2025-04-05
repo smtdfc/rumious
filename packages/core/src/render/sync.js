@@ -39,6 +39,7 @@ export class RumiousArraySync {
 		this.state = state;
 		this.template = template;
 		this.target = null;
+		this._id = Date.now();
 	}
 	
 	/**
@@ -54,7 +55,7 @@ export class RumiousArraySync {
 	*/
 	clean() {
 		if (!this.target) return;
-		this.state.reactor.removeBinding(this.onChange.bind(this));
+		delete this.state.reactor.priorityBinding[this._id];
 	}
 	
 	/**
@@ -64,7 +65,7 @@ export class RumiousArraySync {
 	sync() {
 		if (!this.target) return;
 		this.renderAll();
-		this.state.reactor.addBinding(this.onChange.bind(this));
+		this.state.reactor.priorityBinding[this._id] = this.onChange.bind(this);
 	}
 	
 	/**
