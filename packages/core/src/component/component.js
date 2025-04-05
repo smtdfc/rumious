@@ -75,6 +75,7 @@ export class RumiousComponent {
    * This can be useful for cleaning up before re-rendering or destroying the component.
    */
   async requestCleanUp() {
+  	this.renderContext.cleans.forEach(callback=>callback());
     if (this.element) {
       let cloned = this.element.cloneNode(true);
       this.element.replaceWith(cloned);
