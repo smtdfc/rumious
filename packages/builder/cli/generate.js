@@ -48,3 +48,21 @@ export const genPage = async (argv) => {
     await readFile(templatePath)
   );
 };
+
+export const genRouter= async (argv) => {
+	const templatePath = path.join(path.dirname(new URL(import.meta.url).pathname), '../templates/files/router.js');
+	const configFilePath = path.join(cwd, 'rumious.configs.json');
+	let configs = {
+		source: cwd,
+	};
+	
+	if (await checkFileExists(configFilePath)) {
+		configs = await importJson(configFilePath);
+	}
+	
+	const routerFilePath = path.join(configs.source ?? cwd, `router/index.js`);
+	await ensureFileExists(
+		routerFilePath,
+		await readFile(templatePath)
+	);
+};
