@@ -17,7 +17,8 @@
   },
   "files": [
     "dist/*",
-    "index.js"
+    "index.js",
+    "types/*"
   ],
   "dependencies": {
     "mutative": "^1.1.0"

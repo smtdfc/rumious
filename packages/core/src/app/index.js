@@ -2,30 +2,39 @@ import { RumiousRenderContext } from '../render/context.js';
 import { render } from '../render/index.js';
 
 /**
- * Represents the Rumious Application.
- * Manages the lifecycle of the application, including rendering and context hooks.
- * 
+ * @typedef {Object} RumiousModule
+ * @property {(app: RumiousApp, configs?: Object) => any} init
+ */
+
+/**
+ * @template [T=any]
  */
 export class RumiousApp {
   /**
-   * Creates an instance of the RumiousApp.
-   * @constructor
-   * @param {HTMLElement} [root=document.createElement('span')] - The root element where the app will be rendered.
-   * @param {Object} [configs={}] - Configuration options for the app.
+   * Creates an instance of RumiousApp.
+   * @param {HTMLElement} [root=document.createElement('span')] - Root element to render into.
+   * @param {Object} [configs={}] - App-level configuration options.
    */
   constructor(root = document.createElement('span'), configs = {}) {
+    /** @type {HTMLElement} */
     this.root = root;
+    
+    /** @type {RumiousApp} */
     this.app = this;
+    
+    /** @type {any[]} */
     this.modules = [];
+    
+    /** @type {Object} */
     this.configs = configs;
+    
+    /** @type {RumiousRenderContext} */
     this.renderContext = new RumiousRenderContext(this);
   }
-
+  
   /**
-   * Renders the provided element to the root of the app.
-   * This method triggers lifecycle hooks before and after rendering.
-   * 
-   * @param {HTMLElement} element - The element to be rendered in the app.
+   * Renders an element into the app's root container.
+   * @param {HTMLElement} element - Element to render.
    */
   render(element) {
     this.renderContext.runHooks('onBeforeRender', this.renderContext);
@@ -34,15 +43,15 @@ export class RumiousApp {
   }
   
   /**
-   * Add module for app
-   * 
-   * @param {RumiousModule} module - The module .
-   * @param {Object} [configs={}] - Configuration options for the module.
-   * @returns {Object} - Module instance 
+   * Registers a module to the application.
+   *
+   * @template T
+   * @param {{ init(app: RumiousApp, configs?: Object): T }} module - Module with an `init()` method.
+   * @param {Object} [configs={}] - Module-specific configuration.
+   * @returns {T} - Instance returned by the module's `init()` method.
    */
-  addModule(module,configs={}) {
-    let moduleInstance = module.init(this,configs);
+  addModule(module, configs = {}) {
+    const moduleInstance = module.init(this, configs);
     return moduleInstance;
-   }
-
+  }
 }

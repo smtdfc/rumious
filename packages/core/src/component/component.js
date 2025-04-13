@@ -1,5 +1,4 @@
 import { RumiousRenderContext } from '../render/context.js';
-
 /**
  * Represents a Rumious component that can be rendered with dynamic content.
  * Manages element properties, rendering logic, and lifecycle hooks for components.
