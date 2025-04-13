@@ -16,6 +16,7 @@ function generateDynamicValueHandle(t, path, target, child, contextName) {
         ])
       ),
     ]),
+    generateAppendChild(t,target,tempId),
     t.expressionStatement(
       t.callExpression(t.memberExpression(t.identifier(contextName), t.identifier("dynamicValue"), false), [
         target,
@@ -23,7 +24,6 @@ function generateDynamicValueHandle(t, path, target, child, contextName) {
         child,
       ])
     ),
-    generateAppendChild(t,target,tempId),
   ];
 }
 
