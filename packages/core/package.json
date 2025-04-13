@@ -1,33 +1,33 @@
 {
-  "name": "rumious",
-  "version": "0.0.13-beta.2",
-  "description": "The simple library for build UI",
-  "keywords": [
-    "rumious",
-    "rumiousjs",
-    "smtdfc"
-  ],
-  "author": "smtdfc",
-  "license": "MIT",
-  "main": "dist/index.cjs.min.js",
-  "module": "dist/index.esm.min.js",
-  "unpkg": "dist/index.min.js",
-  "scripts": {
-    "build": "rollup -c rollup.config.mjs"
-  },
-  "files": [
-    "dist/*",
-    "index.js"
-  ],
-  "dependencies": {
-    "mutative": "^1.1.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/smtdfc/rumious.git"
-  },
-  "bugs": {
-    "url": "https://github.com/smtdfc/rumious/issues"
-  },
-  "homepage": "https://github.com/smtdfc/rumious#readme"
+	"name": "rumious-core",
+	"version": "1.0.0",
+	"description": "Simple framework for building UI ",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"keywords": ["rumious", "core", "framework", "typescript", "webcomponents", "ui"],
+	"scripts": {
+	  "dec":"tsc --declaration --allowJs --emitDeclarationOnly",
+	  "type":"tsc --noEmit",
+		"build": "rollup -c  --environment MINIFY:true",
+		"build:dev": "rollup -c ",
+		"start": "node dist/index.js",
+		"test": "echo \"No tests yet\""
+	},
+	"author": "smtdfc",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/smtdfc/rumious"
+	},
+	"bugs": {
+		"url": "https://github.com/smtdfc/rumious/issues"
+	},
+	"homepage": "https://github.com/smtdfc/rumious#readme",
+	"files": [
+		"dist/**",
+		"README.md"
+	],
+	"engines": {
+		"node": ">=16"
+	}
 }
