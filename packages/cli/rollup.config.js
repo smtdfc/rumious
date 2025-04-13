@@ -10,12 +10,8 @@ const shouldMinify = process.env.MINIFY === 'true';
 export default {
   input: 'src/index.ts',
   output: {
-    file: 'dist/bundle.js',
-    format: 'iife',
-    name: 'App',
-    globals: {
-      "rumious": "Rumious"
-    }
+    file: 'dist/index.js',
+    format: 'cjs',
   },
   plugins: [
     resolve({
@@ -38,5 +34,4 @@ export default {
       maxWorkers: os.cpus().length || 1
     })
   ].filter(Boolean),
-  external: ["rumious"]
 };

@@ -4,6 +4,7 @@ import { RumiousRenderTemplate } from '../render/template.js';
 import { render } from '../render/render.js';
 import { Constructor } from '../utils/types.js';
 
+export interface RumiousEmptyProps{};
 
 export abstract class RumiousComponent < T = unknown > {
   public app!: RumiousApp;
@@ -12,10 +13,10 @@ export abstract class RumiousComponent < T = unknown > {
   public context!: RumiousRenderContext;
   constructor() {}
   
-  abstract onCreate(): void;
-  abstract onBeforeRender(): void;
-  abstract onRender(): void;
-  abstract onDestroy(): void;
+  onCreate(): void {}
+  onBeforeRender(): void {}
+  onRender(): void {}
+  onDestroy(): void {}
   abstract template(): RumiousRenderTemplate;
   
   prepare(currentContext: RumiousRenderContext) {
