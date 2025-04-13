@@ -23,6 +23,7 @@ function generateDynamicValueHandle(t, path, target, child, contextName) {
         child,
       ])
     ),
+    generateAppendChild(t,target,tempId),
   ];
 }
 

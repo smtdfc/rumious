@@ -2,30 +2,45 @@ import { RumiousApp } from '../app/app.js'
 import { RumiousRenderContext } from '../render/context.js'
 import { RumiousRenderTemplate } from '../render/template.js';
 import { render } from '../render/render.js';
-import { Constructor } from '../utils/types.js';
+import { Constructor } from '../types/utils.js';
+import { RumiousRenderMode } from "../types/render.js"
 
-export interface RumiousEmptyProps{};
+export interface RumiousEmptyProps {};
+
+interface RumiousComponentRenderOptions {
+  mode: RumiousRenderMode,
+  time ? : number
+};
 
 export abstract class RumiousComponent < T = unknown > {
+  public static classNames = "";
   public app!: RumiousApp;
   public props!: T;
   public element!: HTMLElement;
   public context!: RumiousRenderContext;
-  constructor() {}
+  public renderOptions: RumiousComponentRenderOptions;
+  constructor() {
+    this.renderOptions = {
+      mode: "idle"
+    };
+  }
   
   onCreate(): void {}
-  onBeforeRender(): void {}
   onRender(): void {}
   onDestroy(): void {}
+  async onBeforeRender(): Promise < void > {}
   abstract template(): RumiousRenderTemplate;
   
-  prepare(currentContext: RumiousRenderContext) {
+  prepare(currentContext: RumiousRenderContext, props: T) {
+    this.props = props;
     this.context = new RumiousRenderContext(this, currentContext.app as RumiousApp);
   }
   
-  requestRender() {
+  async requestRender() {
+    await this.onBeforeRender();
     let template = this.template();
     render(this.context, template, this.element);
+    this.onRender();
   }
   
   requestCleanup() {

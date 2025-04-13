@@ -3,11 +3,7 @@ import { RumiousRenderTemplate } from '../render/template.js';
 import { RumiousModule, RumiousModuleInstance } from './module.js';
 import { render } from '../render/render.js';
 
-interface RumiousAppOptions {
-  
-}
-
-
+interface RumiousAppOptions {}
 
 export class RumiousApp {
   private root: HTMLElement;

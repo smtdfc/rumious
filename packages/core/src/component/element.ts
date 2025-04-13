@@ -1,7 +1,6 @@
 import type { RumiousComponent } from "./component.js";
 import { RumiousRenderContext } from "../render/context.js";
-import { Constructor } from '../utils/types.js';
-
+import { Constructor } from '../types/utils.js';
 
 
 export class RumiousComponentElement extends HTMLElement {
@@ -28,10 +27,13 @@ export class RumiousComponentElement extends HTMLElement {
     
     this.componentInstance = new this.componentConstructor();
     this.componentInstance.element = this;
-    this.componentInstance.prepare(this.context);
-    this.componentInstance.props = this.props;
+    this.componentInstance.prepare(this.context,this.props);
+    this.componentInstance.onCreate();
     this.componentInstance.requestRender();
-    console.log(this.componentInstance);
+  }
+  
+  disconnectedCallback(){
+    this.componentInstance?.onDestroy();
   }
 }
 
