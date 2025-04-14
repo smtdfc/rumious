@@ -3,7 +3,9 @@ import { RumiousComponent } from "./component/component.js";
 
 interface RumiousJSXFactory {
   template(...args: any[]): RumiousRenderTemplate;
-  createElement (...args: any[]):RumiousRenderTemplate;
+  createElement(...args: any[]): RumiousRenderTemplate;
+  addDirective(...args: any[]): void;
+  dynamicValue(...args: any[]): void;
 }
 
 
@@ -20,7 +22,6 @@ declare global {
     interface ElementAttributesProperty {
       props: {};
     }
-    
     
     type Element = RumiousRenderTemplate;
     interface IntrinsicElements {

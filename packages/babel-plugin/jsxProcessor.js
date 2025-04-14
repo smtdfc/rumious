@@ -47,7 +47,7 @@ function processAttributes(t, elId, attributes, contextName) {
         t.stringLiteral("") :
         t.booleanLiteral(true);
       if (standaloneDirectives.includes(name)) {
-        statements.push(processDirective(t, elId, attr, "standalone", name, contextName));
+        statements.push(processDirective(t, elId, attr, name, "standalone", contextName));
       } else {
         statements.push(generateSetAttr(t, elId, name, value));
       }

@@ -90,8 +90,12 @@ export class RumiousElementRef {
     this.target.removeEventListener(event, callback, options);
   }
   
-  setInnerHTML(html: string) {
-    this.target.innerHTML = html;
+  set html(t: string) {
+    this.target.innerHTML = t;
+  }
+  
+  get html(): string | null {
+    return this.target.innerHTML;
   }
   
   getBoundingRect(): DOMRect {
@@ -195,4 +199,8 @@ export class RumiousElementRef {
   animate(keyframes: Keyframe[], options: KeyframeAnimationOptions | number) {
     return this.target.animate(keyframes, options);
   }
+}
+
+export function createElementRef(){
+  return new RumiousElementRef(document.createElement("span"));
 }

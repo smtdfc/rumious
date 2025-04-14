@@ -18,10 +18,11 @@ function generateDynamicValueHandle(t, path, target, child, contextName) {
     ]),
     generateAppendChild(t,target,tempId),
     t.expressionStatement(
-      t.callExpression(t.memberExpression(t.identifier(contextName), t.identifier("dynamicValue"), false), [
+      t.callExpression(t.memberExpression(t.identifier("window.RUMIOUS_JSX"), t.identifier("dynamicValue"), false), [
         target,
         tempId,
         child,
+        t.identifier(contextName)
       ])
     ),
   ];
@@ -63,8 +64,9 @@ function generateSetProps(t, target, key, value) {
 
 function generateAddDirective(t, target, directive, modifier, value, contextName) {
   return t.expressionStatement(
-    t.callExpression(t.memberExpression(t.identifier(contextName), t.identifier("addDirective"), false), [
+    t.callExpression(t.memberExpression(t.identifier("window.RUMIOUS_JSX"), t.identifier("addDirective"), false), [
       target,
+      t.identifier(contextName),
       t.stringLiteral(directive),
       t.stringLiteral(modifier),
       value,
