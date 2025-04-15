@@ -34,7 +34,7 @@ function processNamespace(t, target, attr, contextName) {
 
 function processAttributes(t, elId, attributes, contextName) {
   const statements = [];
-  const standaloneDirectives = ["ref", "model"];
+  const standaloneDirectives = ["ref", "model","inject"];
   
   for (const attr of attributes) {
     if (t.isJSXAttribute(attr) && !t.isJSXNamespacedName(attr.name)) {

@@ -6,6 +6,7 @@ const {
   generateAppendChild,
   generateDynamicValueHandle,
   generateCreateText,
+  generateCreateComponent,
 } = require('./astGenerators');
 const {
   processAttributes,
@@ -69,7 +70,7 @@ function transformJSXElement(t, path, element, contextName) {
   }
   
   if (isComponent) {
-    statements.push(generateCreateEl(t, elId, "rumious-component"));
+    statements.push(generateCreateComponent(t, elId, jsxNameToExpression(t, tagName)));
     statements.push(
       t.expressionStatement(
         t.callExpression(t.memberExpression(elId, t.identifier("setup")), [t.identifier(contextName),jsxNameToExpression(t, tagName)])

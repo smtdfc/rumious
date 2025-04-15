@@ -2,9 +2,13 @@ import type { RumiousComponent } from "./component.js";
 import { RumiousRenderContext } from "../render/context.js";
 import { Constructor } from '../types/utils.js';
 
+export type RumiousComponentConstructor = Constructor < RumiousComponent > & {
+  classNames ? : string;
+  tagName ?: string;
+};
 
 export class RumiousComponentElement extends HTMLElement {
-  public componentConstructor!: Constructor < RumiousComponent > ;
+  public componentConstructor!: RumiousComponentConstructor;
   private componentInstance!: RumiousComponent;
   private context!: RumiousRenderContext;
   public props: Record < string, any > ;
@@ -14,27 +18,31 @@ export class RumiousComponentElement extends HTMLElement {
     this.props = {};
   }
   
-  setup(context: RumiousRenderContext, componentConstructor: Constructor < RumiousComponent > ) {
+  setup(context: RumiousRenderContext, componentConstructor: RumiousComponentConstructor) {
     this.context = context;
     this.componentConstructor = componentConstructor;
   }
   
   connectedCallback() {
     if (!this.componentConstructor) {
-      console.warn("RumiousComponentElement: Cannot find matching component constructor .");
+      console.warn("Rumious: Cannot find matching component constructor.");
       return;
     }
     
     this.componentInstance = new this.componentConstructor();
     this.componentInstance.element = this;
-    this.componentInstance.prepare(this.context,this.props);
+    
+    // Check and access static classNames property
+    if (this.componentConstructor.classNames) {
+      this.className = this.componentConstructor.classNames;
+    }
+    
+    this.componentInstance.prepare(this.context, this.props);
     this.componentInstance.onCreate();
     this.componentInstance.requestRender();
   }
   
-  disconnectedCallback(){
+  disconnectedCallback() {
     this.componentInstance?.onDestroy();
   }
 }
-
-customElements.define("rumious-component", RumiousComponentElement);

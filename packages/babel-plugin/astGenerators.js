@@ -74,6 +74,17 @@ function generateAddDirective(t, target, directive, modifier, value, contextName
   );
 }
 
+function generateCreateComponent(t, varName, component){
+  return t.variableDeclaration("const", [
+  t.variableDeclarator(
+    varName,
+    t.callExpression(t.memberExpression(t.identifier("window.RUMIOUS_JSX"), t.identifier("createComponent")), [
+      component,
+    ])
+  ),
+]);
+}
+
 module.exports = {
   generateAppendChild,
   generateDynamicValueHandle,
@@ -82,4 +93,5 @@ module.exports = {
   generateSetAttr,
   generateSetProps,
   generateAddDirective,
+  generateCreateComponent
 };

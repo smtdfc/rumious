@@ -1,9 +1,9 @@
 import { RumiousTemplateGenerator } from "../types/render.js";
 import { RumiousRenderTemplate } from "../render/template.js";
-import {RumiousRenderContext} from "../render/context.js";
-import {directives} from "../render/directives.js";
+import { RumiousRenderContext } from "../render/context.js";
+import { directives } from "../render/directives.js";
 import { isPrimitive } from "../utils/checkers.js"
-
+import { RumiousComponentConstructor, RumiousComponentElement } from "../component/element.js";
 
 
 export function template(generator: RumiousTemplateGenerator): RumiousRenderTemplate {
@@ -17,7 +17,7 @@ function createElement(...args: any[]): any {
   throw Error("Rumious doesn't use createElement !");
 }
 
-function addDirective(element: HTMLElement,context:RumiousRenderContext, name: string, modifier: string = "", data: any): void {
+function addDirective(element: HTMLElement, context: RumiousRenderContext, name: string, modifier: string = "", data: any): void {
   let callback = directives[name];
   if (callback) {
     callback(context, element, modifier, data);
@@ -26,7 +26,7 @@ function addDirective(element: HTMLElement,context:RumiousRenderContext, name: s
   }
 }
 
-function dynamicValue(target: HTMLElement, textNode: Text, value: any,context:RumiousRenderContext): void {
+function dynamicValue(target: HTMLElement, textNode: Text, value: any, context: RumiousRenderContext): void {
   const parent = textNode.parentNode;
   if (!parent) return;
   
@@ -63,9 +63,22 @@ function dynamicValue(target: HTMLElement, textNode: Text, value: any,context:Ru
   }
 }
 
+function createComponent(componentConstructor: RumiousComponentConstructor): HTMLElement {
+  let tagName = componentConstructor.tagName as string;
+  if (!window.customElements.get(tagName)) {
+    window.customElements.define(tagName, class extends RumiousComponentElement {
+      public static tag = tagName;
+    });
+  }
+  
+  return document.createElement(tagName);
+}
+
+
 window.RUMIOUS_JSX = {
   template,
   createElement,
   addDirective,
-  dynamicValue
+  dynamicValue,
+  createComponent,
 }

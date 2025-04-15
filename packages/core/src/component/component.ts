@@ -14,6 +14,7 @@ interface RumiousComponentRenderOptions {
 
 export abstract class RumiousComponent < T = unknown > {
   public static classNames = "";
+  public static tagName = "rumious-component";
   public app!: RumiousApp;
   public props!: T;
   public element!: HTMLElement;
