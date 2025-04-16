@@ -12,6 +12,7 @@ export class RumiousState < T > {
   set(value: T): void {
     this.value = value;
     this.reactor.emit({
+      type: "SET",
       target: this,
       value: value
     });
@@ -19,6 +20,12 @@ export class RumiousState < T > {
   
   get(): T {
     return this.value;
+  }
+  
+  increase(count: number = 1): void {
+    if (typeof this.value === "number") {
+      this.set((this.value + count) as T);
+    }
   }
 }
 

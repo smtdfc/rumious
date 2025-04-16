@@ -1,6 +1,12 @@
 import type { RumiousState } from './state.js';
 
+
+type RumiousStateCommitTypes =
+  "SET" | 
+  "GET" 
+
 interface RumiousStateCommit < T > {
+  type:RumiousStateCommitTypes;
   target: RumiousState < T > ;
   value: T;
 }
@@ -18,7 +24,7 @@ export class RumiousReactor < T > {
   }
   
   removeBinding(bind: RumiousBinding < T > ) {
-    this.bindings = this.bindings.filter(_ => _ === bind);
+    this.bindings = this.bindings.filter(_ => _ !== bind);
   }
   
   async emit(commit: RumiousStateCommit < T > ): Promise < void > {
