@@ -1,0 +1,28 @@
+{
+  "name": "rumious-cli",
+  "version": "1.0.0",
+  "main": "index.js",
+  "bin": {
+    "rumious": "./index.js"
+  },
+  "scripts": {
+    "dec": "tsc --declaration --allowJs --emitDeclarationOnly",
+    "type": "tsc --noEmit",
+    "build": "rollup -c  --environment MINIFY:true",
+    "build:dev": "rollup -c ",
+    "start": "node dist/index.js",
+    "test": "echo \"No tests yet\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "commander": "^13.1.0"
+  },
+  "files": [
+    "dist/**",
+    "data/**",
+    "index.js"
+  ]
+}
