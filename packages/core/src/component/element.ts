@@ -32,7 +32,6 @@ export class RumiousComponentElement extends HTMLElement {
     this.componentInstance = new this.componentConstructor();
     this.componentInstance.element = this;
     
-    // Check and access static classNames property
     if (this.componentConstructor.classNames) {
       this.className = this.componentConstructor.classNames;
     }

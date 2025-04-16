@@ -4,7 +4,7 @@ import { RumiousRenderContext } from "../render/context.js";
 import { directives } from "../render/directives.js";
 import { isPrimitive } from "../utils/checkers.js"
 import { RumiousComponentConstructor, RumiousComponentElement } from "../component/element.js";
-
+import { RumiousState } from "../state/state.js";
 
 export function template(generator: RumiousTemplateGenerator): RumiousRenderTemplate {
   return new RumiousRenderTemplate(generator);
@@ -32,6 +32,11 @@ function dynamicValue(target: HTMLElement, textNode: Text, value: any, context: 
   
   if (isPrimitive(value)) {
     textNode.textContent = String(value);
+  } else if (value && value instanceof RumiousState) {
+    textNode.textContent = value.value;
+    value.reactor.addBinding(({ target }) => {
+      textNode.textContent = target.value;
+    });
   } else if (Array.isArray(value)) {
     textNode.textContent = value.map(String).join("");
   } else if (value instanceof HTMLElement) {

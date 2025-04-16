@@ -1,7 +1,6 @@
 export class RumiousChildrenRef {
   constructor(public target: HTMLElement) {}
   
-  // Existing methods
   list(): HTMLElement[] {
     return Array.from(this.target.children) as HTMLElement[];
   }

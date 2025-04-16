@@ -1,0 +1,35 @@
+import { RumiousReactor, RumiousBinding } from './reactor.js';
+
+export class RumiousState < T > {
+  public value: T;
+  public reactor: RumiousReactor < T > ;
+  
+  constructor(value: T, reactor ? : RumiousReactor < T > ) {
+    this.value = value;
+    this.reactor = reactor ?? new RumiousReactor < T > (this);
+  }
+  
+  set(value: T): void {
+    this.value = value;
+    this.reactor.emit({
+      target: this,
+      value: value
+    });
+  }
+  
+  get(): T {
+    return this.value;
+  }
+}
+
+export function watch < T > (state: RumiousState < T > , fn: RumiousBinding < T > ): void {
+  state.reactor.addBinding(fn);
+}
+
+export function unwatch < T > (state: RumiousState < T > , fn: RumiousBinding < T > ): void {
+  state.reactor.removeBinding(fn);
+}
+
+export function createState < T > (value: T): RumiousState < T > {
+  return new RumiousState < T > (value);
+}
