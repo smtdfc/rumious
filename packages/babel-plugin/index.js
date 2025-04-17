@@ -84,7 +84,7 @@ function transformJSXElement(t, path, element, contextName) {
   
   for (const child of element.children) {
     if (t.isJSXText(child)) {
-      const text = child.value.trim();
+      const text = child.value;
       if (text) {
         const textNode = generateCreateText(t, text);
         statements.push(generateAppendChild(t, elId, textNode));
