@@ -9,7 +9,7 @@ type RumiousStateCommitTypes =
   | "APPEND"
   | "INSERT_BY_KEY";
 
-interface RumiousStateCommit<T> {
+export interface RumiousStateCommit<T> {
   type: RumiousStateCommitTypes;
   target: RumiousState<T>;
   value: T;
