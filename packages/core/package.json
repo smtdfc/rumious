@@ -1,5 +1,5 @@
 {
-	"name": "rumious-core",
+	"name": "rumious",
 	"version": "1.0.0",
 	"description": "Simple framework for building UI ",
 	"main": "dist/index.js",
