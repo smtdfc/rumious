@@ -4,4 +4,4 @@
 ## Installation
 
 ```bash
-npm install rumious-core
+npm install rumious
