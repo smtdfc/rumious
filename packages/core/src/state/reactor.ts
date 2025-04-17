@@ -2,14 +2,21 @@ import type { RumiousState } from './state.js';
 
 
 type RumiousStateCommitTypes =
-  "SET" | 
-  "GET" 
+  | "SET"
+  | "GET"
+  | "SET_BY_KEY"
+  | "REMOVE_BY_KEY"
+  | "APPEND"
+  | "INSERT_BY_KEY";
 
-interface RumiousStateCommit < T > {
-  type:RumiousStateCommitTypes;
-  target: RumiousState < T > ;
+interface RumiousStateCommit<T> {
+  type: RumiousStateCommitTypes;
+  target: RumiousState<T>;
   value: T;
+  key?: string | number;
+  item?: T extends Array<infer A> ? A : T extends object ? keyof T : unknown;
 }
+
 
 export type RumiousBinding < T > = (commit: RumiousStateCommit < T > ) => void;
 

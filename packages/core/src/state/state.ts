@@ -1,4 +1,7 @@
 import { RumiousReactor, RumiousBinding } from './reactor.js';
+import { create } from 'mutative';
+
+type RumiousStateProduceCallback < T > = (draft: T) => void;
 
 export class RumiousState < T > {
   public value: T;
@@ -26,6 +29,12 @@ export class RumiousState < T > {
     if (typeof this.value === "number") {
       this.set((this.value + count) as T);
     }
+  }
+  
+  produce(callback: RumiousStateProduceCallback < T > ): void {
+    const [draft, finalize] = create(this.value);
+    callback(draft as T);
+    this.set(finalize() as T);
   }
 }
 

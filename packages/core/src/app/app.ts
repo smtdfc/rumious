@@ -27,3 +27,7 @@ export class RumiousApp {
     render(this.context, template, this.root);
   }
 }
+
+export function createApp(root:HTMLElement,options?:RumiousAppOptions):RumiousApp{
+  return new RumiousApp(root,options);
+}

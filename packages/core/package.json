@@ -4,10 +4,17 @@
 	"description": "Simple framework for building UI ",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
-	"keywords": ["rumious", "core", "framework", "typescript", "webcomponents", "ui"],
+	"keywords": [
+		"rumious",
+		"core",
+		"framework",
+		"typescript",
+		"webcomponents",
+		"ui"
+	],
 	"scripts": {
-	  "dec":"tsc --declaration --allowJs --emitDeclarationOnly",
-	  "type":"tsc --noEmit",
+		"dec": "tsc --declaration --allowJs --emitDeclarationOnly",
+		"type": "tsc --noEmit",
 		"build": "rollup -c  --environment MINIFY:true",
 		"build:dev": "rollup -c ",
 		"start": "node dist/index.js",
@@ -29,5 +36,8 @@
 	],
 	"engines": {
 		"node": ">=16"
+	},
+	"dependencies": {
+		"mutative": "^1.1.0"
 	}
 }
