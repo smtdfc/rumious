@@ -17,7 +17,7 @@ export class RumiousArrayState < T > extends RumiousState < T[] > {
         type: "SET_BY_KEY",
         value: [...this.value],
         target: this,
-        key:index,
+        key: index,
         item: newValue,
       });
     } else if (Array.isArray(arg1)) {
@@ -27,7 +27,7 @@ export class RumiousArrayState < T > extends RumiousState < T[] > {
     }
   }
   
-
+  
   get(index: number): T;
   get(): T[];
   get(arg ? : any): any {
@@ -40,7 +40,7 @@ export class RumiousArrayState < T > extends RumiousState < T[] > {
       type: "INSERT_BY_KEY",
       value: this.value,
       target: this,
-      key:index,
+      key: index,
       item: newItem,
     });
     return this;
@@ -52,7 +52,7 @@ export class RumiousArrayState < T > extends RumiousState < T[] > {
       type: "REMOVE_BY_KEY",
       value: this.value,
       target: this,
-      key:index,
+      key: index,
     });
     return this;
   }
@@ -87,7 +87,7 @@ export class RumiousArrayState < T > extends RumiousState < T[] > {
       type: "SET_BY_KEY",
       value: [...this.value],
       target: this,
-      key:index,
+      key: index,
       item: newItem,
     });
     return this;
@@ -136,6 +136,11 @@ export class RumiousArrayState < T > extends RumiousState < T[] > {
   get length(): number {
     return this.value.length;
   }
+  
+  forEach(callback: (value: T, index: number) => void): void {
+    this.value.forEach(callback);
+  }
+  
 }
 
 export function createArrayState < T > (value: T[]) {

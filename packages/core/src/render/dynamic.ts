@@ -1,5 +1,6 @@
 import { RumiousRenderTemplate } from "./template.js";
 import { RumiousRenderContext } from "./context.js";
+import { RumiousDynamicArrayRenderer } from "./array.js";
 import { isPrimitive } from "../utils/checkers.js"
 import { RumiousState } from "../state/state.js";
 
@@ -10,7 +11,7 @@ export function dynamicValue(target: HTMLElement, textNode: Text, value: any, co
   
   if (isPrimitive(value)) {
     textNode.textContent = String(value);
-
+    
   } else if (value && value instanceof RumiousState) {
     textNode.textContent = value.value;
     
@@ -27,6 +28,10 @@ export function dynamicValue(target: HTMLElement, textNode: Text, value: any, co
   } else if (Array.isArray(value)) {
     textNode.textContent = value.map(String).join("");
     
+  } else if (value instanceof RumiousDynamicArrayRenderer) {
+      value.prepare(textNode.parentElement as HTMLElement,context);
+      value.render();
+      
   } else if (value instanceof HTMLElement) {
     textNode.replaceWith(value);
     
