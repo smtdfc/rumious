@@ -5,7 +5,7 @@ import { isPrimitive } from "../utils/checkers.js"
 import { RumiousState } from "../state/state.js";
 
 
-export function dynamicValue(target: HTMLElement, textNode: Text, value: any, context: RumiousRenderContext): void {
+export async function dynamicValue(target: HTMLElement, textNode: Text, value: any, context: RumiousRenderContext): Promise<void> {
   const parent = textNode.parentNode;
   if (!parent) return;
   
