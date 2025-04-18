@@ -6,39 +6,54 @@ import os from 'os';
 
 const shouldMinify = process.env.MINIFY === 'true';
 
+const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 
-export default {
-  input: 'src/index.ts',
-  output: [
-    {
-      file: 'dist/index.min.js',
-      format: 'iife',
-      name: 'Rumious',
+const basePlugins = () => [
+  resolve({ extensions }),
+  commonjs(),
+  babel({
+    babelHelpers: 'bundled',
+    extensions,
+    presets: [["@babel/preset-typescript", { isTSX: true, allExtensions: true }]],
+  }),
+];
+
+const createConfig = ({ input, file, format, name, exportsType }) => ({
+  input,
+  output: {
+    file,
+    format,
+    name,
+    exports: exportsType,
+    globals: {
     },
-    {
-      file: 'dist/index.esm.js',
-      format: 'esm',
-    }, 
-  ],
+  },
   plugins: [
-    resolve({
-      extensions: ['.js', '.jsx', '.ts', '.tsx']
-    }),
-    commonjs(),
-    babel({
-      babelHelpers: 'bundled',
-      extensions: ['.js', '.jsx', '.ts', '.tsx'],
-      presets: [
-        ["@babel/preset-typescript", { isTSX: true, allExtensions: true }]
-      ],
-    }),
+    ...basePlugins(),
     shouldMinify &&
-    terser({
-      module: true,
-      compress: { defaults: true },
-      mangle: true,
-      output: { comments: false },
-      maxWorkers: os.cpus().length || 1
-    })
+      terser({
+        module: true,
+        compress: { defaults: true },
+        mangle: true,
+        output: { comments: false },
+        maxWorkers: os.cpus().length || 1,
+      }),
   ].filter(Boolean),
-};
+});
+
+export default [
+  createConfig({
+    input: 'src/index.ts',
+    file: 'dist/index.esm.js',
+    format: 'esm',
+    exportsType: 'named',
+  }),
+
+  createConfig({
+    input: 'src/index.global.ts', 
+    file: 'dist/index.min.js',
+    format: 'iife',
+    name: 'Rumious',
+    exportsType: 'default', 
+  }),
+];
