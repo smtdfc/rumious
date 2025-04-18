@@ -26,6 +26,7 @@ export class RumiousDynamicArrayRenderer < T > {
   
   async render() {
     await this.reconcile(this.state.value);
+    this.state.reactor.addBinding(this.onStateChange.bind(this));
   }
   
   async onStateChange(commit: RumiousStateCommit < typeof this.state.value > ) {
