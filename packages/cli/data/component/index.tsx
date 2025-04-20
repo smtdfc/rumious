@@ -1,4 +1,4 @@
-import { RumiousComponent } from 'rumious-core';
+import { RumiousComponent } from 'rumious';
 
 interface IProps{
   

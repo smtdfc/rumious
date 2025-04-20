@@ -6,7 +6,7 @@ function generateAppendChild(t, target, child) {
 }
 
 function generateDynamicValueHandle(t, path, target, child, contextName) {
-  const tempId = path.scope.generateUidIdentifier("text");
+  const tempId = path.scope.generateUidIdentifier("_rumious_dymanic_");
   return [
     t.variableDeclaration("const", [
       t.variableDeclarator(
@@ -44,6 +44,17 @@ function generateCreateEl(t, varName, tagName) {
     ),
   ]);
 }
+
+function generateCreateFrag(t, varName) {
+  return t.variableDeclaration("const", [
+    t.variableDeclarator(
+      varName,
+      t.callExpression(t.memberExpression(t.identifier("document"), t.identifier("createDocumentFragment")), [
+      ])
+    ),
+  ]);
+}
+
 
 function generateSetAttr(t, target, name, value) {
   return t.expressionStatement(
@@ -93,5 +104,6 @@ module.exports = {
   generateSetAttr,
   generateSetProps,
   generateAddDirective,
-  generateCreateComponent
+  generateCreateComponent,
+  generateCreateFrag
 };

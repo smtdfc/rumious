@@ -2,8 +2,8 @@
 	"name": "rumious",
 	"version": "1.0.0",
 	"description": "Simple framework for building UI ",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
+	"main": "./index.js",
+	"types": "./index.d.ts",
 	"keywords": [
 		"rumious",
 		"core",
@@ -18,7 +18,8 @@
 		"build": "rollup -c  --environment MINIFY:true",
 		"build:dev": "rollup -c ",
 		"start": "node dist/index.js",
-		"test": "echo \"No tests yet\""
+		"test": "echo \"No tests yet\"",
+		"prepublish":"npm run dec && npm run build"
 	},
 	"author": "smtdfc",
 	"license": "MIT",
@@ -32,7 +33,9 @@
 	"homepage": "https://github.com/smtdfc/rumious#readme",
 	"files": [
 		"dist/**",
-		"README.md"
+		"README.md",
+		"index.js",
+		"index.d.ts"
 	],
 	"engines": {
 		"node": ">=16"

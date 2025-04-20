@@ -1,3 +1,3 @@
-import {RumiousApp} from 'rumious-core';
+import {createApp} from 'rumious';
 
-const RumiousApp = new RumiousApp(document.body);
+const RumiousApp = createApp(document.body);
