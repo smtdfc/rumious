@@ -1,0 +1,18 @@
+@use "../abstracts/index" as *;
+
+@mixin bg-color($name, $color) {
+  .bg-#{$name} {
+    background-color: $color !important;
+  }
+}
+
+@mixin color($name, $color) {
+  .color-#{$name} {
+    color: $color !important;
+  }
+}
+
+@each $name, $color in $colors {
+  @include bg-color($name, $color);
+  @include color($name,$color);
+}

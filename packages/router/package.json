@@ -1,0 +1,30 @@
+{
+  "name": "rumious-router",
+  "version": "0.0.3-beta.0",
+  "scripts": {
+    "build": "rollup -c rollup.config.mjs"
+  },
+  "peerDependencies": {
+    "rumious": "*"
+  },
+  "main": "dist/index.cjs.min.js",
+  "module": "dist/index.esm.min.js",
+  "unpkg": "dist/index.min.js",
+  "files": [
+    "index.js",
+    "dist/**"
+  ],
+  "keywords": [
+    "rumious",
+    "rumious-router",
+    "router"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smtdfc/rumious.git"
+  },
+  "homepage": "https://github.com/smtdfc/rumious#readme",
+  "author": "smtdfc",
+  "license": "MIT",
+  "description": "A client router module for rumious  "
+}

@@ -1,0 +1,260 @@
+@use "sass:map";
+@use "../abstracts/index" as *;
+
+$form-input-focus-border-color: map.get($colors, primary);
+$form-input-text-color: map.get($mainColor, text);
+$form-input-border-color: rgba(0, 0, 0, 0.1);
+$form-label-color: map.get($mainColor, text);
+$form-input-check-bg-color: map.get($colors, dark);
+$form-input-check-color: map.get($colors, light);
+$form-input-range-thumb-color: map.get($mainColor, text);
+$form-select-border-color: rgba(0, 0, 0, 0.1);
+$form-select-text-color: map.get($mainColor, text);
+$form-select-focus-border-color: map.get($colors, primary);
+$form-select-bg-color: white;
+$form-select-shadow-color: rgba(0, 0, 0, 0.1);
+
+
+.form-input {
+  --form-input-focus-border-color:#{$form-input-focus-border-color};
+  --form-input-text-color:#{$form-input-text-color};
+  --form-input-border-color:#{$form-input-border-color};
+  --form-input-check-bg-color:#{$form-input-check-bg-color};
+  --form-input-check-color:#{$form-input-check-color};
+  --form-input-range-thumb-color:#{$form-input-range-thumb-color};
+  outline: none;
+  transition: all 0.3s ease-in-out;
+  flex-shrink: 0;
+  flex-grow: 0;
+  flex-basis: auto;
+  
+  &[type="text"],
+  &[type="password"],
+  &[type="email"],
+  &[type="number"],
+  &[type="search"],
+  &[type="tel"],
+  &[type="url"],
+  &[type="date"],
+  &[type="datetime-local"],
+  &[type="month"],
+  &[type="week"] {
+    padding: 0.625rem;
+    margin: 0.625rem;
+    border: 1.5px solid var(--form-input-border-color);
+    border-radius: 8px;
+  }
+  
+  &[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    position: relative;
+    width: 20px;
+    height: 20px;
+    background-color: transparent;
+    border: 1.5px solid var(--form-input-border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    color: white;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: none;
+    padding: 0.5rem !important;
+  }
+  
+  &[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 15px;
+    height: 15px;
+    padding: 0.55rem;
+    border: 1px solid var(--form-input-border-color);
+    border-radius: 50%;
+    position: relative;
+    cursor: none;
+    outline: none;
+    display: inline-block;
+    margin: 0;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  }
+  
+  
+  &[type="checkbox"]:checked,
+  &[type="radio"]:checked {
+    background-color: var(--form-input-check-bg-color);
+    border-color: var(--form-input-border-color);
+  }
+  
+  &[type="checkbox"]:checked::after {
+    content: '✓';
+    color: var(--form-input-check-color);
+    font-weight: bold;
+  }
+  
+  &[type="radio"]:checked::before {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--form-input-check-color);
+    top: 4px;
+    left: 4px;
+  }
+  
+  &[type="color"] {
+    outline: none;
+    width: 39px;
+    height: 38px;
+    border: 1.5px solid var(--form-input-border-color);
+    border-radius: 8px;
+    padding: 0;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  
+  &[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+  
+  &[type="color"]::-webkit-color-swatch {
+    border: none;
+  }
+  
+  &[type="checkbox"]:focus {
+    outline: none;
+  }
+  
+  &[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: var(--form-input-border-color);
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  &[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--form-input-range-thumb-color);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  &[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+  }
+  
+  &[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--form-input-range-thumb-color);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  &[type="range"]::-moz-range-thumb:hover {
+    transform: scale(1.2);
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: var(--form-input-focus-border-color);
+  }
+}
+
+label.form-label {
+  --form-label-color:#{$form-label-color};
+  font-size: 1rem;
+  font-weight: normal;
+  line-height: 1.5;
+  color: var(--form-label-color);
+  margin-bottom: 0.5rem;
+}
+
+.form-text {
+  font-size: 12px;
+  margin: 10px;
+}
+
+.form-group {
+  display: flex;
+  flex-flow: column;
+  margin: 1rem;
+  
+  &.form-inline {
+    align-items: center;
+    flex-flow: row;
+    gap: 10px;
+    
+    .form-label {
+      margin: 0px;
+    }
+  }
+  
+  .form-input {
+    
+    &[type="text"],
+    &[type="password"],
+    &[type="email"],
+    &[type="number"],
+    &[type="search"],
+    &[type="tel"],
+    &[type="url"],
+    &[type="date"],
+    &[type="datetime-local"],
+    &[type="month"],
+    &[type="week"] {
+      margin: 0;
+    }
+  }
+}
+
+.form-select {
+  --form-select-border-color: #{$form-select-border-color};
+  --form-select-text-color: #{$form-select-text-color};
+  --form-select-focus-border-color: #{$form-select-focus-border-color};
+  --form-select-bg-color: #{$form-select-bg-color};
+  --form-select-shadow-color: #{$form-select-shadow-color};
+  
+  outline: none;
+  padding: 0.625rem;
+  margin: 0.625rem;
+  border: 1.5px solid var(--form-select-border-color);
+  border-radius: 8px;
+  background-color: var(--form-select-bg-color);
+  color: var(--form-select-text-color);
+  font-size: 1rem;
+  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  padding-right: 2rem;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='20' height='20' fill='black'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  
+  &:focus {
+    border-color: var(--form-select-focus-border-color);
+    box-shadow: 0 0 5px var(--form-select-shadow-color);
+  }
+  
+  option {
+    background-color: var(--form-select-bg-color);
+    color: var(--form-select-text-color);
+  }
+}

@@ -1,0 +1,6 @@
+@use "../abstracts/index" as *;
+
+$border-styles: solid, dashed, dotted, double, groove, ridge, inset, outset;
+
+@include generate-class('border',$colors,'border-color');
+@include generate-class('border',$border-styles,'border-style');

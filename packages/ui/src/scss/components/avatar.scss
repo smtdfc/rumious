@@ -1,0 +1,48 @@
+$avatar-sizes: (
+  xxs: 4px,
+  xs: 10px,
+  sm: 20px,
+  smd: 35px,
+  md: 50px,
+  mdl: 75px,
+  lg: 100px,
+  lgl: 150px,
+  xl: 200px,
+);
+
+$avatar-hover-color: rgba(0, 0, 0, 0.05);
+$active-dot-size: 20%; 
+$active-dot-color: #00c853; 
+
+.avatar {
+  --avatar-hover-color:#{$avatar-hover-color};
+  object-fit: cover;
+  border-radius: 50%;
+  display: inline-block;
+  transition: box-shadow 0.3s ease-in-out;
+  
+  &:hover {
+    box-shadow: 0 0 10px 2px var(--avatar-hover-color);
+  }
+  
+  &.active::after {
+    content: "";
+    position: absolute;
+    width: $active-dot-size;
+    height: $active-dot-size;
+    background: $active-dot-color;
+    border: 2px solid white;
+    border-radius: 50%;
+    bottom: 5%;
+    right: 5%;
+    z-index: 100000;
+  }
+  
+}
+
+@each $size, $value in $avatar-sizes {
+  .avatar-#{$size} {
+    width: $value;
+    height: $value;
+  }
+}

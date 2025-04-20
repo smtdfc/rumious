@@ -1,0 +1,27 @@
+$spacings: (0, 1, 2, 3, 4, 5,6,7,8,9);
+$auto: auto;
+$directions: (t: top, b: bottom, l: left, r: right, x: left right, y: top bottom);
+
+@each $size in $spacings {
+  .m-#{$size} { margin: #{$size * 0.25rem} !important; }
+  .p-#{$size} { padding: #{$size * 0.25rem} !important; }
+}
+
+@each $size in $spacings {
+  @each $abbr, $dir in $directions {
+    .m#{$abbr}-#{$size} { 
+      @each $d in $dir { margin-#{$d}: #{$size * 0.25rem} !important; } 
+    }
+    .p#{$abbr}-#{$size} { 
+      @each $d in $dir { padding-#{$d}: #{$size * 0.25rem} !important; } 
+    }
+  }
+}
+
+.m-auto { margin: auto !important; }
+.mx-auto { margin-left: auto !important; margin-right: auto !important; }
+.my-auto { margin-top: auto !important; margin-bottom: auto !important; }
+.mt-auto { margin-top: auto !important; }
+.mb-auto { margin-bottom: auto !important; }
+.ml-auto { margin-left: auto !important; }
+.mr-auto { margin-right: auto !important; }

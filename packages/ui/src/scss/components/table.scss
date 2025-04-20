@@ -1,0 +1,65 @@
+@use "sass:map";
+@use "../abstracts/index" as *;
+
+$table-thead-bg: map.get($colors, primary);
+$table-thead-color: map.get($colorInBgMap, primary);
+$table-tbody-bg: map.get($mainColor, background);
+$table-tbody-color: map.get($mainColor, text);
+
+.table-container {
+  --table-thead-bg:#{$table-thead-bg};
+  --table-thead-color:#{$table-thead-color};
+  --table-tbody-bg:#{$table-tbody-bg};
+  --table-tbody-color:#{$table-tbody-color};
+  
+  overflow-x: scroll;
+  
+  &.table-nowrap {
+    td,th {
+      white-space: nowrap;
+    }
+  }
+  
+  &.table-rounded {
+    table {
+      border-radius: 10px;
+    }
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    
+    overflow: hidden;
+    
+    thead {
+      background: var(--table-thead-bg);
+      color: var(--table-thead-color);
+      
+      th {
+        padding: 15px;
+        text-align: left;
+        text-transform: uppercase;
+      }
+    }
+    
+    tbody {
+      tr {
+        border-bottom: 1px solid #ddd;
+        transition: background 0.2s ease-in-out;
+        color: var(--table-tbody-color);
+        background: var(--table-tbody-bg);
+        
+        &:hover {
+          background: #ecf0f1;
+        }
+        
+        td {
+          padding: 15px;
+          text-align: left;
+        }
+      }
+    }
+  }
+}

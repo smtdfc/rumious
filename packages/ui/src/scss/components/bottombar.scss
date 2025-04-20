@@ -1,0 +1,19 @@
+@use "sass:map";
+@use "../abstracts/index" as *;
+
+$bottom-bar-bg: map.get($mainColor, background);
+$bottom-bar-color: map.get($mainColor, text);
+
+
+.bottom-bar {
+  --bottom-bar-bg: #{$bottom-bar-bg};
+  --bottom-bar-color: #{$bottom-bar-color};
+  
+  background: var(--bottom-bar-bg);
+  color: var(--bottom-bar-color);
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
+}

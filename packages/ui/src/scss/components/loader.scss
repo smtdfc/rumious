@@ -1,0 +1,251 @@
+@use "../abstracts/index" as *;
+
+.loader {
+  --loader-color: #3498db;
+  --loader-size: 30px;
+}
+
+$speeds: (
+  fast: 0.5s,
+  normal: 1s,
+  slow: 2s
+);
+
+$loader-sizes: (
+  sm:30px,
+  md:40px,
+  lg:50px,
+  xl:60px
+);
+
+@mixin spin($time) {
+  animation: spin $time linear infinite;
+}
+
+@mixin bounce($delay) {
+  animation: bounce 1.2s infinite;
+  animation-delay: $delay;
+}
+
+@each $speed, $time in $speeds {
+  .loader-#{$speed} {
+    animation-duration: $time !important;
+  }
+}
+
+@each $color, $value in $colors {
+  .loader-#{$color} {
+    --loader-color:#{$value};
+  }
+}
+
+@each $color, $value in $colors {
+  .loader-#{$color} {
+    --loader-color:#{$value};
+  }
+}
+
+
+@each $size, $value in $loader-sizes {
+  .loader-#{$size} {
+    --loader-size:#{$value};
+  }
+}
+
+.spinner-loader {
+  width: var(--loader-size);
+  height: var(--loader-size);
+  position: relative;
+  margin: 0 auto;
+}
+
+.spinner-loader:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--loader-size);
+  height: var(--loader-size);
+  border-radius: 50%;
+  border: 4px solid transparent;
+  border-right-color: var(--loader-color);
+  border-bottom-color: var(--loader-color);
+  @include spin(1s);
+}
+
+.dots-loader {
+  display: flex;
+  gap: calc(var(--loader-size) * 0.2);
+  
+  span {
+    width: calc(var(--loader-size) * 0.3);
+    height: calc(var(--loader-size) * 0.3);
+    background: var(--loader-color);
+    border-radius: 50%;
+    @include bounce(0s);
+    
+    &:nth-child(2) {
+      @include bounce(0.2s);
+    }
+    
+    &:nth-child(3) {
+      @include bounce(0.4s);
+    }
+  }
+}
+
+.bar-loader {
+  width: calc(var(--loader-size) * 3);
+  height: calc(var(--loader-size) * 0.2);
+  background: linear-gradient(90deg, var(--loader-color), transparent);
+  background-size: 200% 100%;
+  animation: loadbar 1.5s infinite;
+}
+
+.pulse-loader {
+  background-color: var(--loader-color);
+  border-radius: 50%;
+  width: var(--loader-size);
+  height: var(--loader-size);
+  animation: pulse 1.5s infinite;
+}
+
+.wave-loader {
+  display: flex;
+  gap: calc(var(--loader-size) * 0.1);
+  
+  span {
+    width: calc(var(--loader-size) * 0.2);
+    height: var(--loader-size);
+    background: var(--loader-color);
+    animation: wave 1s infinite ease-in-out;
+    
+    @for $i from 2 through 5 {
+      &:nth-child(#{$i}) {
+        animation-delay: 0.1s * ($i - 1);
+      }
+    }
+  }
+}
+
+.ripple-loader {
+  position: relative;
+  width: var(--loader-size);
+  height: var(--loader-size);
+  
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 4px solid var(--loader-color);
+    border-radius: 50%;
+    opacity: 0;
+    animation: ripple 1.5s infinite;
+  }
+  
+  &::after {
+    animation-delay: 0.5s;
+  }
+}
+
+.dual-ring-loader {
+  border: 5px solid transparent;
+  border-top: 5px solid var(--loader-color);
+  border-bottom: 5px solid var(--loader-color);
+  border-radius: 50%;
+  width: var(--loader-size);
+  height: var(--loader-size);
+  @include spin(1s);
+}
+
+.typing-loader {
+  display: flex;
+  gap: calc(var(--loader-size) * 0.2);
+  
+  span {
+    width: calc(var(--loader-size) * 0.3);
+    height: calc(var(--loader-size) * 0.3);
+    background: var(--loader-color);
+    border-radius: 50%;
+    @include bounce(0s);
+    
+    &:nth-child(2) {
+      @include bounce(0.2s);
+    }
+    
+    &:nth-child(3) {
+      @include bounce(0.4s);
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bounce {
+  
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes loadbar {
+  0% {
+    background-position: -100% 0;
+  }
+  
+  100% {
+    background-position: 100% 0;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
+  }
+  
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes wave {
+  
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  
+  50% {
+    transform: scaleY(1.5);
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}

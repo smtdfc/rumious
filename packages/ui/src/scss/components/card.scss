@@ -1,0 +1,83 @@
+@use "sass:map";
+@use "../abstracts/index" as *;
+
+$card-bg: map.get($mainColor, background);
+$card-color: map.get($mainColor, text);
+$card-border-color: rgba(0, 0, 0, 0.1);
+
+.card {
+  --card-bg:#{$card-bg};
+  --card-border-color: #{$card-border-color};
+  display: block;
+  background-color: var(--card-bg);
+  padding: 0;
+  border-radius: 10px;
+  margin: 0.3rem;
+  outline: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
+
+  &-header,
+  &-footer {
+    padding: 1rem;
+    border-bottom: 0.5px solid var(--card-border-color);
+  }
+  
+  &-footer {
+    border-bottom: none;
+    border-top: 0.5px solid var(--card-border-color);
+  }
+  
+  &-body {
+    padding: 0;
+  }
+  
+  &-contents {
+    padding: 1rem;
+  }
+  
+  &-img {
+    width: 100%;
+    display: block;
+    object-fit: cover;
+  }
+  
+  &:not(.card-square) {
+    .card-body:first-child .card-img {
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
+    
+    .card-body:last-child .card-img {
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+  }
+  
+  &-square {
+    border-radius: 0px;
+  }
+}
+
+.card-group {
+  display: flex;
+  flex-wrap: nowrap; 
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 1rem;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  
+  .card {
+    flex: 0 0 auto; 
+    max-width: 300px;
+    min-width: 200px;
+  }
+  
+  @media (max-width: 768px) {
+    .card {
+      min-width: 150px;
+      max-width: 250px;
+    }
+  }
+}

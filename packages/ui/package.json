@@ -1,0 +1,37 @@
+{
+  "name": "rumious-ui",
+  "version": "0.0.1-beta.1",
+  "description": "A collection of pre-built ui components for Rumious ",
+  "keywords": [
+    "rumious-ui",
+    "rumious",
+    "smtdfc"
+  ],
+  "author": "smtdfc",
+  "license": "MIT",
+  "main": "dist/index.cjs.min.js",
+  "module": "dist/index.esm.min.js",
+  "unpkg": "dist/index.min.js",
+  "scripts": {
+    "build": "rollup -c rollup.config.mjs --bundleConfigAsCjs "
+  },
+  "files": [
+    "dist/*",
+    "index.js",
+    "main.css"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smtdfc/rumious.git"
+  },
+  "bugs": {
+    "url": "https://github.com/smtdfc/rumious/issues"
+  },
+  "homepage": "https://github.com/smtdfc/rumious/tree/main/packages/ui",
+  "devDependencies": {
+    
+  },
+  "peerDependencies": {
+    "rumious": "*"
+  }
+}

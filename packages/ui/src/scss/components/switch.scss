@@ -1,0 +1,58 @@
+@use "sass:map";
+@use "../abstracts/index" as *;
+
+$switch-bg: #ccc;
+$switch-slider-color: map.get($colorInBgMap, primary);
+$switch-active-bg: map.get($colors, primary);
+
+.switch {
+  --switch-bg:#{$switch-bg};
+  --switch-active-bg:#{$switch-active-bg};
+  --switch-slider-color:#{$switch-slider-color};
+  position: relative;
+  width: 50px;
+  height: 26px;
+  background: var(--switch-bg);
+  border-radius: 34px;
+  display: inline-block;
+  transition: background 0.3s;
+  
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .slider {
+    position: absolute;
+    inset: 0;
+    background: var(--switch-bg);
+    border-radius: 34px;
+    transition: 0.3s;
+    
+    &::before {
+      content: "";
+      position: absolute;
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background: var(--switch-slider-color);
+      border-radius: 50%;
+      transition: 0.3s;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+  }
+  
+  input:checked+.slider {
+    background: var(--switch-active-bg);
+    
+    &::before {
+      transform: translateX(24px);
+    }
+  }
+  
+  &:hover .slider {
+    background: color-mix(in srgb, var(--switch-bg) 80%, black);
+  }
+}
