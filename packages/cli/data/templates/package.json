@@ -13,9 +13,8 @@
 		"rumious": "*"
 	},
 	"devDependencies": {
-		"rumious-babel-plugin": "*",
+		"babel-plugin-rumious": "*",
 		"@babel/core": "^7.26.10",
-		"@babel/helper-plugin-utils": "^7.26.5",
 		"@babel/plugin-syntax-jsx": "^7.25.9",
 		"@babel/preset-typescript": "^7.27.0",
 		"@rollup/plugin-babel": "^6.0.4",

@@ -8,7 +8,7 @@ const shouldMinify = process.env.MINIFY === 'true';
 
 
 export default {
-	input: 'src/index.tsx',
+	input: 'src/index.ts',
 	output: {
 		file: 'dist/bundle.js',
 		format: 'iife',
@@ -27,7 +27,7 @@ export default {
 			],
 			plugins: [
 				"@babel/plugin-syntax-jsx",
-				"rumious-babel-plugin"
+				"babel-plugin-rumious"
 			]
 		}),
 		shouldMinify &&
