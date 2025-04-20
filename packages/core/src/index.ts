@@ -1,16 +1,13 @@
+import { RumiousJSXFactory } from "./types/jsx.js";
+import type { RumiousContext } from "./context/context.js";
 import type { RumiousRenderTemplate } from "./render/template.js";
 
-interface RumiousJSXFactory {
-  template(...args: any[]): RumiousRenderTemplate;
-  createElement(...args: any[]): RumiousRenderTemplate;
-  addDirective(...args: any[]): void;
-  dynamicValue(...args: any[]): void;
-  createComponent(...args: any[]): HTMLElement;
-}
+
 
 declare global {
   interface Window {
     RUMIOUS_JSX: RumiousJSXFactory;
+    RUMIOUS_CONTEXTS: Record<string,RumiousContext<any>>;
   }
   
   namespace JSX {
@@ -36,3 +33,5 @@ export * from "./jsx/index.js";
 export * from "./render/index.js";
 export * from "./ref/index.js";
 export * from "./state/index.js";
+export * from "./context/index.js";
+export * from "./performance/index.js"

@@ -5,3 +5,7 @@ export function extractName(str: string): string {
   }
   return ''; 
 }
+
+export function generateName(prefix: string="_"): string {
+  return  `${prefix}${(Math.floor(Math.random()*9999)*Date.now()).toString(32)}`
+}

@@ -1,6 +1,7 @@
 {
   "name": "rumious-ui",
-  "version": "0.0.1-beta.1",
+  "version": "0.0.2",
+  "deprecated": "This package is no longer maintained. Please use lightiz-ui package",
   "description": "A collection of pre-built ui components for Rumious ",
   "keywords": [
     "rumious-ui",

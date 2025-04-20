@@ -18,14 +18,16 @@ const basePlugins = () => [
   }),
 ];
 
-const createConfig = ({ input, file, format, name, exportsType }) => ({
+const createConfig = ({ input, file, format, name, exportsType, external }) => ({
   input,
+  external,
   output: {
     file,
     format,
     name,
     exports: exportsType,
     globals: {
+      mutative: 'mutative',
     },
   },
   plugins: [
@@ -41,19 +43,33 @@ const createConfig = ({ input, file, format, name, exportsType }) => ({
   ].filter(Boolean),
 });
 
+
 export default [
+  
   createConfig({
     input: 'src/index.ts',
     file: 'dist/index.esm.js',
     format: 'esm',
     exportsType: 'named',
+    external: ['mutative'],
   }),
 
+ 
   createConfig({
-    input: 'src/index.global.ts', 
+    input: 'src/index.ts',
+    file: 'dist/index.cjs',
+    format: 'cjs',
+    exportsType: 'named',
+    external: ['mutative'],
+  }),
+
+
+  createConfig({
+    input: 'src/index.global.ts',
     file: 'dist/index.min.js',
     format: 'iife',
     name: 'Rumious',
-    exportsType: 'default', 
+    exportsType: 'default',
+    external: [], 
   }),
 ];
