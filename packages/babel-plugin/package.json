@@ -1,5 +1,5 @@
 {
-	"name": "rumious-babel-plugin",
+	"name": "babel-plugin-rumious",
 	"version": "0.0.1",
 	"description":"Babel plugin for Rumious ",
 	"main": "./index.js",

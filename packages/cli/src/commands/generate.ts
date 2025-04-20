@@ -7,7 +7,7 @@ import * as path from 'path';
 async function generateComponent(currentPath: string, configs: RumiousConfigFile, name: string): Promise < void > {
   const componentFile = path.join(
     path.join(currentPath,configs.entryPoint ?? ""),
-    `./components/${name}.${configs.lang ?? "js"}`);
+    `./components/${name}.${configs.lang +"x" ?? "jsx"}`);
   
   // Ensure directory and file existence
   await ensureDirAndFileExist(componentFile, "//Generate by Rumious CLI");
@@ -15,7 +15,7 @@ async function generateComponent(currentPath: string, configs: RumiousConfigFile
   console.log("📝 Generating component:", name);
   
   try {
-    const templatePath = path.join(__dirname, `../data/component/index.${configs.lang ?? "js"}`);
+    const templatePath = path.join(__dirname, `../data/component/index.${configs.lang +"x" ?? "jsx"}`);
     const templateContent = await fs.readFile(templatePath, 'utf8');
     const content = templateContent.replace("IndexComponent", name);
     

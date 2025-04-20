@@ -1,7 +1,7 @@
 {
   "name": "rumious-babel-preset",
-  "version": "0.0.6",
-  "deprecated": "This package is no longer maintained. Please use rumious@1.0.0 instead.",
+  "version": "0.0.8",
+  "deprecated": "This package is no longer maintained",
   "description": "Rumious Preset for Babel",
   "keywords": [
     "rumious",

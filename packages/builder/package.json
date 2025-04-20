@@ -1,11 +1,11 @@
 {
   "name": "rumious-builder",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "deprecated": "This package is no longer maintained. Please use rumious@1.0.0 instead.",
+  "deprecated": "This package is no longer maintained.",
   "bin": {
     "rumious": "./cli/index.js"
   },
