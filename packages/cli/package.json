@@ -11,7 +11,8 @@
     "build": "rollup -c  --environment MINIFY:true",
     "build:dev": "rollup -c ",
     "start": "node dist/index.js",
-    "test": "echo \"No tests yet\""
+    "test": "echo \"No tests yet\"",
+    "prepublish": "npm run dec && npm run build"
   },
   "keywords": [],
   "author": "",
