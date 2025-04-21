@@ -4,10 +4,10 @@ import commonjs from '@rollup/plugin-commonjs';
 import terser from '@rollup/plugin-terser';
 import os from 'os';
 
-const shouldMinify = process.env.MINIFY === 'true';
+const shouldMinify = process.env.MINIFY === 'true' || process.env.NODE_ENV==='production' ;
 
 export default {
-  input: 'src/index.ts',
+  input: 'src/index.tsx',
   output: {
     file: 'dist/bundle.js',
     format: 'iife',
