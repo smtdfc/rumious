@@ -3,8 +3,9 @@
 	"scripts": {
 		"dec": "tsc --declaration --allowJs --emitDeclarationOnly",
 		"type": "tsc --noEmit",
-		"build": "rollup -c  --environment MINIFY:true",
-		"build:dev": "rollup -c ",
+		"build": "rumious build prod",
+		"build:dev": "rumious build dev ",
+		"dev": "rumious build dev -w",
 		"start": "node dist/index.js",
 		"test": "echo \"No tests yet\""
 	},
