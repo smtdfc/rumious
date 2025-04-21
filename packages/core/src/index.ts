@@ -5,25 +5,24 @@ import type { RumiousRenderTemplate } from './render/template.js';
 declare global {
   interface Window {
     RUMIOUS_JSX: RumiousJSXFactory;
-    RUMIOUS_CONTEXTS: Record < string,
-    RumiousContext < any >> ;
+    RUMIOUS_CONTEXTS: Record<string, RumiousContext<any>>;
   }
-  
+
   declare namespace JSX {
     type Element = RumiousRenderTemplate;
-    
+
     interface ElementClass {
       template: () => RumiousRenderTemplate;
     }
-    
+
     interface ElementAttributesProperty {
       props: {};
     }
-    
+
     interface IntrinsicElements {
       [elemName: string]: any;
     }
-    
+
     type Fragment = 'RUMIOUS_INTERNAL_FRAGMENT';
   }
 }
