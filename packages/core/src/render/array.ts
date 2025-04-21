@@ -3,7 +3,7 @@ import { RumiousArrayState } from '../state/array.js';
 import { RumiousRenderContext } from './context.js';
 import { RumiousStateCommit } from '../state/reactor.js';
 
-type RumiousDynamicArrayRenderFn<T> = (
+type RumiousDynamicArrayRenderFn = (
   item: any,
   index: any
 ) => RumiousRenderTemplate;
@@ -16,7 +16,7 @@ export class RumiousDynamicArrayRenderer<T> {
 
   constructor(
     public state: RumiousArrayState<T>,
-    public callback: RumiousDynamicArrayRenderFn<T>,
+    public callback: RumiousDynamicArrayRenderFn,
     keyFn?: (item: any, index: any) => any
   ) {
     this.keyFn = keyFn ?? ((_, i) => i);
@@ -107,7 +107,7 @@ export class RumiousDynamicArrayRenderer<T> {
 
 export function renderDynamicArray<T>(
   state: RumiousArrayState<T>,
-  callback: RumiousDynamicArrayRenderFn<T>
+  callback: RumiousDynamicArrayRenderFn
 ) {
   return new RumiousDynamicArrayRenderer<T>(state, callback);
 }

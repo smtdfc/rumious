@@ -8,7 +8,7 @@ export function render(
 ): void {
   let generator = template.generator.bind(context.target);
   context.renderHelper = render;
-  let root = generator(target, context);
+  generator(target, context);
   setTimeout(async () => {
     const callbacks = [...context.onRenderFinished];
     context.onRenderFinished = [];

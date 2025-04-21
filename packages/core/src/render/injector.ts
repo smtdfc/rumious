@@ -1,5 +1,3 @@
-import { RumiousRenderContext } from './context.js';
-
 type RumiousDymanicInjectorContentTypes = HTMLElement | string;
 
 export class RumiousDymanicInjector<
