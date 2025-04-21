@@ -1,43 +1,45 @@
-import path from 'path';
-import fs from 'fs-extra';
-import os from 'os';
-import babel from '@rollup/plugin-babel';
-import resolve from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
-import terser from '@rollup/plugin-terser';
-import rumious from '../plugins/rollup.js';
-import dotenv from 'dotenv';
-dotenv.config();
+import path from 'path'
+import fs from 'fs-extra'
+import os from 'os'
+import babel from '@rollup/plugin-babel'
+import resolve from '@rollup/plugin-node-resolve'
+import commonjs from '@rollup/plugin-commonjs'
+import terser from '@rollup/plugin-terser'
+import rumious from '../plugins/rollup.js'
+import dotenv from 'dotenv'
+dotenv.config()
 
 function importJson(filePath) {
-  const fullPath = path.resolve(filePath);
-  const rawData = fs.readFileSync(fullPath, 'utf-8');
-  return JSON.parse(rawData);
+  const fullPath = path.resolve(filePath)
+  const rawData = fs.readFileSync(fullPath, 'utf-8')
+  return JSON.parse(rawData)
 }
 
 export function rollupGenerateConfig(configFile, produce = null) {
   const options = {
-    prod: process.env.NODE_ENV === 'production'
-  };
+    prod: process.env.NODE_ENV === 'production',
+  }
 
-  const configs = importJson(configFile);
-  const cwd = process.cwd();
-  const minifyConfigs = options.prod ? [
-    terser({
-      maxWorkers: {
-        value: os.cpus().length || 1,
-      },
+  const configs = importJson(configFile)
+  const cwd = process.cwd()
+  const minifyConfigs = options.prod
+    ? [
+        terser({
+          maxWorkers: {
+            value: os.cpus().length || 1,
+          },
 
-      compress: {
-        drop_console: true,
-        passes: 3,
-      },
-      mangle: true,
-      output: {
-        comments: false,
-      },
-    })
-  ] : [];
+          compress: {
+            drop_console: true,
+            passes: 3,
+          },
+          mangle: true,
+          output: {
+            comments: false,
+          },
+        }),
+      ]
+    : []
   let rollupConfigs = {
     input: path.join(cwd, configs.entryPoint ?? 'index.jsx'),
     output: {
@@ -48,7 +50,6 @@ export function rollupGenerateConfig(configFile, produce = null) {
     },
     treeshake: {
       moduleSideEffects: false,
-
     },
     watch: {
       include: '/**',
@@ -60,15 +61,13 @@ export function rollupGenerateConfig(configFile, produce = null) {
       commonjs(),
       babel({
         babelHelpers: 'bundled',
-        presets: [
-          './node_modules/rumious-babel-preset/index.js',
-        ],
+        presets: ['./node_modules/rumious-babel-preset/index.js'],
       }),
       ...minifyConfigs,
       rumious(),
     ],
-  };
+  }
 
-  if (produce) rollupConfigs = produce(rollupConfigs);
-  return rollupConfigs;
+  if (produce) rollupConfigs = produce(rollupConfigs)
+  return rollupConfigs
 }

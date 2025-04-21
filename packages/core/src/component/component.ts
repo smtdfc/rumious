@@ -1,20 +1,19 @@
-import { RumiousApp } from '../app/app.js'
-import { RumiousRenderContext } from '../render/context.js'
+import { RumiousApp } from '../app/app.js';
+import { RumiousRenderContext } from '../render/context.js';
 import { RumiousRenderTemplate } from '../render/template.js';
 import { render } from '../render/render.js';
-import { Constructor } from '../types/utils.js';
-import { RumiousRenderMode } from "../types/render.js"
+import { RumiousRenderMode } from '../types/render.js';
 
-export interface RumiousEmptyProps {};
+export interface RumiousEmptyProps {}
 
 interface RumiousComponentRenderOptions {
-  mode: RumiousRenderMode,
-  time ? : number
-};
+  mode: RumiousRenderMode;
+  time?: number;
+}
 
-export abstract class RumiousComponent < T = unknown > {
-  public static classNames = "";
-  public static tagName = "rumious-component";
+export abstract class RumiousComponent<T = unknown> {
+  public static classNames = '';
+  public static tagName = 'rumious-component';
   public app!: RumiousApp;
   public props!: T;
   public element!: HTMLElement;
@@ -22,30 +21,30 @@ export abstract class RumiousComponent < T = unknown > {
   public renderOptions: RumiousComponentRenderOptions;
   constructor() {
     this.renderOptions = {
-      mode: "idle"
+      mode: 'idle',
     };
   }
-  
+
   onCreate(): void {}
   onRender(): void {}
   onDestroy(): void {}
-  async onBeforeRender(): Promise < void > {}
+  async onBeforeRender(): Promise<void> {}
   abstract template(): RumiousRenderTemplate;
-  
+
   prepare(currentContext: RumiousRenderContext, props: T) {
     this.props = props;
-    this.context = new RumiousRenderContext(this, currentContext.app as RumiousApp);
+    this.context = new RumiousRenderContext(
+      this,
+      currentContext.app as RumiousApp
+    );
   }
-  
+
   async requestRender() {
     await this.onBeforeRender();
     let template = this.template();
     render(this.context, template, this.element);
     this.onRender();
   }
-  
-  requestCleanup() {
-    
-  }
-  
+
+  requestCleanup() {}
 }

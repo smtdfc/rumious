@@ -25,12 +25,12 @@ export default [
         format: 'iife',
         name: 'RumiousRouter',
         sourcemap: false,
-        globals:{
-          rumious:'Rumious'
-        }
+        globals: {
+          rumious: 'Rumious',
+        },
       },
     ],
-    external:['rumious'],
+    external: ['rumious'],
     plugins: [
       resolve(),
       commonjs(),
@@ -45,8 +45,8 @@ export default [
         },
         maxWorkers: {
           value: os.cpus().length || 1,
-        }
-      })
+        },
+      }),
     ],
   },
 ];

@@ -1,5 +1,4 @@
-import type { RumiousRenderTemplate } from "../render/template.js";
-
+import type { RumiousRenderTemplate } from '../render/template.js';
 
 export interface RumiousJSXFactory {
   template(...args: any[]): RumiousRenderTemplate;

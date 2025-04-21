@@ -1,7 +1,9 @@
-import { RumiousState } from "./state.js";
-import { RumiousReactor } from "./reactor.js";
+import { RumiousState } from './state.js';
+import { RumiousReactor } from './reactor.js';
 
-export class RumiousObjectState<T extends Record<string, any>> extends RumiousState<T> {
+export class RumiousObjectState<
+  T extends Record<string, any>,
+> extends RumiousState<T> {
   #locked = false;
 
   constructor(value: T, reactor?: RumiousReactor<T>) {
@@ -11,34 +13,34 @@ export class RumiousObjectState<T extends Record<string, any>> extends RumiousSt
   set<K extends string>(key: K, newValue: any): this;
   set(newObject: T): void;
   set(arg1: any, arg2?: any): any {
-    if (this.#locked) throw new Error("Object is locked");
+    if (this.#locked) throw new Error('Object is locked');
 
-    if (typeof arg1 === "string") {
+    if (typeof arg1 === 'string') {
       const key = arg1 as string;
       const newValue = arg2;
       (this.value as any)[key] = newValue;
       this.reactor.emit({
-        type: "SET_BY_KEY",
+        type: 'SET_BY_KEY',
         value: { ...this.value },
         target: this,
         key,
         item: newValue,
       });
       return this;
-    } else if (typeof arg1 === "object") {
+    } else if (typeof arg1 === 'object') {
       super.set(arg1);
     } else {
-      throw new Error("Invalid arguments passed to set()");
+      throw new Error('Invalid arguments passed to set()');
     }
   }
 
   remove<K extends string>(key: K): this {
-    if (this.#locked) throw new Error("Object is locked");
+    if (this.#locked) throw new Error('Object is locked');
 
     if (key in this.value) {
       delete this.value[key];
       this.reactor.emit({
-        type: "REMOVE_BY_KEY",
+        type: 'REMOVE_BY_KEY',
         value: { ...this.value },
         target: this,
         key,
@@ -48,50 +50,47 @@ export class RumiousObjectState<T extends Record<string, any>> extends RumiousSt
   }
 
   merge(partial: Partial<T>): this {
-    if (this.#locked) throw new Error("Object is locked");
+    if (this.#locked) throw new Error('Object is locked');
 
     Object.assign(this.value, partial);
     this.reactor.emit({
-      type: "SET",
-      value: { ...this.value },
-      target: this
-    });
-    return this;
-  }
-
-  assign(obj: Partial<T>): this {
-    if (this.#locked) throw new Error("Object is locked");
-
-    this.value = { ...this.value, ...obj };
-    this.reactor.emit({
-      type: "SET",
+      type: 'SET',
       value: { ...this.value },
       target: this,
     });
     return this;
   }
 
-  
+  assign(obj: Partial<T>): this {
+    if (this.#locked) throw new Error('Object is locked');
+
+    this.value = { ...this.value, ...obj };
+    this.reactor.emit({
+      type: 'SET',
+      value: { ...this.value },
+      target: this,
+    });
+    return this;
+  }
 
   clear(): this {
-    if (this.#locked) throw new Error("Object is locked");
+    if (this.#locked) throw new Error('Object is locked');
 
     for (const key in this.value) {
       delete this.value[key];
     }
     this.reactor.emit({
-      type: "SET",
+      type: 'SET',
       value: {} as T,
       target: this,
     });
     return this;
   }
 
-
   get<K extends string>(key: K): any;
   get(): T;
   get(arg?: any): any {
-    return typeof arg === "string" ? this.value[arg] : this.value;
+    return typeof arg === 'string' ? this.value[arg] : this.value;
   }
 
   keys(): string[] {
@@ -127,7 +126,6 @@ export class RumiousObjectState<T extends Record<string, any>> extends RumiousSt
     });
     return result;
   }
-
 
   clone(): T {
     return JSON.parse(JSON.stringify(this.value));

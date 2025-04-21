@@ -4,7 +4,6 @@ class RouterLazyLoad {
   constructor(callback) {
     this.callback = callback;
     this.component = null;
-    
   }
 
   async load() {
@@ -24,7 +23,8 @@ function pathDiff(pattern, path) {
   let patternParts = pattern.split('/');
   let pathParts = path.split('/');
 
-  let i = 0, j = 0;
+  let i = 0,
+    j = 0;
   while (i < patternParts.length && j < pathParts.length) {
     if (patternParts[i] === '*') return params;
     if (patternParts[i].startsWith(':')) {
@@ -44,7 +44,9 @@ function diffLayout(a, b) {
   for (let i = 0; i < len; i++) {
     if (a[i] !== b[i]) return { pos: i, change: b.slice(i) };
   }
-  return a.length < b.length ? { pos: a.length, change: b.slice(a.length) } : { pos: -1 };
+  return a.length < b.length
+    ? { pos: a.length, change: b.slice(a.length) }
+    : { pos: -1 };
 }
 
 export class RumiousRouterModule {
@@ -77,12 +79,12 @@ export class RumiousRouterModule {
 
   off(name, callback) {
     if (!this.events[name]) return;
-    this.events[name] = this.events[name].filter(cb => cb !== callback);
+    this.events[name] = this.events[name].filter((cb) => cb !== callback);
   }
 
   triggerEvent(name, data) {
     if (!this.events[name]) return;
-    this.events[name].forEach(callback => callback(data));
+    this.events[name].forEach((callback) => callback(data));
   }
 
   resolve(url = new URL('/', window.location.origin)) {
@@ -95,7 +97,7 @@ export class RumiousRouterModule {
           routeConfigs,
           params: diffResult,
           pattern,
-          url
+          url,
         };
       }
     }
@@ -103,7 +105,8 @@ export class RumiousRouterModule {
   }
 
   async solveWrapper(url) {
-    if (this.cachedWrappers?.url === url.pathname) return this.cachedWrappers.components;
+    if (this.cachedWrappers?.url === url.pathname)
+      return this.cachedWrappers.components;
 
     let components = [];
     for (let pattern in this.wrappers) {
@@ -121,13 +124,15 @@ export class RumiousRouterModule {
     this.params = params;
     let components = routeConfigs.components;
     let useWrapper = routeConfigs.wrap ?? true;
-    if (routeConfigs.protect && !await routeConfigs.protect()) {
+    if (routeConfigs.protect && !(await routeConfigs.protect())) {
       return { type: 'error', name: 'not_allowed' };
     }
 
     if (routeConfigs.redirect) {
       this.redirect(
-        typeof routeConfigs.redirect === 'function' ? await routeConfigs.redirect() : routeConfigs.redirect
+        typeof routeConfigs.redirect === 'function'
+          ? await routeConfigs.redirect()
+          : routeConfigs.redirect
       );
       return {};
     }
@@ -150,14 +155,16 @@ export class RumiousRouterModule {
     const injectComponent = (index) => {
       if (index >= layouts.length) return null;
       const injector = this.injectors[index];
-      injector.commit([{
-        type: 'component',
-        value: layouts[index],
-        props: {
-          router: this,
-          routeSlot: injectComponent(index + 1)
-        }
-      }]);
+      injector.commit([
+        {
+          type: 'component',
+          value: layouts[index],
+          props: {
+            router: this,
+            routeSlot: injectComponent(index + 1),
+          },
+        },
+      ]);
       return injector;
     };
 

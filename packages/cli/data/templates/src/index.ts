@@ -1,3 +1,3 @@
-import {createApp} from 'rumious';
+import { createApp } from 'rumious';
 
 const RumiousApp = createApp(document.body);

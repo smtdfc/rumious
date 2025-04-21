@@ -14,9 +14,11 @@ export const ensureFileExist = (filePath: string, content: string): void => {
   }
 };
 
-export const ensureDirAndFileExist = (filePath: string, content: string): void => {
+export const ensureDirAndFileExist = (
+  filePath: string,
+  content: string
+): void => {
   const dirPath = path.dirname(filePath);
   ensureDirExist(dirPath);
   ensureFileExist(filePath, content);
 };
-

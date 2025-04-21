@@ -2,10 +2,10 @@ export function toggle(component, element, options = []) {
   return component.generator(element, options).action({
     type: 'toggle',
     trigger: element,
-    target:element,
+    target: element,
     component,
-    options
-  });
+    options,
+  })
 }
 
 export function active(component, element, options = []) {
@@ -13,7 +13,7 @@ export function active(component, element, options = []) {
     type: 'active',
     trigger: element,
     component,
-    target:element,
-    options
-  });
+    target: element,
+    options,
+  })
 }

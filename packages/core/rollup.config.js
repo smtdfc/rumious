@@ -14,11 +14,20 @@ const basePlugins = () => [
   babel({
     babelHelpers: 'bundled',
     extensions,
-    presets: [["@babel/preset-typescript", { isTSX: true, allExtensions: true }]],
+    presets: [
+      ['@babel/preset-typescript', { isTSX: true, allExtensions: true }],
+    ],
   }),
 ];
 
-const createConfig = ({ input, file, format, name, exportsType, external }) => ({
+const createConfig = ({
+  input,
+  file,
+  format,
+  name,
+  exportsType,
+  external,
+}) => ({
   input,
   external,
   output: {
@@ -43,9 +52,7 @@ const createConfig = ({ input, file, format, name, exportsType, external }) => (
   ].filter(Boolean),
 });
 
-
 export default [
-  
   createConfig({
     input: 'src/index.ts',
     file: 'dist/index.esm.js',
@@ -54,7 +61,6 @@ export default [
     external: ['mutative'],
   }),
 
- 
   createConfig({
     input: 'src/index.ts',
     file: 'dist/index.cjs',
@@ -63,13 +69,12 @@ export default [
     external: ['mutative'],
   }),
 
-
   createConfig({
     input: 'src/index.global.ts',
     file: 'dist/index.min.js',
     format: 'iife',
     name: 'Rumious',
     exportsType: 'default',
-    external: [], 
+    external: [],
   }),
 ];

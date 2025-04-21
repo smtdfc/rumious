@@ -1,19 +1,19 @@
-import { exec } from 'child_process';
+import { exec } from 'child_process'
 
 export function exec_command(command, options) {
-  return new Promise((resolve, ) => {
-    const task = exec(command, { cwd: options.cwd });
-    
+  return new Promise((resolve) => {
+    const task = exec(command, { cwd: options.cwd })
+
     task.stdout.on('data', (data) => {
-      if(options.showLog) console.log(`${data}`);
-    });
-    
+      if (options.showLog) console.log(`${data}`)
+    })
+
     task.stderr.on('data', (data) => {
-      if(options.showErr) console.error(`${data}`);
-    });
-    
+      if (options.showErr) console.error(`${data}`)
+    })
+
     task.on('close', (code) => {
-      resolve(code);
-    });
-  });
+      resolve(code)
+    })
+  })
 }

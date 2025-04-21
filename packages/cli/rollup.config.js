@@ -6,7 +6,6 @@ import os from 'os';
 
 const shouldMinify = process.env.MINIFY === 'true';
 
-
 export default {
   input: 'src/index.ts',
   output: {
@@ -15,23 +14,24 @@ export default {
   },
   plugins: [
     resolve({
-      extensions: ['.js', '.jsx', '.ts', '.tsx']
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
     }),
     commonjs(),
     babel({
       babelHelpers: 'bundled',
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
       presets: [
-        ["@babel/preset-typescript", { isTSX: true, allExtensions: true }]
+        ['@babel/preset-typescript', { isTSX: true, allExtensions: true }],
       ],
     }),
     shouldMinify &&
-    terser({
-      module: true,
-      compress: { defaults: true },
-      mangle: true,
-      output: { comments: false },
-      maxWorkers: os.cpus().length || 1
-    })
+      terser({
+        module: true,
+        compress: { defaults: true },
+        mangle: true,
+        output: { comments: false },
+        maxWorkers: os.cpus().length || 1,
+      }),
   ].filter(Boolean),
+  external: ['commander'],
 };

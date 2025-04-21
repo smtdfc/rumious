@@ -1,7 +1,10 @@
-export function observeUnmount(targetNode: Node, onRemoved: () => void): () => void {
+export function observeUnmount(
+  targetNode: Node,
+  onRemoved: () => void
+): () => void {
   const parent = targetNode.parentNode;
   if (!parent) return () => {};
-  
+
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       for (const removed of Array.from(mutation.removedNodes)) {
@@ -13,7 +16,7 @@ export function observeUnmount(targetNode: Node, onRemoved: () => void): () => v
       }
     }
   });
-  
+
   observer.observe(parent, { childList: true });
   return () => observer.disconnect();
 }
