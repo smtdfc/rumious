@@ -62,6 +62,10 @@ function createElement(...args: any[]): any {
   throw Error(`Rumious doesn't use createElement !`);
 }
 
+export const Fragment = function(...args: any[]): any {
+  throw Error(`Fragment element must be compiled by Rumious !`);
+};
+
 window.RUMIOUS_JSX = {
   template,
   createElement,

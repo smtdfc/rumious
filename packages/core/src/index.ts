@@ -8,7 +8,7 @@ declare global {
     RUMIOUS_CONTEXTS: Record<string, RumiousContext<any>>;
   }
 
-  declare namespace JSX {
+  namespace JSX {
     type Element = RumiousRenderTemplate;
 
     interface ElementClass {
