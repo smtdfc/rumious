@@ -1,10 +1,7 @@
 import type { RumiousApp } from './app.js';
 
-export interface RumiousModuleInstance {}
-export type RumiousModuleOptions<T extends RumiousModule<any>> =
-  T extends RumiousModule<infer O> ? O : never;
+export abstract class RumiousModule{}
 
-export type RumiousModule<OptionsType = any> = {
-  new (...args: any[]): any;
-  init(app: RumiousApp, options?: OptionsType): RumiousModuleInstance;
+export type RumiousModuleClass < T extends RumiousModule = any, O = any > = {
+  init(app: RumiousApp, options ? : O): T;
 };

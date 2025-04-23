@@ -50,7 +50,7 @@ export class RumiousComponentElement extends HTMLElement {
 }
 
 export function renderComponent(
-  component: RumiousComponentElement,
+  component: RumiousComponentConstructor,
   props: any
 ): HTMLElement {
   let element = window.RUMIOUS_JSX.createComponent(component);

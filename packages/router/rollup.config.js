@@ -35,7 +35,9 @@ const createConfig = ({
     format,
     name,
     exports: exportsType,
-    globals: {},
+    globals: {
+      "rumious":"Rumious"
+    },
   },
   plugins: [
     ...basePlugins(),
@@ -55,6 +57,7 @@ export default [
     input: 'src/index.ts',
     file: 'dist/index.esm.js',
     format: 'esm',
+    external: ["rumious"],
     exportsType: 'named',
   }),
 
@@ -62,6 +65,7 @@ export default [
     input: 'src/index.ts',
     file: 'dist/index.cjs',
     format: 'cjs',
+    external: ["rumious"],
     exportsType: 'named',
   }),
 
@@ -71,6 +75,6 @@ export default [
     format: 'iife',
     name: 'RumiousRouter',
     exportsType: 'default',
-    external: [],
+    external: ["rumious"],
   }),
 ];
