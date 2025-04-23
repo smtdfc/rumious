@@ -48,3 +48,12 @@ export class RumiousComponentElement extends HTMLElement {
     this.componentInstance?.onDestroy();
   }
 }
+
+export function renderComponent(
+  component: RumiousComponentElement,
+  props: any
+): HTMLElement {
+  let element = window.RUMIOUS_JSX.createComponent(component);
+  element.props = props;
+  return element;
+}

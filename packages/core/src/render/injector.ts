@@ -1,10 +1,12 @@
+import { RumiousComponentConstructor } from '../component/element.js';
+
 type RumiousDymanicInjectorContentTypes = HTMLElement | string;
 
 export class RumiousDymanicInjector<
   T extends RumiousDymanicInjectorContentTypes,
 > {
   private targets: Map<HTMLElement, any>;
-  private type: 'string' | 'element';
+  private type: 'string' | 'element' | 'component';
 
   constructor(public contents?: T[]) {
     this.targets = new Map();
@@ -13,6 +15,12 @@ export class RumiousDymanicInjector<
       throw new Error('Injector must be initialized with non-empty content');
     }
 
+    const first = contents[0];
+    this.type = typeof first === 'string' ? 'string' : 'element';
+  }
+
+  commit(contents: T[]): void {
+    this.contents = contents;
     const first = contents[0];
     this.type = typeof first === 'string' ? 'string' : 'element';
   }

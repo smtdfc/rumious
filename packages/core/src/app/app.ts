@@ -1,5 +1,9 @@
 import { RumiousRenderContext } from '../render/context.js';
-import { RumiousModule, RumiousModuleInstance } from './module.js';
+import {
+  RumiousModule,
+  RumiousModuleInstance,
+  RumiousModuleOptions,
+} from './module.js';
 import { render } from '../render/render.js';
 
 export interface RumiousAppOptions {}
@@ -16,7 +20,10 @@ export class RumiousApp {
     this.context = new RumiousRenderContext(this, this);
   }
 
-  addModule(module: RumiousModule, options: any): RumiousModuleInstance {
+  addModule<T extends RumiousModule<any>>(
+    module: T,
+    options: RumiousModuleOptions<T>
+  ): RumiousModuleInstance {
     let instance = module.init(this, options);
     this.modules.push(instance);
     return instance;

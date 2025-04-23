@@ -1,13 +1,10 @@
 {
 	"name": "rumious",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "Simple framework for building UI ",
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.esm.js",
 	"exports": {
-		"import": "./dist/index.esm.js",
-		"require": "./dist/index.cjs",
-		"types": "./dist/index.d.ts",
 		".": {
 			"import": "./dist/index.esm.js",
 			"require": "./dist/index.cjs",

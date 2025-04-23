@@ -40,7 +40,7 @@ function dynamicValue(
 
 function createComponent(
   componentConstructor: RumiousComponentConstructor
-): HTMLElement {
+): RumiousComponentElement {
   let tagName = componentConstructor.tagName as string;
   if (!window.customElements.get(tagName)) {
     window.customElements.define(
@@ -51,7 +51,7 @@ function createComponent(
     );
   }
 
-  return document.createElement(tagName);
+  return document.createElement(tagName) as RumiousComponentElement;
 }
 
 // This is just to satisfy TypeScript's JSX requirement.

@@ -1,30 +1,52 @@
 {
-  "name": "rumious-router",
-  "version": "0.0.3-beta.0",
-  "scripts": {
-    "build": "rollup -c rollup.config.mjs"
-  },
-  "peerDependencies": {
-    "rumious": "*"
-  },
-  "main": "dist/index.cjs.min.js",
-  "module": "dist/index.esm.min.js",
-  "unpkg": "dist/index.min.js",
-  "files": [
-    "index.js",
-    "dist/**"
-  ],
-  "keywords": [
-    "rumious",
-    "rumious-router",
-    "router"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/smtdfc/rumious.git"
-  },
-  "homepage": "https://github.com/smtdfc/rumious#readme",
-  "author": "smtdfc",
-  "license": "MIT",
-  "description": "A client router module for rumious  "
+	"name": "rumious-router",
+	"version": "1.0.0",
+	"description": "",
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.esm.js",
+	"exports": {
+		".": {
+			"import": "./dist/index.esm.js",
+			"require": "./dist/index.cjs",
+			"types": "./dist/index.d.ts"
+		}
+	},
+	"types": "./dist/index.d.ts",
+	"keywords": [
+		"rumious",
+		"core",
+		"framework",
+		"typescript",
+		"webcomponents",
+		"router"
+	],
+	"scripts": {
+		"dec": "tsc --declaration --allowJs --emitDeclarationOnly",
+		"type": "tsc --noEmit",
+		"build": "rollup -c  --environment MINIFY:true",
+		"build:dev": "rollup -c ",
+		"start": "node dist/index.js",
+		"test": "echo \"No tests yet\"",
+		"prepublishOnly": "npm run dec && npm run build:dev"
+	},
+	"author": "smtdfc",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/smtdfc/rumious"
+	},
+	"bugs": {
+		"url": "https://github.com/smtdfc/rumious/issues"
+	},
+	"homepage": "https://github.com/smtdfc/rumious#readme",
+	"files": [
+		"dist/**",
+		"README.md",
+		"index.js",
+		"index.d.ts"
+	],
+	"engines": {
+		"node": ">=16"
+	},
+	"dependencies": {}
 }

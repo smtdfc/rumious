@@ -9,7 +9,7 @@ const shouldMinify = process.env.MINIFY === 'true' || process.env.NODE_ENV==='pr
 export default {
   input: 'src/index.tsx',
   output: {
-    file: 'dist/bundle.js',
+    file: 'public/dist/bundle.js',
     format: 'iife',
     name: 'App',
   },
