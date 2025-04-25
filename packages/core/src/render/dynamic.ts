@@ -3,46 +3,50 @@ import { RumiousRenderContext } from './context.js';
 import { RumiousDynamicArrayRenderer } from './array.js';
 import { isPrimitive } from '../utils/checkers.js';
 import { RumiousState } from '../state/state.js';
-import { RumiousComponentElement } from "../component/element.js";
+import { RumiousComponentElement } from '../component/element.js';
 
 export async function dynamicValue(
   target: HTMLElement,
   textNode: Text,
   value: any,
   context: RumiousRenderContext
-): Promise < void > {
+): Promise<void> {
   const parent = textNode.parentNode;
   if (!parent) return;
-  
+
   if (isPrimitive(value)) {
     textNode.textContent = String(value);
-  } else if (value && value instanceof RumiousState && value.value instanceof Node) {
+  } else if (
+    value &&
+    value instanceof RumiousState &&
+    value.value instanceof Node
+  ) {
     let currentNode = textNode as Node;
     if (!currentNode.parentNode) return;
-    
+
     function onValueChange({}) {
       if (document.contains(currentNode) && currentNode.parentNode) {
         if (value.value instanceof RumiousComponentElement) {
-          value.value.setContext(context)
+          value.value.setContext(context);
         }
-        
+
         currentNode.parentNode.replaceChild(value.value, currentNode);
         currentNode = value.value;
       } else {
         value.reactor.removeBinding(onValueChange);
       }
     }
-    
+
     if (value.value instanceof RumiousComponentElement) {
-      value.value.setContext(context)
+      value.value.setContext(context);
     }
-    
+
     currentNode.parentNode.replaceChild(value.value, currentNode);
     currentNode = value.value;
     value.reactor.addBinding(onValueChange);
   } else if (value && value instanceof RumiousState) {
     textNode.textContent = value.value;
-    
+
     function onValueChange({}) {
       if (document.contains(textNode)) {
         textNode.textContent = value.value;
@@ -50,7 +54,7 @@ export async function dynamicValue(
         value.reactor.removeBinding(onValueChange);
       }
     }
-    
+
     value.reactor.addBinding(onValueChange);
   } else if (Array.isArray(value)) {
     textNode.textContent = value.map(String).join('');
@@ -68,7 +72,7 @@ export async function dynamicValue(
       textNode.remove();
       return;
     }
-    
+
     const fragment = document.createDocumentFragment();
     for (const node of Array.from(value)) {
       fragment.appendChild(node.cloneNode(true));

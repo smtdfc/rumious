@@ -1,15 +1,15 @@
-import type { RumiousRouterModule } from "../router.js";
+import type { RumiousRouterModule } from '../router.js';
 
 export class RumiousRouterMemoryStrategy {
-  private currentPath = "";
+  private currentPath = '';
   private historyStack: string[] = [];
   private historyIndex = -1;
-  
+
   constructor(public router: RumiousRouterModule) {}
-  
+
   redirect(path: string, replace: boolean = false): void {
-    const normalizedPath = path.replace(/^\/+/, "");
-    
+    const normalizedPath = path.replace(/^\/+/, '');
+
     if (replace && this.historyIndex >= 0) {
       this.historyStack[this.historyIndex] = normalizedPath;
     } else {
@@ -17,21 +17,21 @@ export class RumiousRouterMemoryStrategy {
       this.historyStack.push(normalizedPath);
       this.historyIndex++;
     }
-    
+
     this.currentPath = normalizedPath;
     this.router.resolve(normalizedPath);
   }
-  
+
   start(): void {
     if (this.currentPath) {
       this.router.resolve(this.currentPath);
     }
   }
-  
+
   getCurrentPath(): string {
     return this.currentPath;
   }
-  
+
   back(): void {
     if (this.historyIndex > 0) {
       this.historyIndex--;
@@ -39,7 +39,7 @@ export class RumiousRouterMemoryStrategy {
       this.router.resolve(this.currentPath);
     }
   }
-  
+
   forward(): void {
     if (this.historyIndex < this.historyStack.length - 1) {
       this.historyIndex++;
