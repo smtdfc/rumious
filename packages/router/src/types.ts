@@ -27,6 +27,6 @@ export interface RumiousRouterConfigs {
 export interface RumiousRouterRouteMatchResult {
   isMatched: boolean,
   configs ? : RumiousRouterRouteConfigs,
-  slugs ? : object,
+  slugs ? : Record<string,string>,
   path: string
 }

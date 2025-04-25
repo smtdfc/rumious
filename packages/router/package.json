@@ -27,7 +27,7 @@
 		"build:dev": "rollup -c ",
 		"start": "node dist/index.js",
 		"test": "echo \"No tests yet\"",
-		"prepublishOnly": "npm run dec && npm run build:dev"
+		"prepublishOnly": "npm run dec && npm run build"
 	},
 	"author": "smtdfc",
 	"license": "MIT",

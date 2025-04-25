@@ -17,6 +17,9 @@ import type {
 } from "./types.js";
 
 import { RumiousRouterHashStrategy } from "./strategies/hash.js";
+import { RumiousRouterHistoryStrategy } from "./strategies/history.js";
+import { RumiousRouterMemoryStrategy } from "./strategies/memory.js";
+
 import { RumiousRouterEvent } from "./event.js";
 
 function isLayoutFunction(
@@ -27,10 +30,12 @@ function isLayoutFunction(
 
 export class RumiousRouterModule extends RumiousModule {
   public currentPath: string;
+  public slugs ? : Record < string, string > ;
+  public query ? : URLSearchParams;
   public rootInject: RumiousState < HTMLElement | Text | Node > ;
   public event: RumiousRouterEvent;
   public routes: Record < string, RumiousRouterRouteConfigs > ;
-  private strategy: RumiousRouterHashStrategy | null;
+  private strategy: RumiousRouterHashStrategy | RumiousRouterHistoryStrategy | RumiousRouterMemoryStrategy | null;
   private layouts: RumiousRouterLayout[];
   private layoutInstances: RumiousState < HTMLElement | Text | Node > [];
   constructor(
@@ -42,17 +47,22 @@ export class RumiousRouterModule extends RumiousModule {
     this.rootInject = createState(document.createTextNode(""));
     this.event = new RumiousRouterEvent();
     this.layoutInstances = [this.rootInject];
-    
+    this.slugs = {};
+    this.query = new URLSearchParams();
     this.routes = {};
     this.currentPath = "";
     if (configs?.strategy === "hash") {
       this.strategy = new RumiousRouterHashStrategy(this);
+    } else if (configs?.strategy === "history") {
+      this.strategy = new RumiousRouterHistoryStrategy(this);
+    } else if (configs?.strategy === "memory") {
+      this.strategy = new RumiousRouterMemoryStrategy(this);
     } else {
       this.strategy = null;
     }
   }
   
-  match(pattern: string, path: string): RumiousRouterRouteMatchResult {
+  private match(pattern: string, path: string): RumiousRouterRouteMatchResult {
     const routeConfig = this.routes[pattern];
     if (!routeConfig) return {
       isMatched: false,
@@ -81,12 +91,12 @@ export class RumiousRouterModule extends RumiousModule {
     return {
       isMatched: true,
       configs: routeConfig,
-      slugs: paramNames,
+      slugs: params,
       path
     };
   }
   
-  diffLayout(layouts: RumiousRouterLayout[]): number {
+  private diffLayout(layouts: RumiousRouterLayout[]): number {
     for (let i = 0; i < Math.max(this.layouts.length, layouts.length); i++) {
       if (this.layouts[i] !== layouts[i]) {
         return i;
@@ -98,6 +108,7 @@ export class RumiousRouterModule extends RumiousModule {
   
   async resolve(path: string): Promise < void > {
     let routeMatched!: RumiousRouterRouteMatchResult;
+    const url = new URL(path, window.location.origin);
     
     for (let pattern in this.routes) {
       let result = this.match(pattern, path);
@@ -107,13 +118,21 @@ export class RumiousRouterModule extends RumiousModule {
       }
     }
     
-    if (!routeMatched) return;
+    if (!routeMatched) {
+      this.event.emit("not_found", {
+        router: this,
+        path
+      });
+      
+      return;
+    };
     
     if (routeMatched.configs?.protect && !routeMatched.configs?.protect(this)) {
       this.event.emit("not_allow", { router: this, path });
       return;
     }
-    
+    this.query = url.searchParams;
+    this.slugs = routeMatched.slugs;
     const rawLayouts = routeMatched.configs?.layouts || [];
     const normalizedLayouts: RumiousComponentConstructor[] = [];
     
@@ -161,6 +180,7 @@ export class RumiousRouterModule extends RumiousModule {
     });
     
     this.layoutInstances[normalizedLayouts.length].set(finalComponent);
+    this.event.emit("page_loaded", routeMatched);
   }
   
   addRoute(pattern: string, handler ? : RumiousRouterRouteHandler, layouts ? : RumiousRouterLayout[]): void {
@@ -168,6 +188,16 @@ export class RumiousRouterModule extends RumiousModule {
       handler,
       layouts
     }
+  }
+  
+  redirect(path: string, replace: boolean = false): void {
+    if (!this.strategy) throw new Error("RumiousRouterModuleError: No routing strategy defined. Did you forget to pass configs ?");;
+    this.strategy.redirect(path, replace);
+    this.event.emit("redirect", {
+      router: this,
+      path,
+      replace
+    });
   }
   
   static init(
@@ -181,7 +211,7 @@ export class RumiousRouterModule extends RumiousModule {
     if (this.strategy) {
       this.strategy.start();
     } else {
-      throw new Error("RumiousRouterModuleError: No routing strategy defined. Did you forget to pass configs to init()?");
+      throw new Error("RumiousRouterModuleError: No routing strategy defined. Did you forget to pass configs ?");
     }
   }
 }

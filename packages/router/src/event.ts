@@ -1,10 +1,11 @@
 export type RumiousRouterEventHandler = (data ? : any) => void;
 
-export type RumiousRouterEvents = |
-  "page_loaded" |
-  "not_found" |
-  "not_allow" |
-  "error"
+export type RumiousRouterEvents = 
+  | "page_loaded" 
+  | "not_found"
+  | "not_allow"
+  | "error"
+  | "redirect"
 
 export class RumiousRouterEvent {
   public events: Record < RumiousRouterEvents, RumiousRouterEventHandler[] > ;
@@ -13,7 +14,8 @@ export class RumiousRouterEvent {
       page_loaded: [],
       not_found: [],
       not_allow: [],
-      error: []
+      error: [],
+      redirect:[]
     };
   }
   
