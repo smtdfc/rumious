@@ -2,6 +2,10 @@ import {
   RumiousApp,
   RumiousModule,
   RumiousComponentConstructor,
+  RumiousComponentElement,
+  RumiousState,
+  renderComponent,
+  createState,
 } from 'rumious';
 
 import type {
@@ -9,22 +13,36 @@ import type {
   RumiousRouterConfigs,
   RumiousRouterRouteMatchResult,
   RumiousRouterRouteHandler,
+  RumiousRouterLayout,
 } from "./types.js";
 
 import { RumiousRouterHashStrategy } from "./strategies/hash.js";
 import { RumiousRouterEvent } from "./event.js";
 
-export class RumiousRouterModule extends RumiousModule{
+function isLayoutFunction(
+  layout: RumiousRouterLayout
+): layout is(router: RumiousRouterModule) => Promise < RumiousComponentConstructor > | RumiousComponentConstructor {
+  return typeof layout === "function";
+}
+
+export class RumiousRouterModule extends RumiousModule {
   public currentPath: string;
-  public event:RumiousRouterEvent;
+  public rootInject: RumiousState < HTMLElement | Text | Node > ;
+  public event: RumiousRouterEvent;
   public routes: Record < string, RumiousRouterRouteConfigs > ;
   private strategy: RumiousRouterHashStrategy | null;
+  private layouts: RumiousRouterLayout[];
+  private layoutInstances: RumiousState < HTMLElement | Text | Node > [];
   constructor(
     public app: RumiousApp,
     public configs ? : RumiousRouterConfigs
   ) {
     super();
+    this.layouts = [];
+    this.rootInject = createState(document.createTextNode(""));
     this.event = new RumiousRouterEvent();
+    this.layoutInstances = [this.rootInject];
+    
     this.routes = {};
     this.currentPath = "";
     if (configs?.strategy === "hash") {
@@ -68,9 +86,87 @@ export class RumiousRouterModule extends RumiousModule{
     };
   }
   
-  addRoute(pattern: string, handler ? : RumiousRouterRouteHandler): void {
+  diffLayout(layouts: RumiousRouterLayout[]): number {
+    for (let i = 0; i < Math.max(this.layouts.length, layouts.length); i++) {
+      if (this.layouts[i] !== layouts[i]) {
+        return i;
+      }
+    }
+    
+    return -1;
+  }
+  
+  async resolve(path: string): Promise < void > {
+    let routeMatched!: RumiousRouterRouteMatchResult;
+    
+    for (let pattern in this.routes) {
+      let result = this.match(pattern, path);
+      if (result.isMatched) {
+        routeMatched = result;
+        break;
+      }
+    }
+    
+    if (!routeMatched) return;
+    
+    if (routeMatched.configs?.protect && !routeMatched.configs?.protect(this)) {
+      this.event.emit("not_allow", { router: this, path });
+      return;
+    }
+    
+    const rawLayouts = routeMatched.configs?.layouts || [];
+    const normalizedLayouts: RumiousComponentConstructor[] = [];
+    
+    for (let i = 0; i < rawLayouts.length; i++) {
+      const layout = rawLayouts[i];
+      if (isLayoutFunction(layout)) {
+        normalizedLayouts[i] = await layout(this);
+      } else {
+        normalizedLayouts[i] = layout as RumiousComponentConstructor;
+      }
+    }
+    
+    const component = await routeMatched.configs?.handler?.(
+      this,
+      routeMatched.slugs as Record < string, string >
+    ) as RumiousComponentConstructor;
+    
+    const changeIndex = this.diffLayout(normalizedLayouts);
+    if (changeIndex !== -1) {
+      this.layouts = normalizedLayouts;
+      
+      this.layoutInstances = this.layoutInstances.slice(0, changeIndex + 1);
+      for (let i = changeIndex; i < normalizedLayouts.length; i++) {
+        const layoutState = createState(document.createTextNode(""));
+        this.layoutInstances[i + 1] = layoutState;
+        
+        const layoutEl = renderComponent(normalizedLayouts[i], {
+          router: this,
+          route: routeMatched,
+          routeSlot: layoutState,
+        });
+        
+        this.layoutInstances[i].set(layoutEl);
+      }
+    }
+    
+    if (!this.layoutInstances[normalizedLayouts.length]) {
+      this.layoutInstances[normalizedLayouts.length] = createState(document.createTextNode(""));
+    }
+    
+    const finalComponent = renderComponent(component, {
+      router: this,
+      route: routeMatched,
+      routeSlot: null,
+    });
+    
+    this.layoutInstances[normalizedLayouts.length].set(finalComponent);
+  }
+  
+  addRoute(pattern: string, handler ? : RumiousRouterRouteHandler, layouts ? : RumiousRouterLayout[]): void {
     this.routes[pattern] = {
-      handler
+      handler,
+      layouts
     }
   }
   

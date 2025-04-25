@@ -16,7 +16,7 @@
 
 ## 📦 Installation
 ```sh
-npm install rumious rumious-babel-preset rumious-builder
+npm install rumious rumious-cli
 ```
 
 ## 🔧 Basic Usage
@@ -28,7 +28,8 @@ Using **Rumious** to create custom components and apps is simple and efficient. 
 Start by initializing a new Rumious project:
 
 ```sh
-rumious init --name=start-app
+rumious init start-app
+npm install 
 ```
 
 This command will generate a project directory with the basic structure and configuration files.
@@ -38,14 +39,14 @@ This command will generate a project directory with the basic structure and conf
 Navigate to the *index.jsx* file and add the following code:
 
 ```js
-import {RumiousApp} from "rumious";
+import {RumiousApp, Fragment} from "rumious";
 const app = new RumiousApp(document.getElementById("root"));
 
 app.render(
-  <>
+  <Fragment>
     <h1>Hello Rumious</h1>
-    <button onClick={async () => alert("Hello Rumious!")}>Click me!</button>
-  </>
+    <button on:click={async () => alert("Hello Rumious!")}>Click me!</button>
+  </Fragment>
 );
 
 ```
@@ -58,7 +59,7 @@ Once you've created your app, you can build it and start testing it locally.
 
 To build your project, run:
 ```sh
-rumious build:dev
+rumious build dev
 npx http-server ./public -p 3000
 ```
 

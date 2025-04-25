@@ -12,6 +12,7 @@ export default {
     file: 'public/dist/bundle.js',
     format: 'iife',
     name: 'App',
+    sourcemap:!shouldMinify,
   },
   plugins: [
     resolve({

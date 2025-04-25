@@ -11,17 +11,17 @@ export type RumiousRouterStrategies = "hash" | "history";
 export type RumiousRouterRouteHandler = (router: RumiousRouterModule, slugs ? : Record < string, string > , query ? : URLSearchParams) => 
   RumiousComponentConstructor | Promise<RumiousComponentConstructor> ;
 
+export type RumiousRouterLayout = RumiousComponentConstructor | RumiousRouterRouteHandler;
+
 export type RumiousRouterRouteConfigs = {
   handler ? : RumiousRouterRouteHandler;
+  layouts?:RumiousRouterLayout[];
   protect ? : (router: RumiousRouterModule) => boolean;
 }
 
-export interface RumiousRouterLayourWrapperConfigs {}
 
 export interface RumiousRouterConfigs {
   strategy: RumiousRouterStrategies,
-  layoutsWrappers ? : Record < string,
-  RumiousRouterLayourWrapperConfigs[] > ;
 }
 
 export interface RumiousRouterRouteMatchResult {
