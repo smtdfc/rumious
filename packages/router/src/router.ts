@@ -2,7 +2,6 @@ import {
   RumiousApp,
   RumiousModule,
   RumiousComponentConstructor,
-  RumiousComponentElement,
   RumiousState,
   renderComponent,
   createState,
@@ -27,7 +26,7 @@ function isLayoutFunction(
 ): layout is (
   router: RumiousRouterModule
 ) => Promise<RumiousComponentConstructor> | RumiousComponentConstructor {
-  return typeof layout === 'function';
+  return typeof layout === 'function' && layout.length > 0;
 }
 
 export class RumiousRouterModule extends RumiousModule {
@@ -191,6 +190,10 @@ export class RumiousRouterModule extends RumiousModule {
 
     this.layoutInstances[normalizedLayouts.length].set(finalComponent);
     this.event.emit('page_loaded', routeMatched);
+  }
+
+  route(pattern: string, configs: RumiousRouterRouteConfigs): void {
+    this.routes[pattern] = configs;
   }
 
   addRoute(
