@@ -4,7 +4,8 @@ export class RumiousRouterHashStrategy {
   constructor(public router: RumiousRouterModule) {}
 
   onHashChange(event: HashChangeEvent) {
-    const path = new URL(event.newURL).hash.slice(1);
+    let path = new URL(event.newURL).hash.slice(1);
+    if (path === '') path = '/';
     this.router.resolve(path);
   }
 

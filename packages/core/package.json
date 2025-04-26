@@ -18,7 +18,8 @@
 		"framework",
 		"typescript",
 		"webcomponents",
-		"ui"
+		"ui",
+		"smtdfc"
 	],
 	"scripts": {
 		"dec": "tsc --declaration --allowJs --emitDeclarationOnly",

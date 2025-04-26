@@ -134,6 +134,8 @@ export class RumiousRouterModule extends RumiousModule {
       return;
     }
 
+    this.event.emit('page_start_load', routeMatched);
+
     if (routeMatched.configs?.protect && !routeMatched.configs?.protect(this)) {
       this.event.emit('not_allow', { router: this, path });
       return;

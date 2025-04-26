@@ -1,7 +1,7 @@
 {
 	"name": "rumious-router",
 	"version": "1.0.0",
-	"description": "",
+	"description": "A minimal and powerful routing solution for Rumious application",
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.esm.js",
 	"exports": {
@@ -14,11 +14,12 @@
 	"types": "./dist/index.d.ts",
 	"keywords": [
 		"rumious",
-		"core",
+		"client-router",
 		"framework",
 		"typescript",
 		"webcomponents",
-		"router"
+		"router",
+		"smtdfc"
 	],
 	"scripts": {
 		"dec": "tsc --declaration --allowJs --emitDeclarationOnly",

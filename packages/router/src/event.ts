@@ -5,7 +5,8 @@ export type RumiousRouterEvents =
   | 'not_found'
   | 'not_allow'
   | 'error'
-  | 'redirect';
+  | 'redirect'
+  | 'page_start_load';
 
 export class RumiousRouterEvent {
   public events: Record<RumiousRouterEvents, RumiousRouterEventHandler[]>;
@@ -16,6 +17,7 @@ export class RumiousRouterEvent {
       not_allow: [],
       error: [],
       redirect: [],
+      page_start_load:[],
     };
   }
 
