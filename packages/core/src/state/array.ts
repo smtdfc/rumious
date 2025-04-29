@@ -18,7 +18,6 @@ export class RumiousArrayState<T> extends RumiousState<T[]> {
         value:newValue,
         target: this,
         key: index,
-        item: newValue,
       });
     } else if (Array.isArray(arg1)) {
       super.set(arg1);
@@ -40,7 +39,6 @@ export class RumiousArrayState<T> extends RumiousState<T[]> {
       value: newItem,
       target: this,
       key: index,
-      item: newItem,
     });
     return this;
   }
@@ -56,13 +54,12 @@ export class RumiousArrayState<T> extends RumiousState<T[]> {
     return this;
   }
 
-  append(value: T): this {
-    this.value.push(value);
+  append(...values: T[]): this {
+    this.value.push(...values);
     this.reactor.emit({
       type: 'APPEND',
-      value: value,
+      value: values,
       target: this,
-      item: value,
     });
     return this;
   }
@@ -73,7 +70,6 @@ prepend(value: T): this {
     type: 'PREPEND', 
     value: value,
     target: this,
-    item: value,
   });
   return this;
 }
@@ -98,7 +94,6 @@ prepend(value: T): this {
       value:newItem,
       target: this,
       key: index,
-      item: newItem,
     });
     return this;
   }

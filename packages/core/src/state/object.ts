@@ -21,10 +21,9 @@ export class RumiousObjectState<
       (this.value as any)[key] = newValue;
       this.reactor.emit({
         type: 'SET_BY_KEY',
-        value: { ...this.value },
+        value:newValue,
         target: this,
         key,
-        item: newValue,
       });
       return this;
     } else if (typeof arg1 === 'object') {

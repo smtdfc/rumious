@@ -8,13 +8,11 @@ type RumiousStateCommitTypes =
   | 'INSERT_BY_KEY'
   | 'PREPEND' ;
   
-
 export interface RumiousStateCommit<T> {
   type: RumiousStateCommitTypes;
   target: RumiousState<T>;
   value: unknown;
   key?: string | number;
-  item?: T extends Array<infer A> ? A : T extends object ? keyof T : unknown;
 }
 
 export type RumiousBinding<T> = (commit: RumiousStateCommit<T>) => void;

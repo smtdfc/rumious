@@ -1,6 +1,6 @@
 import { RumiousRenderTemplate } from './template.js';
 import { RumiousRenderContext } from './context.js';
-import { RumiousDynamicArrayRenderer } from './array.js';
+import { RumiousListRenderer } from './struct.js';
 import { isPrimitive } from '../utils/checkers.js';
 import { RumiousState } from '../state/state.js';
 import { RumiousComponentElement } from '../component/element.js';
@@ -58,7 +58,7 @@ export async function dynamicValue(
     value.reactor.addBinding(onValueChange);
   } else if (Array.isArray(value)) {
     textNode.textContent = value.map(String).join('');
-  } else if (value instanceof RumiousDynamicArrayRenderer) {
+  } else if (value instanceof RumiousListRenderer) {
     value.prepare(textNode.parentElement as HTMLElement, context);
     value.render();
   } else if (value instanceof HTMLElement) {
