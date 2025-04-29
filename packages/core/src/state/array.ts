@@ -15,7 +15,7 @@ export class RumiousArrayState<T> extends RumiousState<T[]> {
       this.value[index] = newValue;
       this.reactor.emit({
         type: 'SET_BY_KEY',
-        value: [...this.value],
+        value:newValue,
         target: this,
         key: index,
         item: newValue,
@@ -37,7 +37,7 @@ export class RumiousArrayState<T> extends RumiousState<T[]> {
     this.value.splice(index, 0, newItem);
     this.reactor.emit({
       type: 'INSERT_BY_KEY',
-      value: this.value,
+      value: newItem,
       target: this,
       key: index,
       item: newItem,
@@ -49,7 +49,7 @@ export class RumiousArrayState<T> extends RumiousState<T[]> {
     this.value.splice(index, 1);
     this.reactor.emit({
       type: 'REMOVE_BY_KEY',
-      value: this.value,
+      value: null,
       target: this,
       key: index,
     });
@@ -60,18 +60,29 @@ export class RumiousArrayState<T> extends RumiousState<T[]> {
     this.value.push(value);
     this.reactor.emit({
       type: 'APPEND',
-      value: this.value,
+      value: value,
       target: this,
       item: value,
     });
     return this;
   }
 
+prepend(value: T): this {
+  this.value.unshift(value);
+  this.reactor.emit({
+    type: 'PREPEND', 
+    value: value,
+    target: this,
+    item: value,
+  });
+  return this;
+}
+
   clear(): this {
     this.value.length = 0;
     this.reactor.emit({
       type: 'SET',
-      value: [],
+      value: null,
       target: this,
     });
     return this;
@@ -84,7 +95,7 @@ export class RumiousArrayState<T> extends RumiousState<T[]> {
     this.value[index] = newItem;
     this.reactor.emit({
       type: 'SET_BY_KEY',
-      value: [...this.value],
+      value:newItem,
       target: this,
       key: index,
       item: newItem,
@@ -96,7 +107,7 @@ export class RumiousArrayState<T> extends RumiousState<T[]> {
     this.value = this.value.filter(callback);
     this.reactor.emit({
       type: 'SET',
-      value: this.value,
+      value: null,
       target: this,
     });
     return this;
@@ -106,7 +117,7 @@ export class RumiousArrayState<T> extends RumiousState<T[]> {
     this.value = this.value.map(callback);
     this.reactor.emit({
       type: 'SET',
-      value: this.value,
+      value: null,
       target: this,
     });
     return this;
@@ -116,7 +127,7 @@ export class RumiousArrayState<T> extends RumiousState<T[]> {
     this.value.sort(compareFn);
     this.reactor.emit({
       type: 'SET',
-      value: this.value,
+      value:null,
       target: this,
     });
     return this;
@@ -126,7 +137,7 @@ export class RumiousArrayState<T> extends RumiousState<T[]> {
     this.value.reverse();
     this.reactor.emit({
       type: 'SET',
-      value: this.value,
+      value: null,
       target: this,
     });
     return this;
