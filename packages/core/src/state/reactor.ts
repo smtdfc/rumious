@@ -6,8 +6,8 @@ type RumiousStateCommitTypes =
   | 'REMOVE_BY_KEY'
   | 'APPEND'
   | 'INSERT_BY_KEY'
-  | 'PREPEND' ;
-  
+  | 'PREPEND';
+
 export interface RumiousStateCommit<T> {
   type: RumiousStateCommitTypes;
   target: RumiousState<T>;

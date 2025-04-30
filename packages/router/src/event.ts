@@ -17,7 +17,7 @@ export class RumiousRouterEvent {
       not_allow: [],
       error: [],
       redirect: [],
-      page_start_load:[],
+      page_start_load: [],
     };
   }
 

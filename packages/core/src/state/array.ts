@@ -15,7 +15,7 @@ export class RumiousArrayState<T> extends RumiousState<T[]> {
       this.value[index] = newValue;
       this.reactor.emit({
         type: 'SET_BY_KEY',
-        value:newValue,
+        value: newValue,
         target: this,
         key: index,
       });
@@ -64,15 +64,15 @@ export class RumiousArrayState<T> extends RumiousState<T[]> {
     return this;
   }
 
-prepend(value: T): this {
-  this.value.unshift(value);
-  this.reactor.emit({
-    type: 'PREPEND', 
-    value: value,
-    target: this,
-  });
-  return this;
-}
+  prepend(value: T): this {
+    this.value.unshift(value);
+    this.reactor.emit({
+      type: 'PREPEND',
+      value: value,
+      target: this,
+    });
+    return this;
+  }
 
   clear(): this {
     this.value.length = 0;
@@ -91,7 +91,7 @@ prepend(value: T): this {
     this.value[index] = newItem;
     this.reactor.emit({
       type: 'SET_BY_KEY',
-      value:newItem,
+      value: newItem,
       target: this,
       key: index,
     });
@@ -122,7 +122,7 @@ prepend(value: T): this {
     this.value.sort(compareFn);
     this.reactor.emit({
       type: 'SET',
-      value:null,
+      value: null,
       target: this,
     });
     return this;
