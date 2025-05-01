@@ -115,7 +115,7 @@ export function renderList<T>(
   return new RumiousListRenderer<T>(state, callback);
 }
 
-export interface RumiousInfintyScrollRenderOptions<T> {
+export interface RumiousInfinityScrollRenderOptions<T> {
   data: RumiousArrayState<T>;
   template: RumiousListRenderFn;
   loader?: (limit: number, offset: number) => T[] | Promise<T[]>;
@@ -126,12 +126,12 @@ export interface RumiousInfintyScrollRenderOptions<T> {
   threshold: number;
 }
 
-export class RumiousInfintyScrollRenderer<T> extends RumiousListRenderer<T> {
+export class RumiousInfinityScrollRenderer<T> extends RumiousListRenderer<T> {
   private limit: number;
   private offset: number;
   private isLoading = false;
 
-  constructor(public options: RumiousInfintyScrollRenderOptions<T>) {
+  constructor(public options: RumiousInfinityScrollRenderOptions<T>) {
     super(options.data, options.template);
     this.limit = options.limit ?? 50;
     this.offset = options.offset ?? 0;
@@ -190,10 +190,10 @@ export class RumiousInfintyScrollRenderer<T> extends RumiousListRenderer<T> {
   }
 }
 
-export function createInfintyScroll<T>(
-  options: RumiousInfintyScrollRenderOptions<T>
+export function createInfinityScroll<T>(
+  options: RumiousInfinityScrollRenderOptions<T>
 ) {
-  return new RumiousInfintyScrollRenderer(options);
+  return new RumiousInfinityScrollRenderer(options);
 }
 
 export interface RumiousPagenationOptions<T> {
