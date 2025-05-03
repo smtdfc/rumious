@@ -13,7 +13,7 @@ function eventBindingDirective(
   if (typeof data === 'string') {
     data = context.findName(extractName(data));
   }
-
+  
   target.addEventListener(modifier, data);
 }
 
@@ -26,7 +26,7 @@ function refBindingDirective(
   if (typeof data === 'string') {
     data = context.findName(extractName(data));
   }
-
+  
   if (data instanceof RumiousElementRef) {
     data.target = target;
   } else {
@@ -43,7 +43,7 @@ function injectDirective(
   if (typeof data === 'string') {
     data = context.findName(extractName(data));
   }
-
+  
   if (data instanceof RumiousDymanicInjector) {
     data.addTarget(target);
     data.inject(target);
@@ -61,14 +61,40 @@ function bindDirective(
   if (typeof data === 'string') {
     data = context.findName(extractName(data));
   }
-
+  
   if (data instanceof RumiousState) {
-    target.setAttribute(modifier, data.value);
-    data.reactor.addBinding(({}) => {
-      target.setAttribute(modifier, data.value);
-    });
+    type ApplyMap = {
+      [key: string]: (val: any, target: HTMLElement) => void;
+    };
+    
+    const applyMap: ApplyMap = {
+      text: (val, el) => el.textContent = val,
+      html: (val, el) => el.innerHTML = val,
+      value: (val, el) => (el as HTMLInputElement | HTMLTextAreaElement).value = val,
+      class: (val, el) => el.className = val,
+      style: (val, el) => el.style.cssText = val,
+      checked: (val, el) => (el as HTMLInputElement).checked = val,
+      disabled: (val, el) => {
+        if ('disabled' in el) {
+          el.disabled = val;
+        }
+      },
+      readonly: (val, el) => (el as HTMLInputElement | HTMLTextAreaElement).readOnly = val,
+      required: (val, el) => (el as HTMLInputElement | HTMLSelectElement).required = val,
+      selected: (val, el) => (el as HTMLOptionElement).selected = val,
+      src: (val, el) => (el as HTMLImageElement | HTMLVideoElement).src = val,
+      href: (val, el) => (el as HTMLAnchorElement).href = val,
+      placeholder: (val, el) => (el as HTMLInputElement | HTMLTextAreaElement).placeholder = val,
+      title: (val, el) => el.title = val,
+      show: (val, el) => el.style.display = val ? "" : "none",
+      hide: (val, el) => el.style.display = val ? "none" : ""
+    };
+    
+    const apply = applyMap[modifier] ?? ((val, el) => el.setAttribute(modifier, val));
+    apply(data.value, target);
+    data.reactor.addBinding(() => apply(data.value, target));
   } else {
-    throw Error('Rumious: bind directive required RumiousState !');
+    throw Error("Rumious: bind directive requires RumiousState!");
   }
 }
 
@@ -81,7 +107,7 @@ function modelDirective(
   if (typeof data === 'string') {
     data = context.findName(extractName(data));
   }
-
+  
   if (
     data instanceof RumiousState &&
     (target instanceof HTMLInputElement ||
@@ -89,7 +115,7 @@ function modelDirective(
       target instanceof HTMLTextAreaElement)
   ) {
     const type = (target as HTMLInputElement).type;
-
+    
     target.addEventListener('input', () => {
       if (target instanceof HTMLInputElement) {
         switch (type) {
@@ -116,7 +142,7 @@ function modelDirective(
   }
 }
 
-export const directives: Record<string, Function> = {
+export const directives: Record < string, Function > = {
   on: eventBindingDirective,
   ref: refBindingDirective,
   inject: injectDirective,
