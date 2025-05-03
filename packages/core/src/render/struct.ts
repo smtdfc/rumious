@@ -121,6 +121,7 @@ export interface RumiousInfinityScrollRenderOptions<T> {
   loader?: (limit: number, offset: number) => T[] | Promise<T[]>;
   scrollElement: HTMLElement | Window;
   state?: RumiousState<string>;
+  controller?: RumiousState<string>;
   limit?: number;
   offset?: number;
   threshold: number;
@@ -131,10 +132,18 @@ export class RumiousInfinityScrollRenderer<T> extends RumiousListRenderer<T> {
   private offset: number;
   private isLoading = false;
 
+  private onScroll: () => void;
+  private onControl: () => void;
+  private onChange: (commit: RumiousStateCommit<T[]>) => void;
+
   constructor(public options: RumiousInfinityScrollRenderOptions<T>) {
     super(options.data, options.template);
     this.limit = options.limit ?? 50;
     this.offset = options.offset ?? 0;
+
+    this.onScroll = this.handleScroll.bind(this);
+    this.onControl = this.handleControl.bind(this);
+    this.onChange = this.handleStateChange.bind(this);
   }
 
   private setState(name: string) {
@@ -162,34 +171,63 @@ export class RumiousInfinityScrollRenderer<T> extends RumiousListRenderer<T> {
         };
   }
 
+  private async addData() {
+    const anchorElement = this.options.scrollElement;
+    this.isLoading = true;
+    this.setState('START_FETCH');
+
+    const newData = await this.fetchData();
+
+    this.setState('END_FETCH');
+
+    if (newData.length === 0) {
+      this.setState('NO_DATA');
+      anchorElement.removeEventListener('scroll', this.onScroll);
+    } else {
+      this.state.append(...newData);
+    }
+
+    this.isLoading = false;
+  }
+
+  private async handleScroll() {
+    const { scrollTop, scrollHeight, clientHeight } = this.getScrollInfo();
+
+    if (
+      scrollTop + clientHeight >= scrollHeight - this.options.threshold &&
+      !this.isLoading
+    ) {
+      await this.addData();
+    }
+  }
+
+  private handleControl() {
+    if (this.options?.controller?.get() === 'FETCH') {
+      this.addData();
+    }
+  }
+
+  private handleStateChange(commit: RumiousStateCommit<T[]>) {
+    if (!document.contains(this.anchorElement)) {
+      if (this.options.controller)
+        unwatch(this.options.controller, this.onControl);
+      this.state.reactor.removeBinding(this.onChange);
+      return;
+    }
+
+    this.onStateChange(commit);
+  }
+
   async render(): Promise<void> {
     const anchorElement = this.options.scrollElement;
-    const onScroll = async () => {
-      const { scrollTop, scrollHeight, clientHeight } = this.getScrollInfo();
-      if (
-        scrollTop + clientHeight >= scrollHeight - this.options.threshold &&
-        !this.isLoading
-      ) {
-        this.isLoading = true;
-        this.setState('START_FETCH');
-        const newData = await this.fetchData();
-        this.setState('END_FETCH');
-        if (newData.length === 0) {
-          this.setState('NO_DATA');
-          anchorElement.removeEventListener('scroll', onScroll);
-        } else {
-          this.state.append(...(Array.isArray(newData) ? newData : []));
-        }
-        this.isLoading = false;
-      }
-    };
+    anchorElement.addEventListener('scroll', this.onScroll);
 
-    anchorElement.addEventListener('scroll', onScroll);
-    this.state.reactor.addBinding(this.onStateChange.bind(this));
+    if (this.options.controller) watch(this.options.controller, this.onControl);
+    this.state.reactor.addBinding(this.onChange);
+
     this.scheduleRenderAll();
   }
 }
-
 export function createInfinityScroll<T>(
   options: RumiousInfinityScrollRenderOptions<T>
 ) {
