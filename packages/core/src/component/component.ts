@@ -8,10 +8,10 @@ export interface RumiousEmptyProps {}
 
 interface RumiousComponentRenderOptions {
   mode: RumiousRenderMode;
-  time?: number;
+  time ? : number;
 }
 
-export abstract class RumiousComponent<T = unknown> {
+export abstract class RumiousComponent < T = unknown > {
   public static classNames = '';
   public static tagName = 'rumious-component';
   public app!: RumiousApp;
@@ -24,13 +24,19 @@ export abstract class RumiousComponent<T = unknown> {
       mode: 'idle',
     };
   }
-
+  
+  render(template: RumiousRenderTemplate): DocumentFragment {
+    let frag = document.createDocumentFragment();
+    render(this.context, template, frag);
+    return frag;
+  }
+  
   onCreate(): void {}
   onRender(): void {}
   onDestroy(): void {}
-  async onBeforeRender(): Promise<void> {}
+  async onBeforeRender(): Promise < void > {}
   abstract template(): RumiousRenderTemplate;
-
+  
   prepare(currentContext: RumiousRenderContext, props: T) {
     this.props = props;
     this.context = new RumiousRenderContext(
@@ -38,13 +44,13 @@ export abstract class RumiousComponent<T = unknown> {
       currentContext.app as RumiousApp
     );
   }
-
+  
   async requestRender() {
     await this.onBeforeRender();
     let template = this.template();
     render(this.context, template, this.element);
     this.onRender();
   }
-
+  
   requestCleanup() {}
 }
