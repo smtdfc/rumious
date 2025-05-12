@@ -3,6 +3,7 @@ import { RumiousRenderContext } from '../render/context.js';
 import { RumiousRenderTemplate } from '../render/template.js';
 import { render } from '../render/render.js';
 import { RumiousRenderMode } from '../types/render.js';
+import { RumiousWarpController } from '../types/warp.js';
 
 export interface RumiousEmptyProps {}
 
@@ -22,6 +23,24 @@ export abstract class RumiousComponent < T = unknown > {
   constructor() {
     this.renderOptions = {
       mode: 'idle',
+    };
+  }
+  
+  warp(
+    template: RumiousRenderTemplate,
+    target: HTMLElement
+  ): RumiousWarpController {
+    let frag = document.createDocumentFragment();
+    render(this.context, template, frag);
+    let id = Date.now().toString(32);
+    let component = document.createElement("r-wrap");
+    component.id = `r-wrap-${id}`;
+    component.appendChild(frag);
+    target.appendChild(component)
+    return {
+      id,
+      remove:()=> component.remove(),
+      target
     };
   }
   
