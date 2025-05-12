@@ -1,5 +1,5 @@
 export interface RumiousWarpController {
-  id: string,
-  remove: () => any,
-  target: HTMLElement
+  id: string;
+  remove: () => any;
+  target: HTMLElement;
 }

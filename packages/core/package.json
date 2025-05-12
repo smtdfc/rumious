@@ -1,6 +1,6 @@
 {
 	"name": "rumious",
-	"version": "1.0.11",
+	"version": "1.0.12",
 	"description": "Simple framework for building UI ",
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.esm.js",

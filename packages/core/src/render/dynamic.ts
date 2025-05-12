@@ -9,33 +9,33 @@ function handlePrimitive(textNode: Text, value: any) {
   textNode.textContent = String(value);
 }
 
-function handleReactiveNode(
+function handleReactiveNode<T extends Node>(
   textNode: Text,
-  value: RumiousState,
+  value: RumiousState<T>,
   context: RumiousRenderContext
 ) {
   let currentNode: Node = textNode;
-  
+
   const update = () => {
     if (!document.contains(currentNode)) {
       value.reactor.removeBinding(update);
       return;
     }
-    
+
     const newNode = value.value;
     if (newNode instanceof RumiousComponentElement) {
       newNode.setContext(context);
     }
-    
+
     currentNode.parentNode?.replaceChild(newNode, currentNode);
     currentNode = newNode;
   };
-  
+
   update();
   value.reactor.addBinding(update);
 }
 
-function handleReactiveText(textNode: Text, value: RumiousState) {
+function handleReactiveText<T>(textNode: Text, value: RumiousState<T>) {
   const update = () => {
     if (!document.contains(textNode)) {
       value.reactor.removeBinding(update);
@@ -43,7 +43,7 @@ function handleReactiveText(textNode: Text, value: RumiousState) {
     }
     textNode.textContent = String(value.value);
   };
-  
+
   update();
   value.reactor.addBinding(update);
 }
@@ -72,7 +72,7 @@ function handleArray(
   context: RumiousRenderContext
 ) {
   const fragment = document.createDocumentFragment();
-  
+
   for (const item of value) {
     if (item instanceof RumiousRenderTemplate) {
       context.renderHelper?.(context, item, fragment);
@@ -82,7 +82,7 @@ function handleArray(
       fragment.appendChild(item.cloneNode(true));
     }
   }
-  
+
   textNode.replaceWith(fragment);
 }
 
@@ -91,10 +91,10 @@ export async function dynamicValue(
   textNode: Text,
   value: any,
   context: RumiousRenderContext
-): Promise < void > {
+): Promise<void> {
   const parent = textNode.parentNode;
   if (!parent) return;
-  
+
   if (isPrimitive(value)) {
     handlePrimitive(textNode, value);
   } else if (value instanceof RumiousState && value.value instanceof Node) {

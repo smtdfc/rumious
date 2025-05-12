@@ -13,7 +13,7 @@ function eventBindingDirective(
   if (typeof data === 'string') {
     data = context.findName(extractName(data));
   }
-  
+
   target.addEventListener(modifier, data);
 }
 
@@ -26,7 +26,7 @@ function refBindingDirective(
   if (typeof data === 'string') {
     data = context.findName(extractName(data));
   }
-  
+
   if (data instanceof RumiousElementRef) {
     data.target = target;
   } else {
@@ -43,7 +43,7 @@ function injectDirective(
   if (typeof data === 'string') {
     data = context.findName(extractName(data));
   }
-  
+
   if (data instanceof RumiousDymanicInjector) {
     data.addTarget(target);
     data.inject(target);
@@ -61,12 +61,12 @@ function bindDirective(
   if (typeof data === 'string') {
     data = context.findName(extractName(data));
   }
-  
+
   if (data instanceof RumiousState) {
     type ApplyMap = {
       [key: string]: (val: any, target: HTMLElement) => void;
     };
-    
+
     const applyMap: ApplyMap = {
       text: (val, el) => (el.textContent = val),
       html: (val, el) => (el.innerHTML = val),
@@ -93,7 +93,7 @@ function bindDirective(
       show: (val, el) => (el.style.display = val ? '' : 'none'),
       hide: (val, el) => (el.style.display = val ? 'none' : ''),
     };
-    
+
     const apply =
       applyMap[modifier] ?? ((val, el) => el.setAttribute(modifier, val));
     apply(data.value, target);
@@ -112,7 +112,7 @@ function modelDirective(
   if (typeof data === 'string') {
     data = context.findName(extractName(data));
   }
-  
+
   if (
     data instanceof RumiousState &&
     (target instanceof HTMLInputElement ||
@@ -120,7 +120,7 @@ function modelDirective(
       target instanceof HTMLTextAreaElement)
   ) {
     const type = (target as HTMLInputElement).type;
-    
+
     target.addEventListener('input', () => {
       if (target instanceof HTMLInputElement) {
         switch (type) {
@@ -147,7 +147,7 @@ function modelDirective(
   }
 }
 
-export const directives: Record < string, Function > = {
+export const directives: Record<string, Function> = {
   on: eventBindingDirective,
   ref: refBindingDirective,
   inject: injectDirective,
