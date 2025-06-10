@@ -1,3 +1,12 @@
 import { createApp } from 'rumious';
 
-const RumiousApp = createApp(document.body);
+let rootElement = document.getElementById('root');
+if(!rootElement) {
+  throw 'Root element not found '
+}
+
+const RumiousApp = createApp({
+  root:document.body
+});
+
+

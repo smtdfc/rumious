@@ -4,6 +4,7 @@ export type RumiousConfigFile = {
   lang?: 'js' | 'ts' | null;
   builder?: string;
   rollupConfigFile?: string;
+  webpackConfigFile?: string;
 };
 
 export interface BuildCommandOptions {

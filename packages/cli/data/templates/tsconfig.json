@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
-    "jsx": "react",
-    "jsxFactory": "window.RUMIOUS_JSX.createElement",
+    "jsx": "preserve",
     "declaration": true,
     "declarationDir": "./dist/",
     "outDir": "./dist",
