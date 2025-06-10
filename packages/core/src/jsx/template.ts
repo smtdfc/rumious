@@ -1,0 +1,275 @@
+import { RumiousRenderContext } from '../render/index.js';
+import { RumiousTemplate } from '../types/index.js';
+import { RumiousRef } from '../ref/index.js';
+import { RumiousState } from '../state/index.js';
+import { createEvent } from './element.js';
+
+export function createTemplate(
+  fn: (root: HTMLElement | DocumentFragment, context: RumiousRenderContext) => HTMLElement
+): RumiousTemplate {
+  return Object.assign(fn, {
+    __isTemplate: true as
+    const
+  });
+}
+
+export function html(
+  h: string
+): Node {
+  let template = document.createElement('template');
+  template.innerHTML = h;
+  return template.content.cloneNode(true)
+}
+
+export const directives = {
+  ref(context: RumiousRenderContext, modifier: string, target: HTMLElement, value: RumiousRef) {
+    if (value instanceof RumiousRef) {
+      value.setTarget(target);
+    } else {
+      throw new Error("Cannot setup element reference for non-RumiousRef object !");
+    }
+  },
+  
+  model(
+    context: RumiousRenderContext,
+    modifier: string,
+    element: HTMLElement,
+    state: RumiousState < any >
+  ) {
+    const tag = element.tagName,
+      type = (element as HTMLInputElement).type;
+    
+    if (tag === "TEXTAREA") {
+      element.addEventListener("input", () => state.set((element as HTMLTextAreaElement).value));
+    } else if (tag === "SELECT") {
+      element.addEventListener("change", () => {
+        const s = element as HTMLSelectElement;
+        state.set(s.multiple ? Array.from(s.selectedOptions).map(o => o.value) : s.value);
+      });
+    } else if (tag === "INPUT") {
+      if (type === "checkbox") {
+        element.addEventListener("change", () => state.set((element as HTMLInputElement).checked));
+      } else if (type === "radio") {
+        element.addEventListener("change", () => {
+          const i = element as HTMLInputElement;
+          if (i.checked) state.set(i.value);
+        });
+      } else if (type === "file") {
+        element.addEventListener("change", () => {
+          const f = (element as HTMLInputElement).files;
+          state.set(element.hasAttribute("multiple") ? f : f?.[0] ?? null);
+        });
+      } else {
+        element.addEventListener("input", () => {
+          const val = (element as HTMLInputElement).value;
+          state.set(type === "number" ? (val === "" ? null : +val) : val);
+        });
+      }
+    }
+  },
+  
+  on(
+    context: RumiousRenderContext,
+    event: string,
+    element: HTMLElement,
+    callback: (e: Event) => void
+  ) {
+    createEvent(
+      element,
+      event,
+      callback
+    );
+  },
+  
+  bind(
+    context: RumiousRenderContext,
+    modifier: string,
+    element: HTMLElement,
+    state: RumiousState < any >
+  ) {
+    let reactive: () => void = () => {};
+    
+    switch (modifier) {
+      case 'text':
+        reactive = () => { element.textContent = String(state.get()) };
+        break;
+        
+      case 'html':
+        reactive = () => { element.innerHTML = String(state.get()) };
+        break;
+        
+      case 'style':
+        reactive = () => {
+          const styles = state.get();
+          if (typeof styles === 'string') {
+            element.setAttribute('style', styles);
+          } else if (typeof styles === 'object') {
+            Object.assign(element.style, styles);
+          }
+        };
+        break;
+        
+      case 'class':
+        reactive = () => {
+          const cls = state.get();
+          if (typeof cls === 'string') element.className = cls;
+          else if (Array.isArray(cls)) element.className = cls.join(' ');
+          else if (typeof cls === 'object') {
+            element.className = Object.entries(cls)
+              .filter(([_, active]) => active)
+              .map(([name]) => name)
+              .join(' ');
+          }
+        };
+        break;
+        
+      case 'disabled':
+        reactive = () => {
+          if ('disabled' in element)(element as any).disabled = Boolean(state.get());
+        };
+        break;
+        
+      case 'checked':
+        reactive = () => {
+          if (element instanceof HTMLInputElement || element instanceof HTMLInputElement) {
+            element.checked = Boolean(state.get());
+          }
+        };
+        break;
+        
+      case 'value':
+        reactive = () => {
+          if ('value' in element)(element as any).value = String(state.get());
+        };
+        break;
+        
+      default:
+        throw new Error(`Unknown bind directive modifier: ${modifier}`);
+    }
+    
+    reactive();
+    if (!state.reactor) return;
+    
+    function onStateChange(commit: any) {
+      if (!document.contains(element) && state.reactor) {
+        state.reactor.removeBinding(onStateChange);
+        return;
+      }
+      reactive();
+    }
+    
+    state.reactor.addBinding(onStateChange);
+  },
+  
+  attr(
+    context: RumiousRenderContext,
+    attrName: string,
+    element: HTMLElement,
+    state: RumiousState < any >
+  ) {
+    
+    function onStateChange(commit ? : any) {
+      if (!document.contains(element) && state.reactor) {
+        state.reactor.removeBinding(onStateChange);
+        return;
+      }
+      element.setAttribute(attrName, String(state.get()));
+    }
+    
+    onStateChange();
+    if (!state.reactor) return;
+    
+    state.reactor.addBinding(onStateChange);
+  },
+  
+  prop(
+    context: RumiousRenderContext,
+    name: string,
+    element: HTMLElement,
+    state: RumiousState < any >
+  ) {
+    
+    function onStateChange(commit ? : any) {
+      if (!document.contains(element) && state.reactor) {
+        state.reactor.removeBinding(onStateChange);
+        return;
+      }
+      (element as any)[name] = state.get();
+    }
+    
+    onStateChange();
+    if (!state.reactor) return;
+    
+    state.reactor.addBinding(onStateChange);
+  },
+  
+  html(
+    context: RumiousRenderContext,
+    modifier: string,
+    element: HTMLElement,
+    state: RumiousState < any >
+  ) {
+    
+    function onStateChange(commit ? : any) {
+      if (!document.contains(element) && state.reactor) {
+        state.reactor.removeBinding(onStateChange);
+        return;
+      }
+      element.innerHTML = String(state.get());
+    }
+    
+    onStateChange();
+    if (!state.reactor) return;
+    
+    state.reactor.addBinding(onStateChange);
+  },
+  
+  show(
+    context: RumiousRenderContext,
+    modifier: string,
+    element: HTMLElement,
+    state: RumiousState < any >
+  ) {
+    
+    function onStateChange(commit ? : any) {
+      if (!document.contains(element) && state.reactor) {
+        state.reactor.removeBinding(onStateChange);
+        return;
+      }
+      element.style.display = Boolean(state.get()) ? 'block' : 'none';
+    }
+    
+    onStateChange();
+    if (!state.reactor) return;
+    
+    state.reactor.addBinding(onStateChange);
+  },
+  
+  hide(
+    context: RumiousRenderContext,
+    modifier: string,
+    element: HTMLElement,
+    state: RumiousState < any >
+  ) {
+    
+    function onStateChange(commit ? : any) {
+      if (!document.contains(element) && state.reactor) {
+        state.reactor.removeBinding(onStateChange);
+        return;
+      }
+      element.style.display = !Boolean(state.get()) ? 'block' : 'none';
+    }
+    
+    onStateChange();
+    if (!state.reactor) return;
+    state.reactor.addBinding(onStateChange);
+  }
+}
+
+// This is just to satisfy TypeScript's JSX requirement.
+// Rumious doesn't use createElement — we do things differently.
+
+function createElement(...args: any[]): any {
+  console.log(args);
+  throw Error(`Rumious doesn't use createElement !`);
+}

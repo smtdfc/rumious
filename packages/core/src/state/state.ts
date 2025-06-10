@@ -1,54 +1,68 @@
-import { RumiousReactor, RumiousBinding } from './reactor.js';
-import { create } from 'mutative';
+import { RumiousReactor } from './reactor.js';
+import { RumiousStateBind } from '../types/index.js';
 
-type RumiousStateProduceCallback<T> = (draft: T) => void;
-
-export class RumiousState<T> {
-  public value: T;
-  public reactor: RumiousReactor<T>;
-
-  constructor(value: T, reactor?: RumiousReactor<T>) {
-    this.value = value;
-    this.reactor = reactor ?? new RumiousReactor<T>(this);
+export class RumiousState < T > {
+  
+  constructor(
+    public value: T,
+    public reactor ? : RumiousReactor < RumiousState < T >>
+  ) {
+    
+    if (!this.reactor) {
+      this.reactor = new RumiousReactor < RumiousState < T >> (this);
+    }
   }
-
-  set(value: T): void {
+  
+  set(value: T) {
     this.value = value;
-    this.reactor.emit({
-      type: 'SET',
-      target: this,
+    this.reactor?.notify({
+      type: 'set',
       value: value,
+      state: this
     });
   }
-
+  
   get(): T {
     return this.value;
   }
-
-  increase(count: number = 1): void {
-    if (typeof this.value === 'number') {
-      this.set((this.value + count) as T);
-    }
+  
+  slientUpdate(value: T) {
+    this.value = value;
   }
-
-  produce(callback: RumiousStateProduceCallback<T>): void {
-    const [draft, finalize] = create(this.value);
-    callback(draft as T);
-    this.set(finalize() as T);
+  
+  update(updater: (value: T) => T) {
+    this.set(updater(this.value));
+  }
+  
+  toJSON(): string {
+    return JSON.stringify(this.value);
+  }
+  
+  trigger() {
+    this.reactor?.notify({
+      type: 'set',
+      value: this.value,
+      state: this
+    });
   }
 }
 
-export function watch<T>(state: RumiousState<T>, fn: RumiousBinding<T>): void {
-  state.reactor.addBinding(fn);
+export function createState < T > (value: T): RumiousState < T > {
+  return new RumiousState < T > (value);
 }
 
-export function unwatch<T>(
-  state: RumiousState<T>,
-  fn: RumiousBinding<T>
-): void {
-  state.reactor.removeBinding(fn);
+type StateBindFor < M > = RumiousStateBind < RumiousState < M >> ;
+
+export function watch < M > (
+  state: RumiousState < M > ,
+  callback: StateBindFor < M >
+) {
+  if (state.reactor) state.reactor.addBinding(callback);
 }
 
-export function createState<T>(value: T): RumiousState<T> {
-  return new RumiousState<T>(value);
+export function unwatch < M > (
+  state: RumiousState < M > ,
+  callback: StateBindFor < M >
+) {
+  if (state.reactor) state.reactor.removeBinding(callback);
 }

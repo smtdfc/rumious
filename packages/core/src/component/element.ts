@@ -1,68 +1,53 @@
-import type { RumiousComponent } from './component.js';
-import { RumiousRenderContext } from '../render/context.js';
-import { Constructor } from '../types/utils.js';
+import { RumiousComponentConstructor } from '../types/index.js';
+import {  RumiousRenderContext } from '../render/index.js';
+import type {RumiousComponent} from './component.js';
 
-export type RumiousComponentConstructor = Constructor<RumiousComponent> & {
-  classNames?: string;
-  tagName?: string;
-};
 
-export class RumiousComponentElement extends HTMLElement {
-  public componentConstructor!: RumiousComponentConstructor;
-  private componentInstance!: RumiousComponent;
-  private context!: RumiousRenderContext;
-  public props: Record<string, any>;
-
+export class RumiousComponentElement < T > extends HTMLElement {
+  public component!: RumiousComponentConstructor < T > ;
+  public props!: T;
+  public context!:RumiousRenderContext;
+  public instance!:RumiousComponent;
   constructor() {
-    super();
-    this.props = {};
+    super()
   }
-
-  setContext(context: RumiousRenderContext) {
-    this.context = context;
+  
+  async connectedCallback() {
+    let instance = new this.component();
+    this.instance = instance;
+    instance.prepare(
+      this.props,
+      this.context,
+      this
+    );
+    instance.onCreate();
+   await instance.beforeRender();
+    instance.requestRender();
+    instance.onRender();
   }
-
-  setComponent(component: RumiousComponentConstructor) {
-    this.componentConstructor = component;
-  }
-
-  setup(
-    context: RumiousRenderContext,
-    componentConstructor: RumiousComponentConstructor
-  ) {
-    this.context = context;
-    this.componentConstructor = componentConstructor;
-  }
-
-  connectedCallback() {
-    if (!this.componentConstructor) {
-      console.warn('Rumious: Cannot find matching component constructor.');
-      return;
-    }
-
-    this.componentInstance = new this.componentConstructor();
-    this.componentInstance.element = this;
-
-    if (this.componentConstructor.classNames) {
-      this.className = this.componentConstructor.classNames;
-    }
-
-    this.componentInstance.prepare(this.context, this.props);
-    this.componentInstance.onCreate();
-    this.componentInstance.requestRender();
-  }
-
-  disconnectedCallback() {
-    this.componentInstance?.onDestroy();
+  
+  disconnectedCallback(){
+    this.instance.onDestroy();
   }
 }
 
-export function renderComponent(
-  component: RumiousComponentConstructor,
-  props: any
-): HTMLElement {
-  let element = window.RUMIOUS_JSX.createComponent(component);
-  element.props = props;
-  element.setComponent(component);
+export function createComponentElement < T > (
+  context: RumiousRenderContext,
+  component: RumiousComponentConstructor < T > ,
+  props: T
+):HTMLElement {
+  if (!window.customElements.get(component.tagName)) {
+    window.customElements.define(component.tagName, class extends RumiousComponentElement < T > {
+      constructor() {
+        super()
+        this.component = component;
+        this.props = props;
+        this.context = context;
+      }
+    });
+  }
+  
+  let element = document.createElement(component.tagName);
   return element;
+  
 }

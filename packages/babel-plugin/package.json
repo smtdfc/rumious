@@ -1,6 +1,6 @@
 {
 	"name": "babel-plugin-rumious",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description":"Babel plugin for Rumious ",
 	"main": "./index.js",
 	"keywords": [
@@ -34,5 +34,6 @@
 		"node": ">=16"
 	},
 	"dependencies": {
+		"rumious-compiler":"0.0.1"
 	}
 }

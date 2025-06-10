@@ -1,55 +1,29 @@
 {
-	"name": "rumious",
-	"version": "1.0.12",
-	"description": "Simple framework for building UI ",
-	"main": "./dist/index.cjs",
-	"module": "./dist/index.esm.js",
-	"exports": {
-		".": {
-			"import": "./dist/index.esm.js",
-			"require": "./dist/index.cjs",
-			"types": "./dist/index.d.ts"
-		}
-	},
-	"types": "./dist/index.d.ts",
-	"keywords": [
-		"rumious",
-		"core",
-		"framework",
-		"typescript",
-		"webcomponents",
-		"ui",
-		"smtdfc"
-	],
-	"scripts": {
-		"dec": "tsc --declaration --allowJs --emitDeclarationOnly",
-		"type": "tsc --noEmit",
-		"build": "rollup -c  --environment MINIFY:true",
-		"build:dev": "rollup -c ",
-		"start": "node dist/index.js",
-		"test": "echo \"No tests yet\"",
-		"prepublishOnly": "npm run dec && npm run build"
-	},
-	"author": "smtdfc",
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/smtdfc/rumious"
-	},
-	"bugs": {
-		"url": "https://github.com/smtdfc/rumious/issues"
-	},
-	"homepage": "https://github.com/smtdfc/rumious#readme",
-	"files": [
-		"dist/**",
-		"README.md",
-		"index.js",
-		"index.d.ts"
-	],
-	"engines": {
-		"node": ">=16"
-	},
-	"dependencies": {
-		"mutative": "^1.1.0"
-	}
+  "name": "rumious",
+  "version": "2.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs.js"
+    }
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "clean": "rm -rf dist",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "rumious",
+    "frontend",
+    "framework"
+  ],
+  "author": "smtdfc",
+  "license": "MIT",
+  "devDependencies": {
+
+  },
+  "dependencies": {}
 }

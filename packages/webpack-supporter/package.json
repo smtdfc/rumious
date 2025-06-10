@@ -1,0 +1,35 @@
+{
+  "name": "rumious-webpack-supporter",
+  "version": "0.0.1",
+  "description": "Webpack supporter package for Rumious framework",
+  "main": "dist/plugin/index.js",
+  "types": "dist/plugin/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/plugin/index.js",
+      "require": "./dist/plugin/index.cjs.js"
+    },
+    "./loader": {
+      "import": "./dist/loader/index.js",
+      "require": "./dist/loader/index.cjs.js"
+    }
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "clean": "rm -rf dist",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "webpack",
+    "rumious",
+    "supporter",
+    "frontend",
+    "framework"
+  ],
+  "author": "smtdfc",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/webpack": "^5.28.5"
+  },
+  "dependencies": {}
+}

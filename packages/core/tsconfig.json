@@ -1,14 +1,19 @@
 {
-	"extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "declaration": true,
-    "declarationDir": "./dist/",
-    "outDir": "./dist",
-    "esModuleInterop": true,
-    "strict": true,
-    "target": "ES6",
-    "module": "ESNext"
-  },
-  "include": ["src/**/*","**/jsx.d.ts"],
-  "exclude": ["node_modules","dist"]
+	"compilerOptions": {
+		"target": "esnext",
+		"module": "esnext",
+		"outDir": "./dist",
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"declaration": true,
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+		"paths": {
+			"rumious-compiler": ["../compiler/dist/index.d.ts"]
+		}
+	},
+	"include": ["./src", "./src/global.d.ts"]
 }

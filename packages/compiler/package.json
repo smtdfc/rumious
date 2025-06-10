@@ -1,0 +1,45 @@
+{
+  "name": "rumious-compiler",
+  "version": "0.0.1",
+  "description": "A compiler for Rumious framework",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build:dev": "tsc",
+    "build": "tsc --build",
+    "clean": "rimraf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@babel/generator": "^7.27.3",
+    "@babel/parser": "^7.27.4",
+    "@babel/traverse": "^7.27.4",
+    "@babel/types": "^7.27.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.1.6",
+    "@types/babel__generator": "^7.27.0",
+    "@types/babel__traverse": "^7.20.7",
+    "rimraf": "^5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smtdfc/rumious.git"
+  },
+  "keywords": [
+    "rumious",
+    "compiler",
+    "jsx",
+    "babel",
+    "typescript"
+  ],
+  "author": "smtdfc",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/smtdfc/rumious/issues"
+  },
+  "homepage": "https://github.com/smtdfc/rumious#readme"
+}
