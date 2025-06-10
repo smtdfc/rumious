@@ -3,3 +3,4 @@ test
 node_modules
 .env
 test_app
+local_test
