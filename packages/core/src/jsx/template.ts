@@ -183,7 +183,7 @@ export const directives = {
     }
     
     context.onRendered.push(() => {
-      reactive();
+      onStateChange();
       if (!state.reactor) return;
       state.reactor.addInternalBinding(onStateChange);
     });
@@ -205,7 +205,7 @@ export const directives = {
     }
     
     context.onRendered.push(() => {
-      reactive();
+      onStateChange();
       if (!state.reactor) return;
       state.reactor.addInternalBinding(onStateChange);
     });
@@ -227,7 +227,7 @@ export const directives = {
     }
     
     context.onRendered.push(() => {
-      reactive();
+      onStateChange();
       if (!state.reactor) return;
       state.reactor.addInternalBinding(onStateChange);
     });
@@ -249,7 +249,7 @@ export const directives = {
     }
     
     context.onRendered.push(() => {
-      reactive();
+      onStateChange();
       if (!state.reactor) return;
       state.reactor.addInternalBinding(onStateChange);
     });
@@ -271,7 +271,7 @@ export const directives = {
     }
     
     context.onRendered.push(() => {
-      reactive();
+      onStateChange();
       if (!state.reactor) return;
       state.reactor.addInternalBinding(onStateChange);
     });
