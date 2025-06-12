@@ -5,6 +5,7 @@
     "declarationDir": "./dist/",
     "outDir": "./dist",
     "esModuleInterop": true,
+    "sourceMap":false,
     "strict": true,
     "target": "ES6",
     "module": "ESNext",

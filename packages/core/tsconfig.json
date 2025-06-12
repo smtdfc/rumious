@@ -4,6 +4,7 @@
 		"module": "esnext",
 		"outDir": "./dist",
 		"esModuleInterop": true,
+		"sourceMap":false,
 		"allowSyntheticDefaultImports": true,
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
