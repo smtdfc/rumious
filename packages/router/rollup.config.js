@@ -1,80 +1,22 @@
-import babel from '@rollup/plugin-babel';
-import resolve from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
-import terser from '@rollup/plugin-terser';
-import os from 'os';
+import typescript from '@rollup/plugin-typescript';
 
-const shouldMinify = process.env.MINIFY === 'true';
+const isProduction = process.env.NODE_ENV === 'production';
 
-const extensions = ['.js', '.jsx', '.ts', '.tsx'];
-
-const basePlugins = () => [
-  resolve({ extensions }),
-  commonjs(),
-  babel({
-    babelHelpers: 'bundled',
-    extensions,
-    presets: [
-      ['@babel/preset-typescript', { isTSX: true, allExtensions: true }],
-    ],
-  }),
-];
-
-const createConfig = ({
-  input,
-  file,
-  format,
-  name,
-  exportsType,
-  external,
-}) => ({
-  input,
-  external,
+export default {
+  input: 'src/index.ts',
+  external: ['rumious-compiler'],
   output: {
-    file,
-    format,
-    name,
-    exports: exportsType,
-    globals: {
-      rumious: 'Rumious',
-    },
+    file: './dist/index.js',
+    format: 'esm',
+    sourcemap: true,
+    paths: {
+      'rumious-compiler': !isProduction ?
+        '../compiler/dist/index.js' : 'rumious-compiler',
+      'rumious': !isProduction ?
+        '../../core/dist/index.js' : 'rumious'
+    }
   },
   plugins: [
-    ...basePlugins(),
-    shouldMinify &&
-      terser({
-        module: true,
-        compress: { defaults: true },
-        mangle: true,
-        output: { comments: false },
-        maxWorkers: os.cpus().length || 1,
-      }),
-  ].filter(Boolean),
-});
-
-export default [
-  createConfig({
-    input: 'src/index.ts',
-    file: 'dist/index.esm.js',
-    format: 'esm',
-    external: ['rumious'],
-    exportsType: 'named',
-  }),
-
-  createConfig({
-    input: 'src/index.ts',
-    file: 'dist/index.cjs',
-    format: 'cjs',
-    external: ['rumious'],
-    exportsType: 'named',
-  }),
-
-  createConfig({
-    input: 'src/index.globals.ts',
-    file: 'dist/index.min.js',
-    format: 'iife',
-    name: 'RumiousRouter',
-    exportsType: 'default',
-    external: ['rumious'],
-  }),
-];
+    typescript({ tsconfig: './tsconfig.json' })
+  ]
+};

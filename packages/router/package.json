@@ -1,13 +1,12 @@
 {
 	"name": "rumious-router",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "A minimal and powerful routing solution for Rumious application",
-	"main": "./dist/index.cjs",
-	"module": "./dist/index.esm.js",
+	"main": "./dist/index.cs",
+	"module": "./dist/index.js",
 	"exports": {
 		".": {
-			"import": "./dist/index.esm.js",
-			"require": "./dist/index.cjs",
+			"import": "./dist/index.js",
 			"types": "./dist/index.d.ts"
 		}
 	},
@@ -24,9 +23,10 @@
 	"scripts": {
 		"dec": "tsc --declaration --allowJs --emitDeclarationOnly",
 		"type": "tsc --noEmit",
-		"build": "rollup -c  --environment MINIFY:true",
-		"build:dev": "rollup -c ",
-		"start": "node dist/index.js",
+		"build": "NODE_ENV=production rollup -c --environment MINIFY:true",
+		"build:dev": "NODE_ENV=development rollup -c",
+		"start": "NODE_ENV=production node dist/index.js",
+		"dev": "NODE_ENV=development node dist/index.js",
 		"test": "echo \"No tests yet\"",
 		"prepublishOnly": "npm run dec && npm run build"
 	},
