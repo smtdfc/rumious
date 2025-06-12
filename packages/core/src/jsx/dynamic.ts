@@ -6,7 +6,7 @@ import { RumiousComponentElement } from '../component/index.js';
 
 function handleReactiveNode(
   node: Node,
-  value: RumiousState<Node>,
+  value: RumiousState < Node > ,
   context: RumiousRenderContext
 ): Node {
   let currentNode: Node = node;
@@ -65,6 +65,10 @@ export function createDynamicValue(
     return value(document.createDocumentFragment(), context);
   }
   
+  if (value instanceof RumiousState && value.value instanceof Node) {
+    return handleReactiveNode(document.createTextNode(''), value, context);
+  }
+  
   if (value instanceof RumiousState && value.reactor) {
     let node = document.createTextNode('');
     context.onRendered.push(() => {
@@ -79,8 +83,5 @@ export function createDynamicValue(
     return document.createTextNode(String(value));
   }
   
-  if (value instanceof RumiousState && value.value instanceof Node) {
-    return handleReactiveNode(document.createTextNode(''), value, context);
-  }
   return document.createTextNode('');
 }
