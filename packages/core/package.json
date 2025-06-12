@@ -11,9 +11,14 @@
     }
   },
   "scripts": {
-    "build": "rollup -c",
-    "clean": "rm -rf dist",
-    "prepare": "npm run build"
+    "dec": "tsc --declaration --allowJs --emitDeclarationOnly",
+    "type": "tsc --noEmit",
+    "build": "NODE_ENV=production rollup -c --environment MINIFY:true",
+    "build:dev": "NODE_ENV=development rollup -c",
+    "start": "NODE_ENV=production node dist/index.js",
+    "dev": "NODE_ENV=development node dist/index.js",
+    "test": "echo \"No tests yet\"",
+    "prepublishOnly": "npm run dec && npm run build"
   },
   "keywords": [
     "rumious",
@@ -22,8 +27,10 @@
   ],
   "author": "smtdfc",
   "license": "MIT",
-  "devDependencies": {
-
+  "devDependencies": {},
+  "dependencies": {},
+    "bugs": {
+    "url": "https://github.com/smtdfc/rumious/issues"
   },
-  "dependencies": {}
+  "homepage": "https://github.com/smtdfc/rumious#readme"
 }

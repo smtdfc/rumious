@@ -5,12 +5,14 @@
   "bin": {
     "rumious": "./index.js"
   },
+  "type": "module",
   "scripts": {
     "dec": "tsc --declaration --allowJs --emitDeclarationOnly",
     "type": "tsc --noEmit",
-    "build": "rollup -c  --environment MINIFY:true",
-    "build:dev": "rollup -c ",
-    "start": "node dist/index.js",
+    "build": "NODE_ENV=production rollup -c --environment MINIFY:true",
+    "build:dev": "NODE_ENV=development rollup -c",
+    "start": "NODE_ENV=production node dist/index.js",
+    "dev": "NODE_ENV=development node dist/index.js",
     "test": "echo \"No tests yet\"",
     "prepublishOnly": "npm run dec && npm run build"
   },

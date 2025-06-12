@@ -4,6 +4,83 @@ import traverse, { NodePath } from "@babel/traverse";
 import generate from "@babel/generator";
 import * as t from "@babel/types";
 
+
+function convertJSXMemberToMemberExpression(
+  jsxMember: t.JSXMemberExpression
+): t.MemberExpression {
+  const object = t.isJSXIdentifier(jsxMember.object) ?
+    t.identifier(jsxMember.object.name) :
+    convertJSXMemberToMemberExpression(jsxMember.object);
+  
+  const property = t.identifier(jsxMember.property.name);
+  
+  return t.memberExpression(object, property);
+}
+
+
+function getIdentifierOrMemberExpression(
+  node: t.JSXElement
+): t.Identifier | t.MemberExpression {
+  const name = node.openingElement.name;
+  
+  if (t.isJSXIdentifier(name)) {
+    return t.identifier(name.name);
+  }
+  
+  if (t.isJSXMemberExpression(name)) {
+    return convertJSXMemberToMemberExpression(name);
+  }
+  
+  throw new Error('Unknown error ! ');
+}
+
+
+function convertJSXAttributesToObjectExpression(
+  attrs: (t.JSXAttribute | t.JSXSpreadAttribute)[]
+): t.ObjectExpression {
+  const properties: (t.ObjectProperty | t.SpreadElement)[] = [];
+  
+  for (const attr of attrs) {
+    if (t.isJSXSpreadAttribute(attr)) {
+      const argument = attr.argument as t.Expression;
+      properties.push(t.spreadElement(argument));
+      continue;
+    }
+    
+    const keyNode = attr.name;
+    const keyName = typeof keyNode.name === 'string' ? keyNode.name : null;
+    
+    if (!keyName) {
+      throw new Error('Attribute name must be string');
+    }
+    
+    let valueExpr: t.Expression;
+    const value = attr.value;
+    
+    if (t.isJSXExpressionContainer(value)) {
+      valueExpr = value.expression as t.Expression;
+    } else if (t.isStringLiteral(value)) {
+      valueExpr = value;
+    } else if (value === null) {
+      valueExpr = t.booleanLiteral(true);
+    } else {
+      throw new Error(`Unspport value type !`);
+    }
+    
+    properties.push(
+      t.objectProperty(t.identifier(keyName), valueExpr)
+    );
+  }
+  
+  return t.objectExpression(properties);
+}
+
+
+function isValidComponentName(name: string): boolean {
+  const pascalCaseRegex = /^[A-Z][A-Za-z0-9]*$/;
+  return pascalCaseRegex.test(name);
+}
+
 function assignNodeAttr(tranformer: RumiousJSXTransformer, nodeID: t.Identifier, attr: string, value: t.Expression, template: RumiousTemplate): t.Statement {
   return t.expressionStatement(
     t.callExpression(
@@ -64,11 +141,19 @@ export interface RumiousTemplateDirectivePart {
   modifier: string;
 }
 
+export interface RumiousTemplateComponentPart {
+  type: 'component';
+  path: RumiousTemplateNodePart;
+  expression: t.Expression;
+  props: t.ObjectExpression;
+}
+
 
 export type RumiousTemplatePart = |
   RumiousTemplateDynamicAttrPart |
   RumiousTemplateDirectivePart |
-  RumiousTemplateDynamicValuePart
+  RumiousTemplateDynamicValuePart |
+  RumiousTemplateComponentPart
 
 export interface RumiousTemplate {
   html: string;
@@ -231,6 +316,21 @@ export class RumiousJSXTransformer {
     });
   }
   
+  transformComponent(
+    node: t.JSXElement,
+    template: RumiousTemplate
+  ) {
+    let name = getIdentifierOrMemberExpression(node);
+    let props = convertJSXAttributesToObjectExpression(node.openingElement.attributes);
+    template.html += `<rumious-placeholder></rumious-placeholder>`;
+    template.parts.push({
+      type: "component",
+      expression: name,
+      path: [...template.path],
+      props: props
+    });
+  }
+  
   transformJSXElement(
     node: t.JSXElement,
     template: RumiousTemplate
@@ -248,6 +348,11 @@ export class RumiousJSXTransformer {
       name = getMemberName(node.openingElement.name);
     } else {
       throw new Error('Unsupported JSX element name');
+    }
+    
+    if (isValidComponentName(name)) {
+      this.transformComponent(node, template);
+      return;
     }
     
     template.html += `<${name}`;
@@ -379,6 +484,27 @@ export class RumiousJSXTransformer {
                 )
               )
             )
+          }
+          
+          if (d.type === 'component') {
+            const createComponentFn = this.ensureImport('createComponent', 'rumious');
+            const replaceNodeFn = this.ensureImport('replaceNode', 'rumious');
+        
+            statements.push(
+              t.expressionStatement(
+                t.callExpression(
+                  replaceNodeFn,
+                  [
+                    data.elements[pathStr],
+                    t.callExpression(
+                      createComponentFn,
+                      [data.scope.context, d.expression,d.props]
+                    )
+                  ]
+                )
+              )
+            )
+            
           }
         }
         

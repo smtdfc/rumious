@@ -25,9 +25,6 @@
 	"homepage": "https://github.com/smtdfc/rumious#readme",
 	"files": [
 	  "index.js",
-	  "jsxProcessor.js",
-	  "utils.js",
-	  "astGenerators.js",
 		"README.md"
 	],
 	"engines": {

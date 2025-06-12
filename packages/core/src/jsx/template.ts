@@ -13,6 +13,7 @@ export function createTemplate(
   });
 }
 
+
 export function html(
   h: string
 ): Node {
@@ -20,6 +21,8 @@ export function html(
   template.innerHTML = h;
   return template.content.cloneNode(true)
 }
+
+
 
 export const directives = {
   ref(context: RumiousRenderContext, modifier: string, target: HTMLElement, value: RumiousRef) {
@@ -152,13 +155,13 @@ export const directives = {
     
     function onStateChange(commit: any) {
       if (!document.contains(element) && state.reactor) {
-        state.reactor.removeBinding(onStateChange);
+        state.reactor.removeInternalBinding(onStateChange);
         return;
       }
       reactive();
     }
     
-    state.reactor.addBinding(onStateChange);
+    state.reactor.addInternalBinding(onStateChange);
   },
   
   attr(
@@ -170,7 +173,7 @@ export const directives = {
     
     function onStateChange(commit ? : any) {
       if (!document.contains(element) && state.reactor) {
-        state.reactor.removeBinding(onStateChange);
+        state.reactor.removeInternalBinding(onStateChange);
         return;
       }
       element.setAttribute(attrName, String(state.get()));
@@ -179,7 +182,7 @@ export const directives = {
     onStateChange();
     if (!state.reactor) return;
     
-    state.reactor.addBinding(onStateChange);
+    state.reactor.addInternalBinding(onStateChange);
   },
   
   prop(
@@ -191,7 +194,7 @@ export const directives = {
     
     function onStateChange(commit ? : any) {
       if (!document.contains(element) && state.reactor) {
-        state.reactor.removeBinding(onStateChange);
+        state.reactor.removeInternalBinding(onStateChange);
         return;
       }
       (element as any)[name] = state.get();
@@ -200,7 +203,7 @@ export const directives = {
     onStateChange();
     if (!state.reactor) return;
     
-    state.reactor.addBinding(onStateChange);
+    state.reactor.addInternalBinding(onStateChange);
   },
   
   html(
@@ -212,7 +215,7 @@ export const directives = {
     
     function onStateChange(commit ? : any) {
       if (!document.contains(element) && state.reactor) {
-        state.reactor.removeBinding(onStateChange);
+        state.reactor.removeInternalBinding(onStateChange);
         return;
       }
       element.innerHTML = String(state.get());
@@ -221,7 +224,7 @@ export const directives = {
     onStateChange();
     if (!state.reactor) return;
     
-    state.reactor.addBinding(onStateChange);
+    state.reactor.addInternalBinding(onStateChange);
   },
   
   show(
@@ -233,7 +236,7 @@ export const directives = {
     
     function onStateChange(commit ? : any) {
       if (!document.contains(element) && state.reactor) {
-        state.reactor.removeBinding(onStateChange);
+        state.reactor.removeInternalBinding(onStateChange);
         return;
       }
       element.style.display = Boolean(state.get()) ? 'block' : 'none';
@@ -242,7 +245,7 @@ export const directives = {
     onStateChange();
     if (!state.reactor) return;
     
-    state.reactor.addBinding(onStateChange);
+    state.reactor.addInternalBinding(onStateChange);
   },
   
   hide(
@@ -254,7 +257,7 @@ export const directives = {
     
     function onStateChange(commit ? : any) {
       if (!document.contains(element) && state.reactor) {
-        state.reactor.removeBinding(onStateChange);
+        state.reactor.removeInternalBinding(onStateChange);
         return;
       }
       element.style.display = !Boolean(state.get()) ? 'block' : 'none';
@@ -262,7 +265,7 @@ export const directives = {
     
     onStateChange();
     if (!state.reactor) return;
-    state.reactor.addBinding(onStateChange);
+    state.reactor.addInternalBinding(onStateChange);
   }
 }
 

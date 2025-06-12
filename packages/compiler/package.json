@@ -4,11 +4,21 @@
   "description": "A compiler for Rumious framework",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs.js"
+    }
+  },
   "scripts": {
-    "build:dev": "tsc",
-    "build": "tsc --build",
-    "clean": "rimraf dist",
-    "prepublishOnly": "npm run build"
+    "dec": "tsc --declaration --allowJs --emitDeclarationOnly",
+    "type": "tsc --noEmit",
+    "build": "NODE_ENV=production rollup -c --environment MINIFY:true",
+    "build:dev": "NODE_ENV=development rollup -c",
+    "start": "NODE_ENV=production node dist/index.js",
+    "dev": "NODE_ENV=development node dist/index.js",
+    "test": "echo \"No tests yet\"",
+    "prepublishOnly": "npm run dec && npm run build"
   },
   "files": [
     "dist"
@@ -20,7 +30,6 @@
     "@babel/types": "^7.27.3"
   },
   "devDependencies": {
-    "typescript": "^5.1.6",
     "@types/babel__generator": "^7.27.0",
     "@types/babel__traverse": "^7.20.7",
     "rimraf": "^5.0.0"

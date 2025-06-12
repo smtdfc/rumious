@@ -4,7 +4,6 @@ import { RumiousComponentConstructor } from '../types/index.js';
 
 export function createComponent<T>(
   context: RumiousRenderContext,
-  parent:HTMLElement,
   component: RumiousComponentConstructor<T>,
   props:T
 ): HTMLElement {
@@ -14,6 +13,5 @@ export function createComponent<T>(
     props
   );
   
-  parent.appendChild(element);
   return element;
 }
