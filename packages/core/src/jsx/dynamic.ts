@@ -34,8 +34,12 @@ export function createDynamicValue(
   }
   
   if (value instanceof RumiousState && value.reactor) {
-    let node =  document.createTextNode(String(value.get()));
-    value.reactor.addBinding((commit)=> node.textContent = String(commit.state.get()));
+    let node = document.createTextNode('');
+    context.onRendered.push(() => {
+      node.textContent = String(value.get());
+      if (!state.reactor) return;
+      value.reactor.addBinding((commit) => node.textContent = String(commit.state.get()));
+    });
     return node;
   }
   

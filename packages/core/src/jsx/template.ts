@@ -150,8 +150,7 @@ export const directives = {
         throw new Error(`Unknown bind directive modifier: ${modifier}`);
     }
     
-    reactive();
-    if (!state.reactor) return;
+    
     
     function onStateChange(commit: any) {
       if (!document.contains(element) && state.reactor) {
@@ -161,7 +160,11 @@ export const directives = {
       reactive();
     }
     
-    state.reactor.addInternalBinding(onStateChange);
+    context.onRendered.push(() => {
+      reactive();
+      if (!state.reactor) return;
+      state.reactor.addInternalBinding(onStateChange);
+    });
   },
   
   attr(
@@ -179,10 +182,11 @@ export const directives = {
       element.setAttribute(attrName, String(state.get()));
     }
     
-    onStateChange();
-    if (!state.reactor) return;
-    
-    state.reactor.addInternalBinding(onStateChange);
+    context.onRendered.push(() => {
+      reactive();
+      if (!state.reactor) return;
+      state.reactor.addInternalBinding(onStateChange);
+    });
   },
   
   prop(
@@ -200,10 +204,11 @@ export const directives = {
       (element as any)[name] = state.get();
     }
     
-    onStateChange();
-    if (!state.reactor) return;
-    
-    state.reactor.addInternalBinding(onStateChange);
+    context.onRendered.push(() => {
+      reactive();
+      if (!state.reactor) return;
+      state.reactor.addInternalBinding(onStateChange);
+    });
   },
   
   html(
@@ -221,10 +226,11 @@ export const directives = {
       element.innerHTML = String(state.get());
     }
     
-    onStateChange();
-    if (!state.reactor) return;
-    
-    state.reactor.addInternalBinding(onStateChange);
+    context.onRendered.push(() => {
+      reactive();
+      if (!state.reactor) return;
+      state.reactor.addInternalBinding(onStateChange);
+    });
   },
   
   show(
@@ -242,10 +248,11 @@ export const directives = {
       element.style.display = Boolean(state.get()) ? 'block' : 'none';
     }
     
-    onStateChange();
-    if (!state.reactor) return;
-    
-    state.reactor.addInternalBinding(onStateChange);
+    context.onRendered.push(() => {
+      reactive();
+      if (!state.reactor) return;
+      state.reactor.addInternalBinding(onStateChange);
+    });
   },
   
   hide(
@@ -263,9 +270,11 @@ export const directives = {
       element.style.display = !Boolean(state.get()) ? 'block' : 'none';
     }
     
-    onStateChange();
-    if (!state.reactor) return;
-    state.reactor.addInternalBinding(onStateChange);
+    context.onRendered.push(() => {
+      reactive();
+      if (!state.reactor) return;
+      state.reactor.addInternalBinding(onStateChange);
+    });
   }
 }
 
