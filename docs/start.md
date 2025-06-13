@@ -6,7 +6,7 @@ Once your project is initialized, let’s create a simple “Hello World” appl
 
 Open the app.tsx file and replace its contents with the following:
 
-```TypeScript
+```typescript
 import { createApp } from 'rumious';
 
 const app = createApp({

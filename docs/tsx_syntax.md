@@ -16,13 +16,13 @@ In Rumious, TSX elements are compiled to JavaScript using the Rumious compiler a
 
 You can declare HTML-like elements using angle brackets:
 
-```ts
+```typescript
 <div>Hello</div>
 ```
 
 **Note:** All elements must be properly closed following the XHTML style:
 
-```ts
+```typescript
 <img src="logo.png" />
 <br />
 ```
@@ -34,20 +34,20 @@ Unclosed tags will result in compilation errors.
 
 You can assign HTML attributes using a key-value format:
 
-```ts
+```typescript
 <input type="text" placeholder="Enter your name" />
 ```
 
 To insert dynamic values or expressions, wrap them in {}:
 
-```ts
+```typescript
 <h1>{userName}</h1>
 <input value={state.get()} />
 ```
 
 You can also embed any valid TypeScript expression inside {}:
 
-```ts
+```typescript
 <p>{1 + 2}</p>
 <p>{items.length > 0 ? "Yes" : "No"}</p>
 
@@ -57,7 +57,7 @@ You can also embed any valid TypeScript expression inside {}:
 
 You can define functional components and use them like HTML tags:
 
-```ts
+```typescript
 import {createApp,RumiousComponent} from 'rumious';
 
 
@@ -79,7 +79,7 @@ app.render(<Greeting />);
 
 If you want to return multiple sibling elements without an extra wrapper, use `Fragment`:
 
-```ts
+```typescript
 import { Fragment } from 'rumious';
 
 <Fragment>
@@ -94,7 +94,7 @@ This avoids rendering unnecessary DOM nodes and keeps the output clean.
 
 Use ternary operators or short-circuiting to render elements conditionally:
 
-```ts
+```typescript
 {isLoggedIn ? <p>Welcome back!</p> : <p>Please sign in.</p>}
 {showButton && <button>Click me</button>}
 ```
@@ -104,7 +104,7 @@ Use ternary operators or short-circuiting to render elements conditionally:
 
 Use `Array.map()`to render lists of elements:
 
-```ts
+```typescript
 const items = ['A', 'B', 'C'];
 
 <ul>

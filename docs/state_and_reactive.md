@@ -13,7 +13,7 @@ You can create reactive state variables using the `createState()` function.
 
 Example:
 
-```ts
+```typescript
 import { createState } from 'rumious';
 
 let count = createState<number>(0);
@@ -24,13 +24,13 @@ let count = createState<number>(0);
 
 To change the value of a state, use `.set(value)`:
 
-```ts
+```typescript
 count.set(10);
 ```
 
 To perform calculations or transformations before updating the state, use `.update(callback)`:
 
-```ts
+```typescript
 count.update(prev => prev + 1);
 ```
 
@@ -41,7 +41,7 @@ count.update(prev => prev + 1);
 
 Use `.get()` to access the current value of a state:
 
-```ts
+```typescript
 console.log(count.get()); // Outputs: 10
 ```
 
@@ -49,7 +49,7 @@ console.log(count.get()); // Outputs: 10
 
 You can insert a state directly into TSX using {}. Rumious automatically unwraps and subscribes to the state:
 
-```ts
+```typescript
 <h1>Count: {count}</h1>
 ```
 
@@ -57,7 +57,7 @@ Any updates to count will automatically re-render this UI fragment.
 
 Full Example:
 
-```ts
+```typescript
 import { createApp, createState } from 'rumious';
 
 const count = createState<number>(0);
@@ -76,7 +76,7 @@ app.render(<h1>Count: {count}</h1>);
 
 You can register a callback to run whenever the state changes using `watch()`:
 
-```ts
+```typescript
 import { watch } from 'rumious';
 
 watch(count, () => {
@@ -91,6 +91,6 @@ To stop watching, use `unwatch(state, callback)`.
 
 Sometimes you may need to force a reaction even when the state hasn’t changed. Use `.trigger()` for this purpose:
 
-```ts
+```typescript
 count.trigger(); // Forces UI update and watchers to run
 ```

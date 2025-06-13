@@ -9,7 +9,7 @@ This section will walk you through the advanced state manipulation features avai
 
 ### Basic Structure
 
-```ts
+```typescript
 const state = createState<T>(initialValue);
 ```
 
@@ -22,7 +22,7 @@ const state = createState<T>(initialValue);
 
 Returns the current value of the state.
 
-```ts
+```typescript
 const username = createState("smtdfc");
 console.log(username.get()); // "smtdfc"
 ```
@@ -33,7 +33,7 @@ console.log(username.get()); // "smtdfc"
 
 Updates the value and triggers all associated reactions or DOM updates.
 
-```ts
+```typescript 
 username.set("rumiousdev");
 ```
 
@@ -43,7 +43,7 @@ username.set("rumiousdev");
 
 Useful for computed updates based on the current value.
 
-```ts
+```typescript
 const counter = createState(0);
 counter.update(prev => prev + 1);
 ```
@@ -54,7 +54,7 @@ counter.update(prev => prev + 1);
 
 Resets the value back to the initial one provided during creation.
 
-```ts
+```typescript
 counter.reset(); // value is now 0 again
 ```
 
@@ -68,7 +68,7 @@ If your state holds an object, Rumious gives you utility methods to directly man
 
 Sets a specific key in an object and triggers reactive updates.
 
-```ts
+```typescript
 const user = createState({ id: "1", name: "John" });
 user.setKey("name", "Jane");
 ```
@@ -79,7 +79,7 @@ user.setKey("name", "Jane");
 
 Deletes a key from the object.
 
-```ts
+```typescript
 user.deleteKey("name");
 ```
 
@@ -89,7 +89,7 @@ user.deleteKey("name");
 
 Updates multiple keys at once (similar to `Object.assign`).
 
-```ts
+```typescript
 user.merge({ id: "2", email: "hello@rumious.dev" });
 ```
 
@@ -103,7 +103,7 @@ When your state holds an array, Rumious provides mutation helpers with reactive 
 
 Adds one or more items to the array.
 
-```ts
+```typescript
 const items = createState<number[]>([1, 2, 3]);
 items.push(4, 5); // [1, 2, 3, 4, 5]
 ```
@@ -114,7 +114,7 @@ items.push(4, 5); // [1, 2, 3, 4, 5]
 
 Removes and returns the last item of the array.
 
-```ts
+```typescript
 items.pop(); // [1, 2, 3, 4]
 ```
 
@@ -124,7 +124,7 @@ items.pop(); // [1, 2, 3, 4]
 
 Filters the array in place, keeping only items that match the condition.
 
-```ts
+```typescript
 items.filter(n => n % 2 === 0); // [2, 4]
 ```
 
@@ -134,7 +134,7 @@ items.filter(n => n % 2 === 0); // [2, 4]
 
 Maps each array element and returns a new array. This does not mutate the original state but can be used for rendering or processing.
 
-```ts
+```typescript
 const doubled = items.map(n => n * 2); // [4, 8]
 ```
 
@@ -146,7 +146,7 @@ const doubled = items.map(n => n * 2); // [4, 8]
 
 Attach a listener to run when the state changes. Returns an unsubscribe() function.
 
-```ts
+```typescript
 const message = createState("Hello");
 const unsubscribe = message.subscribe(val => {
   console.log("Updated:", val);
@@ -162,7 +162,7 @@ unsubscribe(); // Stops listening
 
 Forces reactive update even if the value didn’t change.
 
-```ts
+```typescript
 message.trigger(); // Will re-run any watchers
 ```
 
@@ -172,7 +172,7 @@ message.trigger(); // Will re-run any watchers
 
 Compares the current state value to a given one using shallow equality.
 
-```ts
+```typescript
 message.equals("World"); // true
 ```
 
@@ -182,7 +182,7 @@ message.equals("World"); // true
 
 Returns a plain JSON-serializable representation of the value, useful when sending data over the network or logging.
 
-```ts
+```typescript
 JSON.stringify(user.toJSON());
 ```
 

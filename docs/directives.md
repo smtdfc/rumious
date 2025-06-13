@@ -10,7 +10,7 @@ Rumious currently supports several built-in directives:
 The `ref` directive allows you to retain a reference to a DOM element rendered in the view. This can be used to access or manipulate the element directly via DOM APIs.
 
 Example:
-```ts
+```typescript
 import { createApp, createRef } from 'rumious';
 
 const app = createApp({ root: document.getElementById('root') });
@@ -43,7 +43,7 @@ Supported elements:
 
 Example:
 
-```ts
+```typescript
 import { createApp, createState } from 'rumious';
 
 const app = createApp({ root: document.getElementById('root') });
@@ -79,19 +79,19 @@ Supported bindings include:
 
 ##### Example 1 – Binding Text Content:
 
-```ts
+```typescript
 <h1 bind:text={titleState} />
 ```
 
 ##### Example 2 – Binding Inline Style:
 
-```ts
+```typescript
 <div bind:style={styleState} />
 ```
 
 ##### Example 3 – Binding Class:
 
-```ts
+```typescript
 <div bind:class={classNameState} />
 ```
 
@@ -103,7 +103,7 @@ This directive binds a raw HTML attribute to a state or expression. Unlike `bind
 
 Example:
 
-```ts
+```typescript
 <img attr:src={imageUrl} attr:alt={description} />
 ```
 
@@ -119,7 +119,7 @@ This directive updates native DOM properties instead of HTML attributes. This is
 
 Example:
 
-```ts
+```typescript
 <input prop:value={state} prop:disabled={isDisabled} />
 ```
 
@@ -132,7 +132,7 @@ The `on:` directive attaches event listeners declaratively. It expects a callbac
 
 Example:
 
-```ts
+```typescript
 <button on:click={() => alert('Clicked!')}>Click Me</button>
 ```
 
