@@ -39,14 +39,14 @@ export class RumiousViewControl {
   emptyAll() {
     const targets = this.targets;
     for (let i = 0; i < targets.length; i++) {
-      targets[i].textContent = '';
+      targets[i].element.textContent = '';
     }
   }
   
   empty(target: HTMLElement) {
     const targets = this.targets;
     for (let i = 0; i < targets.length; i++) {
-      if (targets[i] === target) {
+      if (targets[i].element=== target) {
         target.textContent = '';
         return;
       }
