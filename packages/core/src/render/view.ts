@@ -1,7 +1,7 @@
 import {RumiousTemplate} from '../types/index.js';
 import {RumiousRenderContext} from './context.js';
 import {render} from './render.js';
-/*
+
 export interface RumiousViewControlTarget{
   element:HTMLElement,
   context:RumiousRenderContext
@@ -58,5 +58,3 @@ export function createViewControl(): RumiousViewControl {
   return new RumiousViewControl();
 }
 
-*/
-export {}
