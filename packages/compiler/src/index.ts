@@ -137,7 +137,7 @@ export interface RumiousImportDetails {
 }
 
 export type RumiousImportData = Record < string, RumiousImportDetails > ;
-const SINGLE_DIRECTIVES = ['ref', 'model','each'];
+const SINGLE_DIRECTIVES = ['ref', 'model', 'each'];
 const NAMESPACED_DIRECTIVES = ['bind', 'on', 'attr', 'prop'];
 
 export class RumiousJSXTransformer {
@@ -145,6 +145,7 @@ export class RumiousJSXTransformer {
   code: string;
   importsData: RumiousImportData = {};
   path!: NodePath;
+  events: string[] = [];
   
   constructor(code: string, filename: string = ".jsx") {
     this.code = code;
@@ -162,8 +163,8 @@ export class RumiousJSXTransformer {
   }
   
   ensureEvent(name: string, template: RumiousTemplate) {
-    if (template.events.includes(name)) return;
-    template.events.push(name);
+    if (this.events.includes(name)) return;
+    this.events.push(name);
   }
   
   ensureImport(name: string, moduleName: string): t.Identifier {
@@ -315,15 +316,15 @@ export class RumiousJSXTransformer {
     }
     
     if (name === 'List') {
-
-    /*
-      listRender(
-        anchor,
-        context,
-        item=> <h1>item</h1>,
-        key=> key
-      )
-    */
+      
+      /*
+        listRender(
+          anchor,
+          context,
+          item=> <h1>item</h1>,
+          key=> key
+        )
+      */
     }
     
     let componentFn = this.ensureImport('createComponent', 'rumious');
@@ -419,10 +420,25 @@ export class RumiousJSXTransformer {
           attrName.name,
           '',
           attrValue,
+          template,
           targetId,
           rootElementId,
           contextId
         ));
+      } else if (t.isJSXNamespacedName(attrName)) {
+        let namespace_ = attrName.namespace.name;
+        let name = attrName.name.name;
+        if (NAMESPACED_DIRECTIVES.includes(namespace_)) {
+          directiveAst.push(this.transformDirective(
+            namespace_,
+            name,
+            attrValue,
+            template,
+            targetId,
+            rootElementId,
+            contextId
+          ));
+        }
       } else if (t.isJSXIdentifier(attrName)) objectItemsAst.push(this.transformAttribute(
         attrName,
         attrValue
@@ -439,11 +455,16 @@ export class RumiousJSXTransformer {
     name: string,
     modifier: string,
     value: any,
+    template: RumiousTemplate,
     targetId: t.Identifier,
     rootElementId: t.Identifier,
     contextId: t.Identifier,
   ): t.Statement {
     let directivesObj = this.ensureImport('directives', 'rumious');
+    if (name === 'on') {
+      this.ensureEvent(modifier, template);
+    }
+    
     return t.expressionStatement(
       t.callExpression(
         t.memberExpression(
@@ -551,7 +572,6 @@ export class RumiousJSXTransformer {
         
         const elements: Record < string, any >= {}
         const templateCreateFn = this.ensureImport('createTemplate', 'rumious');
-        const delegateEventsFn = this.ensureImport('delegateEvents', 'rumious');
         
         
         const templateFn = t.callExpression(
@@ -564,10 +584,6 @@ export class RumiousJSXTransformer {
               ],
               t.blockStatement([
                 ...data.stats,
-                t.expressionStatement(t.callExpression(
-                  delegateEventsFn,
-                  [valueToAST(data.events)]
-                )),
                 t.returnStatement(
                   data.scope.rootElement
                 )
@@ -580,6 +596,7 @@ export class RumiousJSXTransformer {
       }
     });
     let importDec: t.ImportDeclaration[] = [];
+    const delegateEventsFn = this.ensureImport('delegateEvents', 'rumious');
     
     
     for (let moduleName in this.importsData) {
@@ -599,7 +616,10 @@ export class RumiousJSXTransformer {
     }
     
     this.ast.program.body.unshift(...importDec);
-    
+    this.ast.program.body.push(t.expressionStatement(t.callExpression(
+      delegateEventsFn,
+      [valueToAST(this.events)]
+    )))
     return generate(this.ast, {}, this.code).code;
   }
 }
