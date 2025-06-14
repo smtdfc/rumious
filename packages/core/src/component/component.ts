@@ -1,21 +1,32 @@
 import { RumiousTemplate } from '../types/index.js';
-import { RumiousRenderContext, render} from '../render/index.js';
+import { RumiousRenderContext, render } from '../render/index.js';
 import { RumiousApp } from '../app/index.js';
 
 export class RumiousComponent < T = any > {
   public props!: T;
-  public app!:RumiousApp;
+  public app!: RumiousApp;
   public element!: HTMLElement;
   public context!: RumiousRenderContext;
   static tagName = 'rumious-component';
   
   constructor() {}
   
+  mountTo(
+    template: RumiousTemplate,
+    target: HTMLElement,
+  ): HTMLElement {
+    return render(
+      template,
+      target,
+      this.context
+    );
+  }
+  
   prepare(
-    props:T,
-    context:RumiousRenderContext,
-    element:HTMLElement
-  ){
+    props: T,
+    context: RumiousRenderContext,
+    element: HTMLElement
+  ) {
     this.app = context.app;
     this.element = element;
     this.props = props;
@@ -38,12 +49,13 @@ export class RumiousComponent < T = any > {
     );
   }
   
-  remove(){
+  remove() {
     this.element.remove();
   }
   
   onCreate() {}
   onRender() {}
   onDestroy() {}
-  beforeRender(){}
+  beforeRender() {}
+  
 }
