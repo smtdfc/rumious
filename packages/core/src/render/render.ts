@@ -14,3 +14,18 @@ export function render(
   }
   return result;
 }
+
+export function renderFrag(
+  content: RumiousTemplate,
+  context: RumiousRenderContext
+): HTMLElement {
+  let container = document.createDocumentFragment();
+  context.onRendered = [];
+  let result = content(container, context);
+  
+  for (var i = 0; i < context.onRendered.length; i++) {
+    context.onRendered[i]();
+  }
+  
+  return result;
+}
