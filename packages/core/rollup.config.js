@@ -8,7 +8,7 @@ export default {
   output: {
     file: './dist/index.js',
     format: 'esm',
-    sourcemap: true,
+    sourcemap: false,
     paths: {
       'rumious-compiler': !isProduction 
       ? '../compiler/dist/index.js'

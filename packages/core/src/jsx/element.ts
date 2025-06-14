@@ -1,5 +1,23 @@
-const nodeCache = new WeakMap < Node | DocumentFragment,
-  Map < string, Node >> ();
+const nodeCache = new WeakMap < Node | DocumentFragment, Map < string, Node >> ();
+
+export function appendChild(
+  parent:HTMLElement,
+  node:Node | string
+){
+  if(typeof node === 'string') parent.appendChild(document.createTextNode(node))
+  else parent.appendChild(node);
+}
+
+export function element(
+  parent:HTMLElement,
+  tagName:string,
+  attrs: Record<string,any>
+):HTMLElement{
+  let element = document.createElement(tagName);
+  parent.appendChild(element);
+  return element;
+}
+
 
 export function resolveNode(
   root: Node | DocumentFragment,

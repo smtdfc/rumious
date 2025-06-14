@@ -278,10 +278,3 @@ export const directives = {
   }
 }
 
-// This is just to satisfy TypeScript's JSX requirement.
-// Rumious doesn't use createElement — we do things differently.
-
-function createElement(...args: any[]): any {
-  console.log(args);
-  throw Error(`Rumious doesn't use createElement !`);
-}
