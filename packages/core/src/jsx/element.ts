@@ -1,4 +1,3 @@
-const nodeCache = new WeakMap < Node | DocumentFragment, Map < string, Node >> ();
 
 export function appendChild(
   parent:HTMLElement,
@@ -18,37 +17,6 @@ export function element(
   return element;
 }
 
-
-export function resolveNode(
-  root: Node | DocumentFragment,
-  path: number[]
-): Node {
-  const key = path.join('.');
-  let rootCache = nodeCache.get(root);
-  
-  if (!rootCache) {
-    rootCache = new Map();
-    nodeCache.set(root, rootCache);
-  }
-  
-  if (rootCache.has(key)) {
-    return rootCache.get(key) !;
-  }
-  
-  let node: Node;
-  if (root instanceof DocumentFragment) {
-    node = root.childNodes[0];
-  } else {
-    node = root;
-  }
-  
-  for (let idx of path) {
-    node = node.childNodes[idx];
-  }
-  
-  rootCache.set(key, node);
-  return node;
-}
 
 export function replaceNode(oldNode: Node, newNode: Node): void {
   const parent = oldNode.parentNode;
