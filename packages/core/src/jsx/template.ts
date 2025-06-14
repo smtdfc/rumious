@@ -1,7 +1,7 @@
-import { RumiousRenderContext } from '../render/index.js';
+import { RumiousRenderContext, renderFrag } from '../render/index.js';
 import { RumiousTemplate } from '../types/index.js';
 import { RumiousRef } from '../ref/index.js';
-import { RumiousState } from '../state/index.js';
+import { RumiousState, RumiousListState } from '../state/index.js';
 import { createEvent } from './element.js';
 
 export function createTemplate(
@@ -275,6 +275,91 @@ export const directives = {
       if (!state.reactor) return;
       state.reactor.addInternalBinding(onStateChange);
     });
+  },
+  
+  each < T > (
+    context: RumiousRenderContext,
+    modifier: string,
+    element: HTMLElement,
+    configs: EachDirectiveConfig < T >
+  ) {
+    
+    context = new RumiousRenderContext(
+      context.app,
+      context.target
+    );
+    
+    const keyToNode = new Map < string,
+      Node > ();
+    const nodeOrder: string[] = [];
+    
+    for (const item of configs.value.value) {
+      const key = configs.key(item);
+      const templ = renderFrag(configs.templ(item, key), context);
+      const dom = templ.childNodes[0] as Node;
+      keyToNode.set(key, dom);
+      nodeOrder.push(key);
+      element.appendChild(dom);
+    }
+    
+    if (!configs.value.reactor) return;
+    
+    configs.value.reactor.addInternalBinding((commit) => {
+      const value = commit.value;
+      const key = configs.key(value);
+      
+      if (commit.type === 'remove') {
+        const oldDom = keyToNode.get(key);
+        if (oldDom) {
+          element.removeChild(oldDom);
+          keyToNode.delete(key);
+          const index = nodeOrder.indexOf(key);
+          if (index !== -1) nodeOrder.splice(index, 1);
+        }
+        return;
+      }
+      
+      const templ = renderFrag(configs.templ(value, key), context);
+      const dom = templ.childNodes[0] as Node;
+      
+      switch (commit.type) {
+        case 'append':
+          keyToNode.set(key, dom);
+          nodeOrder.push(key);
+          element.appendChild(dom);
+          break;
+          
+        case 'prepend':
+          keyToNode.set(key, dom);
+          nodeOrder.unshift(key);
+          element.prepend(dom);
+          break;
+          
+        case 'update': {
+          const oldDom = keyToNode.get(key);
+          if (oldDom) {
+            keyToNode.set(key, dom);
+            element.replaceChild(dom, oldDom);
+          }
+          break;
+        }
+        
+        case 'insert': {
+          const index = commit.key!;
+          const anchorKey = nodeOrder[index];
+          const anchorNode = keyToNode.get(anchorKey) ?? null;
+          keyToNode.set(key, dom);
+          nodeOrder.splice(index, 0, key);
+          element.insertBefore(dom, anchorNode);
+          break;
+        }
+      }
+    });
   }
 }
 
+interface EachDirectiveConfig < T > {
+  value: RumiousListState < T > ;
+  key: (item: T) => string;
+  templ: (item: T, key: string) => RumiousTemplate;
+}
