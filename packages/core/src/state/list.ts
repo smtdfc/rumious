@@ -3,8 +3,8 @@ import { RumiousReactor } from './reactor.js';
 
 export class RumiousListState < T > extends RumiousState < T[] > {
   constructor(
-    public value: T[] = [],
-    public reactor ? : RumiousReactor < RumiousState < T[] >>
+    value: T[] = [],
+    reactor ? : RumiousReactor < RumiousState < T[] >>
   ) {
     super(value, reactor);
   }
@@ -48,11 +48,12 @@ export class RumiousListState < T > extends RumiousState < T[] > {
   }
   
   remove(pos: number) {
+    let currentValue = this.value[pos];
     this.value.splice(pos, 1);
     this.reactor?.notify({
       type: 'remove',
       state: this,
-      value: null,
+      value: currentValue,
       key: pos
     });
   }
@@ -84,4 +85,10 @@ export class RumiousListState < T > extends RumiousState < T[] > {
     });
   }
   
+}
+
+export function createListState<T>(
+  values:T[]
+):RumiousListState<T>{
+  return new RumiousListState(values);
 }
