@@ -137,7 +137,7 @@ export interface RumiousImportDetails {
 }
 
 export type RumiousImportData = Record < string, RumiousImportDetails > ;
-const SINGLE_DIRECTIVES = ['ref', 'model'];
+const SINGLE_DIRECTIVES = ['ref', 'model','each'];
 const NAMESPACED_DIRECTIVES = ['bind', 'on', 'attr', 'prop'];
 
 export class RumiousJSXTransformer {
@@ -222,8 +222,8 @@ export class RumiousJSXTransformer {
         flushText();
         if (t.isJSXElement(node)) {
           this.transformJSXElement(node, template, rootElementId, contextId);
-        } else if(t.isJSXExpressionContainer(node)){
-          this.transformJSXExpressionContainer(node,template,rootElementId,contextId);
+        } else if (t.isJSXExpressionContainer(node)) {
+          this.transformJSXExpressionContainer(node, template, rootElementId, contextId);
         }
       }
     }
@@ -296,12 +296,36 @@ export class RumiousJSXTransformer {
     rootElementId: t.Identifier,
     contextId: t.Identifier,
   ) {
+    
     let name = "";
     if (t.isJSXIdentifier(node.openingElement.name)) {
       name = node.openingElement.name.name;
     } else {
       throw new Error('RumiousCompileError: Unspport component name !');
     }
+    
+    if (name === 'Fragment') {
+      this.transformNodes(
+        node.children,
+        template,
+        rootElementId,
+        contextId,
+      );
+      return;
+    }
+    
+    if (name === 'List') {
+
+    /*
+      listRender(
+        anchor,
+        context,
+        item=> <h1>item</h1>,
+        key=> key
+      )
+    */
+    }
+    
     let componentFn = this.ensureImport('createComponent', 'rumious');
     let elementId = this.path.scope.generateUidIdentifier('ele_');
     let slotId = this.path.scope.generateUidIdentifier('slot_');
