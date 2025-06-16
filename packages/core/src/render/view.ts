@@ -1,14 +1,14 @@
-import {RumiousTemplate} from '../types/index.js';
-import {RumiousRenderContext} from './context.js';
-import {render} from './render.js';
+import { RumiousTemplate } from '../types/index.js';
+import { RumiousRenderContext } from './context.js';
+import { render } from './render.js';
 
-export interface RumiousViewControlTarget{
-  element:HTMLElement,
-  context:RumiousRenderContext
+export interface RumiousViewControlTarget {
+  element: HTMLElement,
+  context: RumiousRenderContext
 }
 
 export class RumiousViewControl {
-  private targets:RumiousViewControlTarget[] = [];
+  private targets: RumiousViewControlTarget[] = [];
   
   constructor() {}
   
@@ -16,7 +16,7 @@ export class RumiousViewControl {
     this.targets.push(target);
   }
   
-
+  
   setView(template: RumiousTemplate) {
     
     const targets = this.targets;
@@ -30,7 +30,7 @@ export class RumiousViewControl {
     }
   }
   
-  each(callback:(target:RumiousViewControlTarget)=> any){
+  each(callback: (target: RumiousViewControlTarget) => any) {
     for (let target of this.targets) {
       callback(target);
     }
@@ -46,7 +46,7 @@ export class RumiousViewControl {
   empty(target: HTMLElement) {
     const targets = this.targets;
     for (let i = 0; i < targets.length; i++) {
-      if (targets[i].element=== target) {
+      if (targets[i].element === target) {
         target.textContent = '';
         return;
       }
@@ -57,4 +57,3 @@ export class RumiousViewControl {
 export function createViewControl(): RumiousViewControl {
   return new RumiousViewControl();
 }
-

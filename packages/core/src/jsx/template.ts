@@ -1,4 +1,4 @@
-import { RumiousRenderContext, renderFrag } from '../render/index.js';
+import { RumiousRenderContext, renderFrag, RumiousViewControl } from '../render/index.js';
 import { RumiousTemplate } from '../types/index.js';
 import { RumiousRef } from '../ref/index.js';
 import { RumiousState, RumiousListState } from '../state/index.js';
@@ -354,6 +354,18 @@ export const directives = {
           break;
         }
       }
+    });
+  },
+  
+  view(
+    context: RumiousRenderContext,
+    modifier: string,
+    element: HTMLElement,
+    configs: RumiousViewControl
+  ) {
+    configs.addTarget({
+      element,
+      context
     });
   }
 }

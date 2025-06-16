@@ -137,7 +137,7 @@ export interface RumiousImportDetails {
 }
 
 export type RumiousImportData = Record < string, RumiousImportDetails > ;
-const SINGLE_DIRECTIVES = ['ref', 'model', 'each'];
+const SINGLE_DIRECTIVES = ['ref', 'model', 'each', 'view'];
 const NAMESPACED_DIRECTIVES = ['bind', 'on', 'attr', 'prop'];
 
 export class RumiousJSXTransformer {
