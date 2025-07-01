@@ -291,21 +291,29 @@ export class RumiousJSXTransformer {
     throw new Error('RumiousCompileError: Unspport value type !');
   }
   
+  resolveJSXComponentName(node: any): t.Identifier | t.MemberExpression {
+    if (t.isJSXIdentifier(node)) {
+      return t.identifier(node.name);
+    } else if (t.isJSXMemberExpression(node)) {
+      return t.memberExpression(
+        this.resolveJSXComponentName(node.object),
+        t.identifier(node.property.name)
+      );
+    } else {
+      throw new Error("RumiousCompileError: Unsupported component name");
+    }
+  }
+  
   transformComponent(
     node: t.JSXElement,
     template: RumiousTemplate,
     rootElementId: t.Identifier,
     contextId: t.Identifier,
   ) {
+    let componentNameNode = node.openingElement.name;
+    let name = this.resolveJSXComponentName(componentNameNode);
     
-    let name = "";
-    if (t.isJSXIdentifier(node.openingElement.name)) {
-      name = node.openingElement.name.name;
-    } else {
-      throw new Error('RumiousCompileError: Unspport component name !');
-    }
-    
-    if (name === 'Fragment') {
+    if (t.isJSXIdentifier(componentNameNode) && componentNameNode.name === 'Fragment') {
       this.transformNodes(
         node.children,
         template,
@@ -315,17 +323,7 @@ export class RumiousJSXTransformer {
       return;
     }
     
-    if (name === 'List') {
-      
-      /*
-        listRender(
-          anchor,
-          context,
-          item=> <h1>item</h1>,
-          key=> key
-        )
-      */
-    }
+    
     
     let componentFn = this.ensureImport('createComponent', 'rumious');
     let elementId = this.path.scope.generateUidIdentifier('ele_');
@@ -342,19 +340,19 @@ export class RumiousJSXTransformer {
     
     let createComponentAst = t.variableDeclaration('const', [
       t.variableDeclarator(
-        t.arrayPattern([
-          elementId,
-        ]),
+        t.arrayPattern([elementId]),
         t.callExpression(componentFn, [
           rootElementId,
           contextId,
-          t.identifier(name),
+          name,
           attrAst
         ])
       )
     ]);
     
     template.stats.push(createComponentAst);
+    if (node.children.length == 0) return;
+    
     const data: RumiousTemplate = {
       elements: {},
       events: [],
@@ -368,29 +366,24 @@ export class RumiousJSXTransformer {
       }
     }
     
-    if(node.children.length == 0) return;
+    
     this.transformNodes(
       node.children,
       data,
       data.scope.rootElement,
       data.scope.context
-    )
-    const templateCreateFn = this.ensureImport('createTemplate', 'rumious');
+    );
     
+    const templateCreateFn = this.ensureImport('createTemplate', 'rumious');
     
     const templateFn = t.callExpression(
       templateCreateFn,
       [
         t.arrowFunctionExpression(
-          [
-            data.scope.rootElement,
-            data.scope.context
-          ],
+          [data.scope.rootElement, data.scope.context],
           t.blockStatement([
             ...data.stats,
-            t.returnStatement(
-              data.scope.rootElement
-            )
+            t.returnStatement(data.scope.rootElement)
           ])
         )
       ]
@@ -398,10 +391,7 @@ export class RumiousJSXTransformer {
     
     template.stats.push(
       t.expressionStatement(t.callExpression(
-        t.memberExpression(
-          elementId,
-          t.identifier("setSlot")
-        ),
+        t.memberExpression(elementId, t.identifier("setSlot")),
         [templateFn]
       ))
     );
@@ -526,11 +516,28 @@ export class RumiousJSXTransformer {
     let elementName = node.openingElement.name;
     let name = "";
     let isComponent = false;
+    
     if (t.isJSXIdentifier(elementName)) {
-      if (isValidComponentName(elementName.name)) isComponent = true;
-      name = elementName.name
+      name = elementName.name;
+      isComponent = isValidComponentName(name);
+    } else if (t.isJSXMemberExpression(elementName)) {
+      const parts: string[] = [];
+      
+      let current: t.JSXMemberExpression | t.JSXIdentifier = elementName;
+      while (t.isJSXMemberExpression(current)) {
+        parts.unshift(current.property.name);
+        current = current.object;
+      }
+      
+      if (t.isJSXIdentifier(current)) {
+        parts.unshift(current.name);
+      }
+      
+      name = parts.join('.');
+      const last = parts[parts.length - 1];
+      isComponent = isValidComponentName(last);
     } else {
-      throw new Error(`RumiousCompileError: Unsupported element name !`);
+      throw new Error(`RumiousCompileError: Unsupported element name!`);
     }
     
     if (isComponent) return this.transformComponent(
