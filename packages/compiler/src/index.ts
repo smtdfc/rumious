@@ -344,11 +344,10 @@ export class RumiousJSXTransformer {
       t.variableDeclarator(
         t.arrayPattern([
           elementId,
-          slotId,
-          ctxId
         ]),
         t.callExpression(componentFn, [
           rootElementId,
+          contextId,
           t.identifier(name),
           attrAst
         ])
@@ -356,13 +355,55 @@ export class RumiousJSXTransformer {
     ]);
     
     template.stats.push(createComponentAst);
-    //template.stats.push(...directiveAst);
+    const data: RumiousTemplate = {
+      elements: {},
+      events: [],
+      stats: [],
+      scope: {
+        appendChildFn: this.ensureImport('appendChild', 'rumious'),
+        rootElement: this.path.scope.generateUidIdentifier('root'),
+        templateRoot: this.path.scope.generateUidIdentifier('tmpl'),
+        context: this.path.scope.generateUidIdentifier('ctx'),
+        generateIdentifier: (prefix ? : string) => this.path.scope.generateUidIdentifier(prefix)
+      }
+    }
     
+    if(node.children.length == 0) return;
     this.transformNodes(
       node.children,
-      template,
-      slotId,
-      ctxId,
+      data,
+      data.scope.rootElement,
+      data.scope.context
+    )
+    const templateCreateFn = this.ensureImport('createTemplate', 'rumious');
+    
+    
+    const templateFn = t.callExpression(
+      templateCreateFn,
+      [
+        t.arrowFunctionExpression(
+          [
+            data.scope.rootElement,
+            data.scope.context
+          ],
+          t.blockStatement([
+            ...data.stats,
+            t.returnStatement(
+              data.scope.rootElement
+            )
+          ])
+        )
+      ]
+    );
+    
+    template.stats.push(
+      t.expressionStatement(t.callExpression(
+        t.memberExpression(
+          elementId,
+          t.identifier("setSlot")
+        ),
+        [templateFn]
+      ))
     );
   }
   
