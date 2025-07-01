@@ -28,7 +28,7 @@ module.exports = {
         exclude: /node_modules/,
         use: [
         {
-          loader: 'rumious-webpack-supporter/dist/loader/index.js'
+          loader: path.resolve(__dirname, './node_modules/rumious-webpack/dist/loader/index.js'),
         },
         {
           loader: 'ts-loader',
@@ -43,7 +43,7 @@ module.exports = {
         exclude: /node_modules/,
         use: [
         {
-          loader: 'rumious-webpack-supporter/dist/loader/index.js'
+          loader: path.resolve(__dirname, './node_modules/rumious-webpack/dist/loader/index.js'),
         }]
       },
       
