@@ -3,15 +3,16 @@ import { createComponentElement } from '../component/index.js';
 import { RumiousComponentConstructor } from '../types/index.js';
 
 export function createComponent<T>(
+  root:HTMLElement,
   context: RumiousRenderContext,
   component: RumiousComponentConstructor<T>,
   props:T
-): HTMLElement {
-  let element = createComponentElement(
+): [HTMLElement] {
+  let [element] = createComponentElement(
     context,
     component,
     props
   );
-  
-  return element;
+  root.appendChild(element);
+  return [element];
 }

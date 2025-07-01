@@ -8,13 +8,20 @@ export function appendChild(
 }
 
 export function element(
-  parent:HTMLElement,
-  tagName:string,
-  attrs: Record<string,any>
-):HTMLElement{
-  let element = document.createElement(tagName);
-  parent.appendChild(element);
-  return element;
+  parent: HTMLElement,
+  tagName: string,
+  attrs ? : Record < string, any >
+): HTMLElement {
+  const el = document.createElement(tagName);
+  
+  if (attrs) {
+    for (let key in attrs) {
+      el.setAttribute(key, attrs[key]);
+    }
+  }
+  
+  parent.appendChild(el);
+  return el;
 }
 
 

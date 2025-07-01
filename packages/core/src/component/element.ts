@@ -1,4 +1,4 @@
-import { RumiousComponentConstructor } from '../types/index.js';
+import { RumiousComponentConstructor,RumiousTemplate } from '../types/index.js';
 import { RumiousRenderContext } from '../render/index.js';
 import type { RumiousComponent } from './component.js';
 
@@ -8,6 +8,7 @@ export class RumiousComponentElement < T > extends HTMLElement {
   public props!: T;
   public context!: RumiousRenderContext;
   public instance!: RumiousComponent;
+  public slotTempl:RumiousTemplate | null = null;
   constructor() {
     super()
   }
@@ -19,6 +20,7 @@ export class RumiousComponentElement < T > extends HTMLElement {
   async connectedCallback() {
     let instance = new this.component();
     this.instance = instance;
+    this.instance.slot = this.slotTempl;
     instance.prepare(
       this.props,
       this.context,
@@ -33,13 +35,17 @@ export class RumiousComponentElement < T > extends HTMLElement {
   disconnectedCallback() {
     this.instance.onDestroy();
   }
+  
+  setSlot(templ:RumiousTemplate){
+    this.slotTempl = templ;
+  }
 }
 
 export function createComponentElement < T > (
   context: RumiousRenderContext,
   component: RumiousComponentConstructor < T > ,
   props: T
-): HTMLElement {
+): [HTMLElement] {
   if (!window.customElements.get(component.tagName)) {
     window.customElements.define(component.tagName, class extends RumiousComponentElement < T > {
       constructor() {
@@ -51,9 +57,8 @@ export function createComponentElement < T > (
     });
   }
   
-  let element = document.createElement(component.tagName);
-  return element;
-  
+  let element = document.createElement(component.tagName) as RumiousComponentElement<unknown>;
+  return [element];
 }
 
 export function renderComponent < T > (

@@ -7,6 +7,7 @@ export class RumiousComponent < T = any > {
   public app!: RumiousApp;
   public element!: HTMLElement;
   public context!: RumiousRenderContext;
+  public slot:RumiousTemplate | null = null;
   static tagName = 'rumious-component';
   
   constructor() {}
