@@ -31,9 +31,11 @@ export class RumiousViewControl {
   }
   
   removeChild(index: number) {
-    for (let i = 0; i < targets.length; i++) {
-      let parent = targets[i].element.parentElement;
-      console.log(parent);
+    for (let i = 0; i < this.targets.length; i++) {
+      let parent = this.targets[i].element.parentElement;
+      if (!parent) return;
+      let element = parent.children[index];
+      if (element) parent.removeChild(element);
     }
   }
   
@@ -76,6 +78,22 @@ export class RumiousViewControl {
       }
     }
   }
+  
+  updateChild(index: number, template: RumiousTemplate) {
+    for (let i = 0; i < this.targets.length; i++) {
+      const { element, context } = this.targets[i];
+      const parent = element.parentElement;
+      if (!parent) continue;
+      
+      const oldChild = parent.children[index];
+      const newNode = renderFrag(template, context);
+      
+      if (oldChild) {
+        parent.replaceChild(newNode, oldChild);
+      }
+    }
+  }
+  
 }
 
 export function createViewControl(): RumiousViewControl {
