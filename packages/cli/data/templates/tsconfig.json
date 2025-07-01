@@ -1,15 +1,15 @@
 {
-  "compilerOptions": {
-    "jsx": "preserve",
-    "declaration": true,
-    "declarationDir": "./dist/",
-    "outDir": "./dist",
-    "esModuleInterop": true,
-    "strict": true,
-    "target": "ES6",
-    "module": "NodeNext",
-    "moduleResolution": "nodenext"
-  },
-  "include": ["src/**/*", "**/jsx.d.ts"],
-  "exclude": ["node_modules"]
+	"compilerOptions": {
+		"jsx": "preserve",
+		"declaration": true,
+		"declarationDir": "./dist/",
+		"outDir": "./dist",
+		"esModuleInterop": true,
+		"strict": true,
+		"target": "ES6",
+		"module": "ESNext", 
+		"moduleResolution": "node" 
+	},
+	"include": ["src/**/*", "**/jsx.d.ts"],
+	"exclude": ["node_modules"]
 }
