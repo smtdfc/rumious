@@ -1,6 +1,6 @@
 {
   "name": "rumious",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -24,6 +24,9 @@
     "rumious",
     "frontend",
     "framework"
+  ],
+  "files":[
+  	"dist/**"
   ],
   "author": "smtdfc",
   "license": "MIT",

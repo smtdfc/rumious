@@ -47,17 +47,16 @@ export function createComponentElement < T > (
   props: T
 ): [HTMLElement] {
   if (!window.customElements.get(component.tagName)) {
-    window.customElements.define(component.tagName, class extends RumiousComponentElement < T > {
-      constructor() {
-        super()
-        this.component = component;
-        this.props = props;
-        this.context = context;
-      }
-    });
+    window.customElements.define(
+      component.tagName,
+      class extends RumiousComponentElement < T > {}
+    );
   }
   
-  let element = document.createElement(component.tagName) as RumiousComponentElement<unknown>;
+  const element = document.createElement(component.tagName) as RumiousComponentElement < T > ;
+  element.component = component;
+  element.props = props;
+  element.context = context;
   return [element];
 }
 
@@ -66,16 +65,15 @@ export function renderComponent < T > (
   props: T
 ): HTMLElement {
   if (!window.customElements.get(component.tagName)) {
-    window.customElements.define(component.tagName, class extends RumiousComponentElement < T > {
-      constructor() {
-        super()
-        this.component = component;
-        this.props = props;
-      }
-    });
+    window.customElements.define(
+      component.tagName,
+      class extends RumiousComponentElement < T > {}
+    );
   }
   
-  let element = document.createElement(component.tagName);
-  return element;
+  const element = document.createElement(component.tagName) as RumiousComponentElement < T > ;
+  element.component = component;
+  element.props = props;
   
+  return element;
 }
