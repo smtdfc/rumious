@@ -1,5 +1,5 @@
 import { RumiousTemplate } from '../types/index.js';
-import { RumiousRenderContext, render } from '../render/index.js';
+import { RumiousRenderContext, render ,RumiousViewControl,createViewControl} from '../render/index.js';
 import { RumiousApp } from '../app/index.js';
 
 export class RumiousComponent < T = any > {
@@ -10,6 +10,10 @@ export class RumiousComponent < T = any > {
   static tagName = 'rumious-component';
   
   constructor() {}
+  
+  createViewControl():RumiousViewControl{
+    return createViewControl();
+  }
   
   mountTo(
     template: RumiousTemplate,
@@ -57,5 +61,9 @@ export class RumiousComponent < T = any > {
   onRender() {}
   onDestroy() {}
   beforeRender() {}
+  
+}
+
+export class Fragment extends RumiousComponent<any>{
   
 }

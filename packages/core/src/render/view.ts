@@ -1,6 +1,6 @@
 import { RumiousTemplate } from '../types/index.js';
 import { RumiousRenderContext } from './context.js';
-import { render } from './render.js';
+import { render, renderFrag } from './render.js';
 
 export interface RumiousViewControlTarget {
   element: HTMLElement,
@@ -29,6 +29,30 @@ export class RumiousViewControl {
       render(template, targets[i].element, targets[i].context);
     }
   }
+  
+  removeChild(index: number) {
+    for (let i = 0; i < targets.length; i++) {
+      let parent = targets[i].element.parentElement;
+      console.log(parent);
+    }
+  }
+  
+  addChild(
+    template: RumiousTemplate,
+    prepend: boolean = false
+  ) {
+    const targets = this.targets;
+    if (targets.length === 0) {
+      throw new Error(`RumiousRenderError: No target assigned to ViewControl`);
+    }
+    
+    for (let i = 0; i < targets.length; i++) {
+      let templ = renderFrag(template, targets[i].context);
+      if (!prepend) targets[i].element.appendChild(templ);
+      else targets[i].element.prepend(templ);
+    }
+  }
+  
   
   each(callback: (target: RumiousViewControlTarget) => any) {
     for (let target of this.targets) {

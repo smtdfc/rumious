@@ -1,5 +1,5 @@
 {
   "name":"App name",
-  "lang":"js",
+  "lang":"ts",
   "builder":"webpack"
 }

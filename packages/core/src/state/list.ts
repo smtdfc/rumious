@@ -14,6 +14,7 @@ export class RumiousListState < T > extends RumiousState < T[] > {
     this.reactor?.notify({
       type: 'append',
       state: this,
+      key:this.value.length -1 ,
       value
     });
   }
@@ -23,6 +24,7 @@ export class RumiousListState < T > extends RumiousState < T[] > {
     this.reactor?.notify({
       type: 'prepend',
       state: this,
+      key:0,
       value
     });
   }
