@@ -146,6 +146,14 @@ export const directives = {
         };
         break;
         
+      case 'show':
+        reactive = () => (element as HTMLElement).style.display = state.get() ? '' : 'none';
+        break;
+        
+      case 'hide':
+        reactive = () => (element as HTMLElement).style.display = state.get() ? 'none' : '';
+        break;
+
       default:
         throw new Error(`Unknown bind directive modifier: ${modifier}`);
     }
