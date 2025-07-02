@@ -38,6 +38,10 @@ export class RumiousState < T > {
     return JSON.stringify(this.value);
   }
   
+  equal(value:T):boolean{
+    return value === this.value;
+  }
+  
   trigger() {
     this.reactor?.notify({
       type: 'set',

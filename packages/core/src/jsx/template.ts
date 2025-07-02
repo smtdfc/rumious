@@ -158,8 +158,6 @@ export const directives = {
         throw new Error(`Unknown bind directive modifier: ${modifier}`);
     }
     
-    
-    
     function onStateChange(commit: any) {
       if (!document.contains(element) && state.reactor) {
         state.reactor.removeInternalBinding(onStateChange);
