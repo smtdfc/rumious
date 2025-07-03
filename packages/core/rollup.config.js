@@ -10,12 +10,16 @@ export default {
     format: 'esm',
     sourcemap: false,
     paths: {
-      'rumious-compiler': !isProduction 
-      ? '../compiler/dist/index.js'
-      : 'rumious-compiler'
+      'rumious-compiler': !isProduction ?
+        '../compiler/dist/index.js' :
+        'rumious-compiler'
     }
   },
   plugins: [
-    typescript({ tsconfig: './tsconfig.json' })
+    typescript({
+      tsconfig: './tsconfig.json',
+      include: ['src/**/*.ts'],
+      exclude: ['node_modules', 'dist']
+    })
   ]
 };
