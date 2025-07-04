@@ -7,5 +7,6 @@ require('./core/component.test.js');
 require('./core/template.test.js');
 require('./core/ref.test.js');
 require('./core/state.test.js');
+require('./core/context.test.js');
 
 runTests();
