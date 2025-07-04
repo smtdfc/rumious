@@ -10,4 +10,5 @@ export * from './component/index.js';
 export * from './ref/index.js';
 export * from './jsx/index.js';
 export * from './module/index.js';
+export * from './context/index.js';
 
