@@ -17,7 +17,6 @@ function convertJSXMemberToMemberExpression(
   return t.memberExpression(object, property);
 }
 
-
 function getIdentifierOrMemberExpression(
   node: t.JSXElement
 ): t.Identifier | t.MemberExpression {
@@ -33,7 +32,6 @@ function getIdentifierOrMemberExpression(
   
   throw new Error('Unknown error ! ');
 }
-
 
 function convertJSXAttributesToObjectExpression(
   attrs: (t.JSXAttribute | t.JSXSpreadAttribute)[]
@@ -75,7 +73,6 @@ function convertJSXAttributesToObjectExpression(
   return t.objectExpression(properties);
 }
 
-
 function isValidComponentName(name: string): boolean {
   const pascalCaseRegex = /^[A-Z][A-Za-z0-9]*$/;
   return pascalCaseRegex.test(name);
@@ -110,6 +107,30 @@ function valueToAST(value: any): t.Expression {
   throw new Error("Unsupported value type: " + typeof value);
 }
 
+function resolveJSXAttrValueToString(attrValue: t.JSXAttribute['value']): string | null {
+  if (!attrValue) return null;
+  
+  if (t.isStringLiteral(attrValue)) {
+    return attrValue.value;
+  }
+  
+  if (t.isJSXExpressionContainer(attrValue)) {
+    const expression = attrValue.expression;
+    
+    if (t.isStringLiteral(expression)) {
+      return expression.value;
+    }
+    
+    if (t.isTemplateLiteral(expression)) {
+      if (expression.expressions.length === 0) {
+        return expression.quasis.map(q => q.value.cooked).join('');
+      }
+    }
+  }
+  
+  return null;
+}
+
 export interface RumiousTemplateScope {
   appendChildFn: t.Identifier;
   context: t.Identifier;
@@ -119,7 +140,10 @@ export interface RumiousTemplateScope {
 }
 
 export type RumiousTemplateNodePart = number[];
-
+export interface CompileDirective {
+  name: string;
+  value: any;
+}
 
 export interface RumiousTemplate {
   scope: RumiousTemplateScope;
@@ -139,6 +163,7 @@ export interface RumiousImportDetails {
 export type RumiousImportData = Record < string, RumiousImportDetails > ;
 const SINGLE_DIRECTIVES = ['ref', 'model', 'each', 'view'];
 const NAMESPACED_DIRECTIVES = ['bind', 'on', 'attr', 'prop'];
+const COMPILE_DIRECTIVES = ['preserveWhitespace'];
 
 export class RumiousJSXTransformer {
   ast: t.File;
@@ -199,6 +224,7 @@ export class RumiousJSXTransformer {
     template: RumiousTemplate,
     rootElementId: t.Identifier,
     contextId: t.Identifier,
+    preserveWhitespace: any = false
   ) {
     let textBuffer = "";
     
@@ -218,17 +244,28 @@ export class RumiousJSXTransformer {
     
     for (let node of nodes) {
       if (t.isJSXText(node)) {
-        textBuffer += node.value;
+        let text = node.value;
+        switch (preserveWhitespace) {
+          case true:
+            break;
+          case 'smart':
+            text = text.replace(/[ \t]*\n[ \t]*/g, ' ').replace(/\s+/g, ' ').trim();
+            break;
+          default:
+            text = text.replace(/\s+/g, ' ').trim();
+        }
+        textBuffer += text;
       } else {
         flushText();
         if (t.isJSXElement(node)) {
           this.transformJSXElement(node, template, rootElementId, contextId);
         } else if (t.isJSXExpressionContainer(node)) {
           this.transformJSXExpressionContainer(node, template, rootElementId, contextId);
+        } else if (t.isJSXFragment(node)) {
+          this.transformNodes(node.children, template, rootElementId, contextId, preserveWhitespace);
         }
       }
     }
-    
     flushText();
   }
   
@@ -237,15 +274,24 @@ export class RumiousJSXTransformer {
     template: RumiousTemplate,
     rootElementId: t.Identifier,
     contextId: t.Identifier,
+    preserveWhitespace: boolean = false
   ) {
+    const rawText = node.value;
     
-    let createTextNodeAst = t.callExpression(
+    if (!preserveWhitespace && /^\s*$/.test(rawText)) {
+      return;
+    }
+    
+    const finalText = preserveWhitespace ? rawText : rawText.trim();
+    if (finalText.length === 0) return;
+    
+    const createTextNodeAst = t.callExpression(
       t.memberExpression(
         t.identifier('document'),
         t.identifier('createTextNode'),
       ),
       [
-        t.stringLiteral(node.value),
+        t.stringLiteral(finalText),
       ]
     );
     
@@ -309,6 +355,7 @@ export class RumiousJSXTransformer {
     template: RumiousTemplate,
     rootElementId: t.Identifier,
     contextId: t.Identifier,
+    preserveWhitespace: any = false
   ) {
     let componentNameNode = node.openingElement.name;
     let name = this.resolveJSXComponentName(componentNameNode);
@@ -330,13 +377,17 @@ export class RumiousJSXTransformer {
     let slotId = this.path.scope.generateUidIdentifier('slot_');
     let ctxId = this.path.scope.generateUidIdentifier('ctx_');
     
-    let [attrAst, directiveAst] = this.transformJSXAttribute(
+    let [attrAst, directiveAst, compileDirectives] = this.transformJSXAttribute(
       node,
       template,
       elementId,
       rootElementId,
       contextId
     );
+    
+    compileDirectives.forEach(d => {
+      if (d.name === 'preserveWhitespace') preserveWhitespace = Boolean(d.value);
+    });
     
     let createComponentAst = t.variableDeclaration('const', [
       t.variableDeclarator(
@@ -371,7 +422,8 @@ export class RumiousJSXTransformer {
       node.children,
       data,
       data.scope.rootElement,
-      data.scope.context
+      data.scope.context,
+      preserveWhitespace
     );
     
     const templateCreateFn = this.ensureImport('createTemplate', 'rumious');
@@ -434,11 +486,11 @@ export class RumiousJSXTransformer {
     targetId: t.Identifier,
     rootElementId: t.Identifier,
     contextId: t.Identifier,
-  ): [t.ObjectExpression, t.Statement[]] {
+  ): [t.ObjectExpression, t.Statement[], CompileDirective[]] {
     let objectItemsAst: t.ObjectProperty[] = [];
     let directiveAst: t.Statement[] = [];
     
-    
+    let compileDirectives: CompileDirective[] = [];
     let attributes = node.openingElement.attributes;
     for (let attr of attributes) {
       if (t.isJSXSpreadAttribute(attr)) continue;
@@ -459,6 +511,14 @@ export class RumiousJSXTransformer {
       } else if (t.isJSXNamespacedName(attrName)) {
         let namespace_ = attrName.namespace.name;
         let name = attrName.name.name;
+        if (namespace_ === 'compile' && COMPILE_DIRECTIVES.includes(name)) {
+          compileDirectives.push({
+            name,
+            value: resolveJSXAttrValueToString(attrValue)
+          });
+          continue;
+        }
+        
         if (NAMESPACED_DIRECTIVES.includes(namespace_)) {
           directiveAst.push(this.transformDirective(
             namespace_,
@@ -478,7 +538,8 @@ export class RumiousJSXTransformer {
     
     return [
       t.objectExpression(objectItemsAst),
-      directiveAst
+      directiveAst,
+      compileDirectives
     ];
   }
   
@@ -512,6 +573,7 @@ export class RumiousJSXTransformer {
     template: RumiousTemplate,
     rootElementId: t.Identifier,
     contextId: t.Identifier,
+    preserveWhitespace: boolean = false
   ) {
     let elementName = node.openingElement.name;
     let name = "";
@@ -544,19 +606,24 @@ export class RumiousJSXTransformer {
       node,
       template,
       rootElementId,
-      contextId
+      contextId,
+      preserveWhitespace
     );
     else {
       let elementFn = this.ensureImport('element', 'rumious');
       let elementId = this.path.scope.generateUidIdentifier('ele_');
       
-      let [attrAst, directiveAst] = this.transformJSXAttribute(
+      let [attrAst, directiveAst, compileDirectives] = this.transformJSXAttribute(
         node,
         template,
         elementId,
         rootElementId,
         contextId
       );
+      
+      compileDirectives.forEach(d => {
+        if (d.name === 'preserveWhitespace') preserveWhitespace = Boolean(d.value);
+      });
       
       let createElementAst = t.variableDeclaration('const', [
         t.variableDeclarator(
@@ -579,7 +646,8 @@ export class RumiousJSXTransformer {
         node.children,
         template,
         elementId,
-        contextId
+        contextId,
+        preserveWhitespace
       );
     }
   }
