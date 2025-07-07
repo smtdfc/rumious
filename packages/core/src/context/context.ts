@@ -1,15 +1,26 @@
+import {RumiousState,createState} from '../state/index.js';
+
+export type RumiousContextReactive < T extends {} > = {
+  [K in keyof T]: RumiousState < T[K] >
+}
+
 export class RumiousContext < T extends {} > {
-  public events: Record < string,
-  Set < (...args: any[]) => void >> = {};
-  
+  public events: Record < string,Set < (...args: any[]) => void >> = {};
+  private states: Partial<RumiousContextReactive<T>> = {};
   constructor(public values: T) {}
   
   set < K extends keyof T > (key: K, value: T[K]): void {
     this.values[key] = value;
+    if (this.states[key]) this.states[key].set(value);
   }
   
   get < K extends keyof T > (key: K): T[K] {
     return this.values[key];
+  }
+  
+  reactive< K extends keyof T > (key: K): RumiousState<T[K]> {
+    if(!this.states[key]) this.states[key] = createState<T[K]>(this.values[key]);
+    return this.states[key];
   }
   
   emit(event: string, ...args: any[]): void {
@@ -39,6 +50,6 @@ export class RumiousContext < T extends {} > {
   }
 }
 
-export function createContext<T extends {}>(values:T):RumiousContext<T>{
-  return new RumiousContext<T>(values);
+export function createContext < T extends {} > (values: T): RumiousContext < T > {
+  return new RumiousContext < T > (values);
 }

@@ -1,18 +1,19 @@
 import { RumiousTemplate } from '../types/index.js';
-import { RumiousRenderContext, render ,RumiousViewControl,createViewControl} from '../render/index.js';
+import { RumiousRenderContext, render, RumiousViewControl, createViewControl } from '../render/index.js';
 import { RumiousApp } from '../app/index.js';
+import { RumiousRef } from '../ref/index.js';
 
 export class RumiousComponent < T = any > {
   public props!: T;
   public app!: RumiousApp;
   public element!: HTMLElement;
   public context!: RumiousRenderContext;
-  public slot:RumiousTemplate | null = null;
+  public slot: RumiousTemplate | null = null;
   static tagName = 'rumious-component';
   
   constructor() {}
   
-  createViewControl():RumiousViewControl{
+  createViewControl(): RumiousViewControl {
     return createViewControl();
   }
   
@@ -63,8 +64,27 @@ export class RumiousComponent < T = any > {
   onDestroy() {}
   beforeRender() {}
   
+  renderTo(
+    target: HTMLElement | RumiousRef,
+    template: RumiousTemplate
+  ) {
+    if (target instanceof HTMLElement) {
+      render(
+        template,
+        target,
+        this.context
+      );
+    } else if (target instanceof RumiousRef && target.isMounted()) {
+      render(
+        template,
+        target.element,
+        this.context
+      );
+    }
+  }
+  
 }
 
-export class Fragment extends RumiousComponent<any>{
+export class Fragment extends RumiousComponent < any > {
   
 }

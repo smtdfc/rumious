@@ -7,7 +7,6 @@ export class RumiousState < T > {
     public value: T,
     public reactor ? : RumiousReactor < RumiousState < T >>
   ) {
-    
     if (!this.reactor) {
       this.reactor = new RumiousReactor < RumiousState < T >> (this);
     }
@@ -38,7 +37,7 @@ export class RumiousState < T > {
     return JSON.stringify(this.value);
   }
   
-  equal(value:T):boolean{
+  equal(value: T): boolean {
     return value === this.value;
   }
   
@@ -49,7 +48,27 @@ export class RumiousState < T > {
       state: this
     });
   }
+  
+  entries(): [any, any][] {
+    if (this.value && typeof this.value === "object") return Object.entries(this.value);
+    return [];
+  }
+  
+  map <R> (callback: (value: unknown, key: any) => R): R[] {
+    const val = this.value;
+    
+    if (Array.isArray(val)) {
+      return val.map((v, i) => callback(v, i)); 
+    }
+    
+    if (val && typeof val === "object") {
+      return Object.entries(val).map(([k, v]) => callback(v, k));
+    }
+    
+    return [];
+  }
 }
+
 
 export function createState < T > (value: T): RumiousState < T > {
   return new RumiousState < T > (value);

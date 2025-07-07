@@ -1,6 +1,6 @@
 {
   "name": "rumious",
-  "version": "2.1.1",
+  "version": "2.1.6",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -18,7 +18,7 @@
     "start": "NODE_ENV=production node dist/index.js",
     "dev": "NODE_ENV=development node dist/index.js",
     "test": "echo \"No tests yet\"",
-    "prepublishOnly": "npm run dec && npm run build"
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "rumious",
