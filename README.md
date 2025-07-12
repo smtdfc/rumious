@@ -36,11 +36,13 @@ This command will generate a project directory with the basic structure and conf
 
 ### 2. Create Your First App
 
-Navigate to the *index.jsx* file and add the following code:
+Navigate to the *index.tsx* file and add the following code:
 
-```js
+```typescript
 import {RumiousApp, Fragment} from "rumious";
-const app = new RumiousApp(document.getElementById("root"));
+const app = new RumiousApp({
+  root:document.getElementById("root")
+});
 
 app.render(
   <Fragment>

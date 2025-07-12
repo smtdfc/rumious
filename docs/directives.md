@@ -76,6 +76,7 @@ Supported bindings include:
 
 `bind:disabled`, `bind:checked`, `bind:value`
 
+`bind:show`, `bind:hide`,
 
 ##### Example 1 – Binding Text Content:
 
@@ -126,7 +127,7 @@ Example:
 > While `attr`: sets the initial value in HTML, `prop`: ensures the actual DOM property reflects the latest state.
 
 
-6. Event Listener Binding (on:event)
+### 6. Event Listener Binding (on:event)
 
 The `on:` directive attaches event listeners declaratively. It expects a callback function, which will be invoked whenever the specified event occurs.
 

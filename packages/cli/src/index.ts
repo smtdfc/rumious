@@ -4,7 +4,7 @@ import { program } from 'commander';
 import * as commands from './commands/index.js';
 
 async function main() {
-  program.version('0.0.1').description('Rumious CLI');
+  program.version('0.0.8').description('Rumious CLI');
 
   program
     .command('init [name] ')

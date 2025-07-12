@@ -1,6 +1,6 @@
 {
 	"name": "rumious-webpack",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Webpack support package for Rumious framework",
 	"main": "dist/plugin/index.js",
 	"types": "dist/plugin/index.d.ts",
