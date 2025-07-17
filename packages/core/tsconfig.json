@@ -1,20 +1,17 @@
 {
-	"compilerOptions": {
-		"target": "esnext",
-		"module": "esnext",
-		"outDir": "./dist",
-		"esModuleInterop": true,
-		"sourceMap":false,
-		"allowSyntheticDefaultImports": true,
-		"moduleResolution": "node",
-		"resolveJsonModule": true,
-		"skipLibCheck": true,
-		"declaration": true,
-		"strict": true,
-		"forceConsistentCasingInFileNames": true,
-		"paths": {
-			"rumious-compiler": ["../compiler/dist/index.d.ts"]
-		}
-	},
-	"include": ["./src", "./src/global.d.ts"]
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["./src", "./src/global.d.ts"]
 }

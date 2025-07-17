@@ -1,0 +1,60 @@
+{
+  "name": "@rumious/webpack-loader",
+  "version": "0.0.1",
+  "description": "A Webpack loader for transforming JSX into optimized JavaScript code during the build process.",
+  "license": "MIT",
+  "author": "smtdfc <me.smtdfc@gmail.com>",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist/",
+    "lib/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build:prod": "NODE_ENV=production rollup -c",
+    "build:dev": "NODE_ENV=development rollup -c",
+    "clean": "rm -rf dist",
+    "test": "node ../../test/compiler",
+    "prepare": "npm run build:dev",
+    "prepublishOnly": "cp ../../LICENSE . && npm run clean && npm run build:prod"
+  },
+  "keywords": [
+    "compiler",
+    "jsx",
+    "loader",
+    "framework",
+    "rumious",
+    "webpack",
+    "template",
+    "transform"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/smtdfc/rumious"
+  },
+  "bugs": {
+    "url": "https://github.com/smtdfc/rumious/issues"
+  },
+  "homepage": "https://github.com/smtdfc/rumious/tree/main/packages/webpack#readme",
+  "engines": {
+    "node": ">=18"
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "@rumious/compiler": "*",
+    "@rumious/config": "*"
+  },
+  "peerDependencies": {
+    "@rumious/core": "*",
+    "webpack": "^5.0.0"
+  }
+}

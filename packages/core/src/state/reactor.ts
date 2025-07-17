@@ -1,65 +1,84 @@
-import { RumiousStateBind, RumiousChangeCommit } from '../types/index.js';
+import type { State } from './state.js';
 
-export class RumiousReactor < T = any > {
-  private bindings: RumiousStateBind < T > [] = [];
-  private internal: RumiousStateBind < T > [] = [];
-  public isUIBatch = true;
-  private scheduled = false;
-  private queuedCommits: RumiousChangeCommit < T > [] = [];
-  
-  
-  constructor(public target: T) {}
-  
-  addBinding(binding: RumiousStateBind < T > ): void {
-    this.bindings.push(binding);
+export type StateCommitType =
+  | 'set'
+  | 'force'
+  | 'append'
+  | 'prepend'
+  | 'insert'
+  | 'remove'
+  | 'update';
+
+export type StateCommit = {
+  type: StateCommitType;
+  target?: unknown;
+  value?: unknown;
+  key?: string | number | symbol;
+};
+
+export type StateBinding = (commit: StateCommit) => void;
+
+export class StateReactor<T> {
+  private bindings: Set<StateBinding> = new Set();
+  private internalBindings: Set<StateBinding> = new Set();
+
+  private triggerQueue: Set<StateBinding> = new Set();
+  private scheduled: boolean = false;
+
+  constructor(public state: State<T>) {}
+
+  addInternalBinding(binding: StateBinding) {
+    this.internalBindings.add(binding);
   }
-  
-  removeBinding(binding: RumiousStateBind < T > ): void {
-    this.bindings = this.bindings.filter(b => b !== binding);
+
+  removeInternalBinding(binding: StateBinding) {
+    this.internalBindings.delete(binding);
   }
-  
-  addInternalBinding(binding: RumiousStateBind < T > ): void {
-    this.internal.push(binding);
+
+  addBinding(binding: StateBinding) {
+    this.bindings.add(binding);
   }
-  
-  removeInternalBinding(binding: RumiousStateBind < T > ): void {
-    this.internal = this.internal.filter(b => b !== binding);
+
+  removeBinding(binding: StateBinding) {
+    this.bindings.delete(binding);
   }
-  
-  notify(commit: RumiousChangeCommit < T > ): void {
-    for (const binding of this.bindings) {
-      binding(commit);
+
+  trigger(commit: StateCommit) {
+    for (const cb of this.internalBindings) {
+      this.triggerQueue.add(cb);
     }
-    
-    if (this.isUIBatch) {
-      this.scheduleInternalUpdate(commit);
-    } else {
-      for (const binding of this.internal) {
-        binding(commit);
-      }
+
+    for (const cb of this.bindings) {
+      this.triggerQueue.add(cb);
     }
-  }
-  
-  
-  private scheduleInternalUpdate(commit: RumiousChangeCommit < T > ) {
-    this.queuedCommits.push(commit);
-    
+
     if (!this.scheduled) {
       this.scheduled = true;
       queueMicrotask(() => {
-        this.flushInternal();
+        for (const cb of this.triggerQueue) {
+          try {
+            cb(commit);
+          } catch (err) {
+            console.error('[StateReactor] callback error:', err);
+          }
+        }
+        this.triggerQueue.clear();
+        this.scheduled = false;
       });
     }
   }
-  
-  private flushInternal() {
-    const lastCommit = this.queuedCommits[this.queuedCommits.length - 1];
-    
-    for (const binding of this.internal) {
-      binding(lastCommit); // chỉ gửi commit cuối cùng
-    }
-    
-    this.queuedCommits = [];
-    this.scheduled = false;
+
+  clear() {
+    this.bindings.clear();
+    this.internalBindings.clear();
+    this.triggerQueue.clear();
+  }
+
+  get stats() {
+    return {
+      bindings: this.bindings.size,
+      internalBindings: this.internalBindings.size,
+      queued: this.triggerQueue.size,
+    };
   }
 }

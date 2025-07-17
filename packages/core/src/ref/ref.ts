@@ -1,178 +1,116 @@
-import {
-  RumiousComponent,
-  RumiousComponentElement
-} from '../component/index.js';
+export class Ref<T extends HTMLElement> {
+  public element: T | null = null;
 
-export class RumiousRef {
-  public element!: HTMLElement;
-  private _mounted = false;
-  private _onMountCallbacks: ((el: HTMLElement) => void)[] = [];
-  private _onUnmountCallbacks: (() => void)[] = [];
-  
-  constructor() {}
-  
-  setTarget(element: HTMLElement) {
-    this.element = element;
-    this._mounted = true;
-    for (const cb of this._onMountCallbacks) {
-      cb(element);
+  setTarget(target: T) {
+    this.element = target;
+  }
+
+  isSet(): boolean {
+    return this.element !== null;
+  }
+
+  addClass(name: string) {
+    this.element?.classList.add(name);
+  }
+
+  removeClass(name: string) {
+    this.element?.classList.remove(name);
+  }
+
+  toggleClass(name: string) {
+    this.element?.classList.toggle(name);
+  }
+
+  get value(): string {
+    return (this.element as any).value ?? '';
+  }
+
+  set value(v: string) {
+    if (this.element && 'value' in this.element) {
+      (this.element as any).value = v;
     }
   }
-  
-  reset() {
-    if (this._mounted) {
-      for (const cb of this._onUnmountCallbacks) {
-        cb();
-      }
-    }
-    this.element = undefined as any;
-    this._mounted = false;
+
+  set text(t: string) {
+    if (this.element) this.element.textContent = t;
   }
-  
-  get(): HTMLElement | undefined {
-    return this._mounted ? this.element : undefined;
+
+  get text(): string {
+    return this.element?.textContent ?? '';
   }
-  
-  isMounted(): boolean {
-    return this._mounted;
+
+  set html(t: string) {
+    if (this.element) this.element.innerHTML = t;
   }
-  
-  has(): boolean {
-    return this.isMounted();
-  }
-  
-  onMount(cb: (el: HTMLElement) => void) {
-    this._onMountCallbacks.push(cb);
-    if (this._mounted) cb(this.element);
-  }
-  
-  onUnmount(cb: () => void) {
-    this._onUnmountCallbacks.push(cb);
-  }
-  
-  toString(): string {
-    return `[RumiousRef ${this._mounted ? "mounted" : "not mounted"}]`;
-  }
-  
-  
-  focus() {
-    this.assertMounted();
-    this.element.focus();
-  }
-  
-  addClass(className: string) {
-    this.assertMounted();
-    this.element.classList.add(className);
-  }
-  
-  removeClass(className: string) {
-    this.assertMounted();
-    this.element.classList.remove(className);
-  }
-  
-  toggleClass(className: string) {
-    this.assertMounted();
-    this.element.classList.toggle(className);
-  }
-  
-  setAttr(key: string, value: string) {
-    this.assertMounted();
-    this.element.setAttribute(key, value);
-  }
-  
-  removeAttr(key: string) {
-    this.assertMounted();
-    this.element.removeAttribute(key);
-  }
-  
-  query < T extends Element = Element > (selector: string): T | null {
-    this.assertMounted();
-    return this.element.querySelector < T > (selector);
-  }
-  
-  queryAll < T extends Element = Element > (selector: string): NodeListOf < T > {
-    this.assertMounted();
-    return this.element.querySelectorAll < T > (selector);
-  }
-  
-  get value(): string | undefined {
-    this.assertMounted();
-    return 'value' in this.element ? (this.element as any).value : undefined;
-  }
-  
-  set value(val: string | undefined) {
-    this.assertMounted();
-    if ('value' in this.element) {
-      (this.element as any).value = val;
-    } else {
-      throw new Error("RumiousRefError: Element has no 'value' property.");
-    }
-  }
-  
-  get text(): string | null {
-    this.assertMounted();
-    return this.element.textContent;
-  }
-  
-  set text(val: string | null) {
-    this.assertMounted();
-    this.element.textContent = val;
-  }
-  
+
   get html(): string {
-    this.assertMounted();
-    return this.element.innerHTML;
+    return this.element?.innerHTML ?? '';
   }
-  
-  set html(val: string) {
-    this.assertMounted();
-    this.element.innerHTML = val;
+
+  addChild(node: Node) {
+    this.element?.appendChild(node);
   }
-  
-  get checked(): boolean {
-    this.assertMounted();
-    return 'checked' in this.element ? Boolean((this.element as any).checked) : false;
+
+  clear() {
+    if (this.element) this.element.innerHTML = '';
   }
-  
-  set checked(val: boolean) {
-    this.assertMounted();
-    if ('checked' in this.element) {
-      (this.element as any).checked = val;
-    } else {
-      throw new Error("RumiousRefError: Element has no 'checked' property.");
-    }
+
+  setAttr(name: string, value: string) {
+    this.element?.setAttribute(name, value);
   }
-  
-  get disabled(): boolean {
-    this.assertMounted();
-    return 'disabled' in this.element ? Boolean((this.element as any).disabled) : false;
+
+  getAttr(name: string): string | null {
+    return this.element?.getAttribute(name) ?? null;
   }
-  
-  set disabled(val: boolean) {
-    this.assertMounted();
-    if ('disabled' in this.element) {
-      (this.element as any).disabled = val;
-    } else {
-      throw new Error("RumiousRefError: Element has no 'disabled' property.");
-    }
+
+  removeAttr(name: string) {
+    this.element?.removeAttribute(name);
   }
-  
-  get component():RumiousComponent | null{
-    if(this.element instanceof RumiousComponentElement){
-      return this.element.instance;
-    }else{
-      return null;
-    }
+
+  on<K extends keyof HTMLElementEventMap>(
+    event: K,
+    listener: (ev: HTMLElementEventMap[K]) => any,
+  ) {
+    this.element?.addEventListener(event, listener);
   }
-  
-  private assertMounted() {
-    if (!this._mounted) {
-      throw new Error("RumiousRefError: Element is not mounted.");
-    }
+
+  off<K extends keyof HTMLElementEventMap>(
+    event: K,
+    listener: (ev: HTMLElementEventMap[K]) => any,
+  ) {
+    this.element?.removeEventListener(event, listener);
+  }
+
+  focus() {
+    (this.element as any)?.focus?.();
+  }
+
+  blur() {
+    (this.element as any)?.blur?.();
+  }
+
+  hide() {
+    if (this.element) this.element.style.display = 'none';
+  }
+
+  show(display: string = 'block') {
+    if (this.element) this.element.style.display = display;
+  }
+
+  setStyle(property: string, value: string) {
+    if (this.element) this.element.style.setProperty(property, value);
+  }
+
+  getStyle(property: string): string {
+    return this.element?.style.getPropertyValue(property) ?? '';
+  }
+
+  remove() {
+    this.element?.remove();
+    this.element = null;
   }
 }
 
-
-export function createRef(): RumiousRef {
-  return new RumiousRef();
+export function createRef<T extends HTMLElement>(): Ref<T> {
+  return new Ref<T>();
 }

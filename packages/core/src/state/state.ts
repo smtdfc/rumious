@@ -1,91 +1,200 @@
-import { RumiousReactor } from './reactor.js';
-import { RumiousStateBind } from '../types/index.js';
+import { StateReactor } from './reactor.js';
 
-export class RumiousState < T > {
-  
-  constructor(
-    public value: T,
-    public reactor ? : RumiousReactor < RumiousState < T >>
-  ) {
-    if (!this.reactor) {
-      this.reactor = new RumiousReactor < RumiousState < T >> (this);
-    }
+export const STATE_SYMBOL: unique symbol = Symbol('State@Symbol');
+
+function shallowEqual(obj1: any, obj2: any): boolean {
+  if (obj1 === obj2) return true;
+  if (!obj1 || !obj2) return false;
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+  if (keys1.length !== keys2.length) return false;
+  for (const key of keys1) {
+    if (obj1[key] !== obj2[key]) return false;
   }
-  
+  return true;
+}
+
+export class State<T> {
+  private keysWrap = new Map<string, State<unknown>>();
+  private wrapCache = new WeakMap<Function, State<unknown>>();
+  [STATE_SYMBOL]: unknown = { instance: this };
+
+  public reactor = new StateReactor<T>(this);
+
+  constructor(protected value: T) {}
+
   set(value: T) {
+    const same =
+      typeof value === 'object' && value !== null
+        ? shallowEqual(this.value, value)
+        : this.value === value;
+
+    if (same) return;
+
     this.value = value;
-    this.reactor?.notify({
-      type: 'set',
-      value: value,
-      state: this
-    });
+    this.reactor.trigger({ type: 'set', target: this, value });
   }
-  
+
   get(): T {
     return this.value;
   }
-  
-  slientUpdate(value: T) {
+
+  update(cb: (v: T) => T) {
+    const newValue = cb(this.value);
+
+    const same =
+      typeof newValue === 'object' && newValue !== null
+        ? shallowEqual(this.value, newValue)
+        : this.value === newValue;
+
+    if (same) return;
+
+    this.set(newValue);
+  }
+
+  setInSlient(value: T) {
     this.value = value;
   }
-  
-  update(updater: (value: T) => T) {
-    this.set(updater(this.value));
+
+  forceReactive() {
+    this.reactor.trigger({ type: 'force' });
   }
-  
-  toJSON(): string {
-    return JSON.stringify(this.value);
+
+  wrap<K>(cb: (val: T) => K): State<K> {
+    if (this.wrapCache.has(cb)) {
+      return this.wrapCache.get(cb) as State<K>;
+    }
+
+    const state = new State<K>(cb(this.value));
+    this.wrapCache.set(cb, state);
+
+    this.reactor.addInternalBinding(() => {
+      state.set(cb(this.value));
+    });
+
+    return state;
   }
-  
-  equal(value: T): boolean {
-    return value === this.value;
-  }
-  
-  trigger() {
-    this.reactor?.notify({
-      type: 'set',
+
+  setKey<K extends keyof T>(key: K, value: T[K]) {
+    if (this.value[key] === value) return;
+    this.value[key] = value;
+
+    this.reactor.trigger({
+      type: 'update',
+      target: this,
       value: this.value,
-      state: this
+      key,
+    });
+
+    const fieldState = this.keysWrap.get(key as string);
+    if (fieldState) fieldState.set(value);
+  }
+
+  setByIndex<U>(this: State<U[]>, index: number, value: U) {
+    if (!Array.isArray(this.value)) {
+      throw new Error(
+        'RumiousStateError: setByIndex can only be used on array value.',
+      );
+    }
+
+    if (this.value[index] === value) return;
+
+    this.value[index] = value;
+
+    this.reactor.trigger({
+      type: 'update',
+      target: this,
+      value: this.value,
+      key: index,
     });
   }
-  
-  entries(): [any, any][] {
-    if (this.value && typeof this.value === "object") return Object.entries(this.value);
-    return [];
+
+  getKey<K extends keyof T>(key: K): T[K] {
+    return this.value[key];
   }
-  
-  map <R> (callback: (value: unknown, key: any) => R): R[] {
-    const val = this.value;
-    
-    if (Array.isArray(val)) {
-      return val.map((v, i) => callback(v, i)); 
+
+  wrapKey<K extends keyof T>(key: K): State<T[K]> {
+    const keyStr = key as string;
+
+    if (!this.keysWrap.has(keyStr)) {
+      const fieldState = createState(this.getKey(key));
+      this.keysWrap.set(keyStr, fieldState);
+
+      this.reactor.addInternalBinding(() => {
+        fieldState.set(this.getKey(key));
+      });
     }
-    
-    if (val && typeof val === "object") {
-      return Object.entries(val).map(([k, v]) => callback(v, k));
+
+    return this.keysWrap.get(keyStr)! as State<T[K]>;
+  }
+
+  insertAt<U>(this: State<U[]>, index: number, value: U) {
+    if (!Array.isArray(this.value)) {
+      throw new Error(
+        'RumiousStateError: insertAt can only be used on array value.',
+      );
     }
-    
-    return [];
+
+    if (index < 0 || index > this.value.length) {
+      throw new Error('RumiousStateError: Index out of bounds.');
+    }
+
+    this.value.splice(index, 0, value);
+    this.reactor.trigger({
+      type: 'insert',
+      target: this,
+      value: this.value,
+      key: index,
+    });
+  }
+
+  removeAt<U>(this: State<U[]>, index: number) {
+    if (!Array.isArray(this.value)) {
+      throw new Error(
+        'RumiousStateError: removeAt can only be used on array value.',
+      );
+    }
+
+    if (index < 0 || index >= this.value.length) {
+      throw new Error('RumiousStateError: Index out of bounds.');
+    }
+
+    this.value.splice(index, 1);
+    this.reactor.trigger({
+      type: 'remove',
+      target: this,
+      value: this.value,
+      key: index,
+    });
+  }
+
+  append<U>(this: State<U[]>, value: U) {
+    this.insertAt(this.value.length, value);
+  }
+
+  prepend<U>(this: State<U[]>, value: U) {
+    this.insertAt(0, value);
+  }
+
+  map<U>(this: State<U[]>, cb: (item: U, index: number) => unknown): unknown[] {
+    return this.value.map(cb);
   }
 }
 
-
-export function createState < T > (value: T): RumiousState < T > {
-  return new RumiousState < T > (value);
+export function wrapState<T, K>(cb: (val: T) => K, parent: State<T>): State<K> {
+  const state = new State(cb(parent.get()));
+  parent.reactor.addInternalBinding(() => {
+    state.set(cb(parent.get()));
+  });
+  return state;
 }
 
-type StateBindFor < M > = RumiousStateBind < RumiousState < M >> ;
-
-export function watch < M > (
-  state: RumiousState < M > ,
-  callback: StateBindFor < M >
-) {
-  if (state.reactor) state.reactor.addBinding(callback);
+export function createState<T>(value: T): State<T> {
+  return new State<T>(value);
 }
 
-export function unwatch < M > (
-  state: RumiousState < M > ,
-  callback: StateBindFor < M >
-) {
-  if (state.reactor) state.reactor.removeBinding(callback);
+export function isState(val: unknown): val is State<unknown> {
+  return (
+    typeof val === 'object' && val !== null && STATE_SYMBOL in (val as object)
+  );
 }

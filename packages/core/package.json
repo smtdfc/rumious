@@ -1,39 +1,53 @@
 {
-  "name": "rumious",
-  "version": "2.1.6",
-  "description": "",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "name": "@rumious/core",
+  "version": "3.0.0",
+  "description": "Core runtime and reactivity system for the Rumious framework.",
+  "license": "MIT",
+  "author": "smtdfc <me.smtdfc@gmail.com>",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/index.js",
-      "default": "./dist/index.js"
+      "types": "./dist/index.d.ts"
     }
   },
+  "files": [
+    "dist/",
+    "lib/",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "dec": "tsc --declaration --allowJs --emitDeclarationOnly",
-    "type": "tsc --noEmit",
-    "build": "NODE_ENV=production rollup -c --environment MINIFY:true",
+    "build:prod": "NODE_ENV=production rollup -c",
     "build:dev": "NODE_ENV=development rollup -c",
-    "start": "NODE_ENV=production node dist/index.js",
-    "dev": "NODE_ENV=development node dist/index.js",
-    "test": "echo \"No tests yet\"",
-    "prepublishOnly": "npm run build"
+    "clean": "rm -rf dist",
+    "test": "node ../../test/browser",
+    "prepare": "npm run build:dev",
+    "prepublishOnly": "cp ../../LICENSE . && npm run clean && npm run build:prod"
   },
   "keywords": [
+    "jsx",
+    "framework",
     "rumious",
-    "frontend",
-    "framework"
+    "reactive",
+    "template",
+    "browser"
   ],
-  "files":[
-  	"dist/**"
-  ],
-  "author": "smtdfc",
-  "license": "MIT",
-  "devDependencies": {},
-  "dependencies": {},
-    "bugs": {
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/smtdfc/rumious"
+  },
+  "bugs": {
     "url": "https://github.com/smtdfc/rumious/issues"
   },
-  "homepage": "https://github.com/smtdfc/rumious#readme"
+  "homepage": "https://github.com/smtdfc/rumious#readme",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@rumious/core": "*"
+  },
+  "devDependencies": {}
 }

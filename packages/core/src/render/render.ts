@@ -1,31 +1,20 @@
-import { RumiousRenderContext } from './context.js';
-import { RumiousTemplate } from '../types/index.js';
+import type { RenderContext } from './context.js';
+import type { RenderContent } from '../types/index.js';
 
-export function render(
-  content: RumiousTemplate,
-  container:HTMLElement,
-  context:RumiousRenderContext
-):HTMLElement{
-  context.onRendered = [];
-  let result = content(container,context);
-  
-  for (var i = 0; i < context.onRendered.length; i++) {
-    context.onRendered[i]();
-  }
-  return result;
+export function isRenderContent(val: unknown): val is RenderContent {
+  return typeof val === 'function' && val.length === 1;
 }
 
-export function renderFrag(
-  content: RumiousTemplate,
-  context: RumiousRenderContext
-): HTMLElement {
-  let container = document.createDocumentFragment();
-  context.onRendered = [];
-  let result = content(container, context);
-  
-  for (var i = 0; i < context.onRendered.length; i++) {
-    context.onRendered[i]();
+export function render(
+  target: HTMLElement,
+  context: RenderContext,
+  content: RenderContent,
+): DocumentFragment {
+  context.onRenderFinish = [];
+  const fragment = content(context);
+  target.appendChild(fragment);
+  for (let i = 0; i < context.onRenderFinish.length; i++) {
+    context.onRenderFinish[i]();
   }
-  
-  return result;
+  return fragment;
 }

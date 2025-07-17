@@ -1,11 +1,11 @@
-import type {RumiousApp} from '../app/index.js';
+import type { App } from '../app/index.js';
 
-type Callback = () => any;
-
-export class RumiousRenderContext{
-  public onRendered: Callback[] = [];
+export type RenderHook = () => unknown;
+export class RenderContext {
+  public onRenderFinish: RenderHook[] = [];
   constructor(
-    public app:RumiousApp,
-    public target:any
-  ){}
+    public app: App,
+
+    public target: any,
+  ) {}
 }

@@ -1,90 +1,54 @@
-import { RumiousTemplate } from '../types/index.js';
-import { RumiousRenderContext, render, RumiousViewControl, createViewControl } from '../render/index.js';
-import { RumiousApp } from '../app/index.js';
-import { RumiousRef } from '../ref/index.js';
+import { RenderContext, render } from '../render/index.js';
+import type { RenderContent } from '../types/index.js';
 
-export class RumiousComponent < T = any > {
-  public props!: T;
-  public app!: RumiousApp;
-  public element!: HTMLElement;
-  public context!: RumiousRenderContext;
-  public slot: RumiousTemplate | null = null;
+export class Component<T extends object> {
   static tagName = 'rumious-component';
-  
-  constructor() {}
-  
-  createViewControl(): RumiousViewControl {
-    return createViewControl();
-  }
-  
-  mountTo(
-    template: RumiousTemplate,
-    target: HTMLElement,
-  ): HTMLElement {
-    return render(
-      template,
-      target,
-      this.context
-    );
-  }
-  
-  prepare(
-    props: T,
-    context: RumiousRenderContext,
-    element: HTMLElement
+  private renderContext: RenderContext;
+
+  constructor(
+    protected props: T,
+    protected element: HTMLElement,
+    parentContext: RenderContext,
   ) {
-    this.app = context.app;
-    this.element = element;
-    this.props = props;
-    this.context = new RumiousRenderContext(
-      context.app,
-      this
-    );
+    this.renderContext = new RenderContext(parentContext.app, this);
+    this.onCreate();
   }
-  
-  template(): RumiousTemplate {
-    throw new Error(`RumiousRenderError: Cannot render empty component !`);
-  }
-  
-  requestRender() {
-    let template = this.template();
-    render(
-      template,
-      this.element,
-      this.context
-    );
-  }
-  
-  remove() {
-    this.element.remove();
-  }
-  
+
   onCreate() {}
   onRender() {}
   onDestroy() {}
   beforeRender() {}
-  
-  renderTo(
-    target: HTMLElement | RumiousRef,
-    template: RumiousTemplate
-  ) {
-    if (target instanceof HTMLElement) {
-      render(
-        template,
-        target,
-        this.context
-      );
-    } else if (target instanceof RumiousRef && target.isMounted()) {
-      render(
-        template,
-        target.element,
-        this.context
-      );
-    }
+  beforeMount() {}
+  onMounted() {}
+
+  template(): RenderContent {
+    throw new Error('RumiousRenderError: Cannot render empty component !');
   }
-  
+
+  async requestRender() {
+    await this.beforeRender();
+    const content = await this.template();
+    this.element.textContent = '';
+    render(this.element, this.renderContext, content);
+    this.onRender();
+  }
 }
 
-export class Fragment extends RumiousComponent < any > {
-  
+export interface ComponentConstructor<T extends object> {
+  new (
+    props: T,
+    element: HTMLElement,
+    parentContext: RenderContext,
+  ): Component<T>;
+  tagName: string;
+}
+
+export type EmptyProps = object;
+
+export class Fragment extends Component<EmptyProps> {
+  template(): RenderContent {
+    throw new Error(
+      'RumiousRenderError: Component must be compile by RumiousCompiler',
+    );
+  }
 }
