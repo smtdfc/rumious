@@ -31,17 +31,17 @@ const generate = (
 export class Compiler {
   public eventNames: string[] = [];
   public environment: string;
-  constructor(public options: Partial<CompilerOptions> = {}) {
+  constructor(public options: Partial < CompilerOptions > = {}) {
     this.environment = options.environment ?? '@rumious/browser';
   }
-
+  
   generateUId(context: Context, name: string): t.Identifier {
     if (!context.program)
       throw Error('RumiousCompileError: Cannot create unique identifier !');
     const id = context.program.scope.generateUidIdentifier(name);
     return id;
   }
-
+  
   transfomDirective(
     context: Context,
     target: t.Identifier,
@@ -51,7 +51,7 @@ export class Compiler {
     const splitted = name.split(':');
     const dName = splitted[0];
     const dModifier = splitted[1] ?? '';
-
+    
     if (dName == 'bind') {
       const reactiveFn = context.importHelper.requireId(
         context,
@@ -75,7 +75,7 @@ export class Compiler {
         ]),
       );
     }
-
+    
     if (dName == 'attr') {
       const reactiveFn = context.importHelper.requireId(
         context,
@@ -97,7 +97,7 @@ export class Compiler {
         ]),
       );
     }
-
+    
     if (dName == 'ref') {
       //spec: ref(context, element,value)
       const refFn = context.importHelper.requireId(
@@ -109,7 +109,7 @@ export class Compiler {
         t.callExpression(refFn, [context.scope.rootCtx, target, value]),
       );
     }
-
+    
     if (dName == 'model') {
       const detectValueChangeFn = context.importHelper.requireId(
         context,
@@ -121,7 +121,7 @@ export class Compiler {
         'setStateValue',
         this.environment,
       );
-
+      
       return t.expressionStatement(
         t.callExpression(detectValueChangeFn, [
           t.arrowFunctionExpression(
@@ -133,7 +133,7 @@ export class Compiler {
         ]),
       );
     }
-
+    
     if (dName == 'on') {
       const createEventFn = context.importHelper.requireId(
         context,
@@ -150,7 +150,7 @@ export class Compiler {
         ]),
       );
     }
-
+    
     const directiveObjId = context.importHelper.requireId(
       context,
       'directives',
@@ -164,7 +164,7 @@ export class Compiler {
       ),
     );
   }
-
+  
   transformJSXAttribute(
     context: Context,
     target: t.Identifier,
@@ -177,7 +177,7 @@ export class Compiler {
       const attr = attributes[i];
       if (t.isJSXAttribute(attr)) {
         const [name, isNamespace] = getAttrNameAsString(attr);
-
+        
         if (isNamespace && name.split(':')[0] == 'compile') {
           const modifier = name.split(':')[1];
           switch (modifier) {
@@ -191,7 +191,7 @@ export class Compiler {
           }
           continue;
         }
-
+        
         const value = getAttrValue(attr);
         if (
           (!isNamespace && SINGLE_DIRECTIVES.includes(name)) ||
@@ -205,20 +205,20 @@ export class Compiler {
         }
       }
     }
-
+    
     return [
       t.objectExpression(attributesExpr),
       directiveStats,
       compileDirective,
     ];
   }
-
+  
   transformJSXElement(context: Context, node: t.JSXElement) {
     const openingElement = node.openingElement;
     const attributes = openingElement.attributes;
     const name = openingElement.name;
     let isComponent = false;
-
+    
     const nameStr = getElementNameAsString(name);
     if (t.isJSXIdentifier(name) && isComponentName(nameStr)) isComponent = true;
     if (
@@ -226,11 +226,11 @@ export class Compiler {
       isComponentName(getElementNameAsString(name.property))
     )
       isComponent = true;
-
+    
     if (isComponent) {
       return this.transfomComponent(context, node);
     }
-
+    
     //spec: element(root,context,tagName,attrs)
     const elementVar = this.generateUId(context, 'ele_');
     const elementFn = context.importHelper.requireId(
@@ -254,9 +254,9 @@ export class Compiler {
         ]),
       ),
     ]);
-
+    
     context.statements.push(elementDec, ...directives);
-
+    
     const elementContext: Context = {
       importHelper: context.importHelper,
       scope: {
@@ -270,12 +270,12 @@ export class Compiler {
         compileDirectives,
       ),
     };
-
+    
     if (node.children.length == 0) return;
     this.transformNodes(elementContext, node.children);
     context.statements.push(...elementContext.statements);
   }
-
+  
   transfomFragmentComponent(context: Context, node: t.JSXElement) {
     const openingElement = node.openingElement;
     const attributes = openingElement.attributes;
@@ -285,7 +285,7 @@ export class Compiler {
       componentVar,
       attributes,
     );
-
+    
     const componentContext: Context = {
       importHelper: context.importHelper,
       scope: {
@@ -299,28 +299,28 @@ export class Compiler {
         compileDirectives,
       ),
     };
-
+    
     this.transformNodes(componentContext, node.children);
-
+    
     context.statements.push(...componentContext.statements);
   }
-
-  transfomForComponent(context: Context, node: t.JSXElement) {
+  
+  transfomIfComponent(context: Context, node: t.JSXElement) {
     const openingElement = node.openingElement;
     const attributes = openingElement.attributes;
     const componentFn = context.importHelper.requireId(
       context,
-      'createForComponent',
+      'createIfComponent',
       this.environment,
     );
-
-    const componentVar = this.generateUId(context, 'for_comp_');
+    
+    const componentVar = this.generateUId(context, 'if_comp_');
     const [props, , compileDirectives] = this.transformJSXAttribute(
       context,
       componentVar,
       attributes,
     );
-
+    
     const componentDec = t.variableDeclaration('const', [
       t.variableDeclarator(
         componentVar,
@@ -331,23 +331,57 @@ export class Compiler {
         ]),
       ),
     ]);
-
+    
     context.statements.push(componentDec);
   }
-
+  
+  transfomForComponent(context: Context, node: t.JSXElement) {
+    const openingElement = node.openingElement;
+    const attributes = openingElement.attributes;
+    const componentFn = context.importHelper.requireId(
+      context,
+      'createForComponent',
+      this.environment,
+    );
+    
+    const componentVar = this.generateUId(context, 'for_comp_');
+    const [props, , compileDirectives] = this.transformJSXAttribute(
+      context,
+      componentVar,
+      attributes,
+    );
+    
+    const componentDec = t.variableDeclaration('const', [
+      t.variableDeclarator(
+        componentVar,
+        t.callExpression(componentFn, [
+          context.scope.rootElement,
+          context.scope.rootCtx,
+          props,
+        ]),
+      ),
+    ]);
+    
+    context.statements.push(componentDec);
+  }
+  
   transfomComponent(context: Context, node: t.JSXElement) {
     const openingElement = node.openingElement;
     const attributes = openingElement.attributes;
     const nameStr = getElementNameAsString(openingElement.name);
-
+    
+    if (nameStr === 'If') {
+      return this.transfomIfComponent(context, node);
+    }
+    
     if (nameStr === 'For') {
       return this.transfomForComponent(context, node);
     }
-
+    
     if (nameStr === 'Fragment') {
       return this.transfomFragmentComponent(context, node);
     }
-
+    
     const name = getElementNameAsExpr(openingElement.name);
     const componentFn = context.importHelper.requireId(
       context,
@@ -360,7 +394,7 @@ export class Compiler {
       componentVar,
       attributes,
     );
-
+    
     const componentDec = t.variableDeclaration('const', [
       t.variableDeclarator(
         componentVar,
@@ -372,9 +406,9 @@ export class Compiler {
         ]),
       ),
     ]);
-
+    
     context.statements.push(componentDec);
-
+    
     if (node.children.length == 0) return;
     const componentContext: Context = {
       importHelper: context.importHelper,
@@ -389,7 +423,7 @@ export class Compiler {
         compileDirectives,
       ),
     };
-
+    
     const createRootFragStat = t.variableDeclaration('const', [
       t.variableDeclarator(
         componentContext.scope.rootElement,
@@ -402,9 +436,9 @@ export class Compiler {
         ),
       ),
     ]);
-
+    
     this.transformNodes(componentContext, node.children);
-
+    
     const setSlotCall = t.expressionStatement(
       t.callExpression(
         t.memberExpression(componentVar, t.identifier('setSlot')),
@@ -421,13 +455,13 @@ export class Compiler {
         ],
       ),
     );
-
+    
     context.statements.push(setSlotCall);
   }
-
+  
   transformNodes(
     context: Context,
-
+    
     nodes: any[],
   ) {
     let textBuffer = '';
@@ -449,7 +483,7 @@ export class Compiler {
       }
       textBuffer = '';
     };
-
+    
     const preserveWhitespace: unknown =
       context.compileDirectives.preserveWhitespace;
     for (const node of nodes) {
@@ -481,7 +515,7 @@ export class Compiler {
     }
     flushText();
   }
-
+  
   transformJSXExpressionContainer(
     context: Context,
     node: t.JSXExpressionContainer,
@@ -500,10 +534,10 @@ export class Compiler {
         expression,
       ]),
     );
-
+    
     context.statements.push(appendDynamicValueStat);
   }
-
+  
   transformAst(ast: t.File) {
     const context: Context = {
       importHelper: new ImportHelper(),
@@ -516,19 +550,19 @@ export class Compiler {
         preserveWhitespace: true,
       },
     };
-
+    
     traverse(ast, {
       Program: (path: NodePath) => {
         context.program = path;
         context.scope.rootElement = this.generateUId(context, 'root');
         context.scope.rootCtx = this.generateUId(context, 'ctx');
       },
-
+      
       JSXAttribute: (path: NodePath) => {
         console.log(path);
       },
-
-      JSXElement: (path: NodePath<t.JSXElement>) => {
+      
+      JSXElement: (path: NodePath < t.JSXElement > ) => {
         const localContext: Context = {
           importHelper: context.importHelper,
           scope: {
@@ -541,9 +575,9 @@ export class Compiler {
             preserveWhitespace: true,
           },
         };
-
+        
         this.transformJSXElement(localContext, path.node);
-
+        
         const createRootFragStat = t.variableDeclaration('const', [
           t.variableDeclarator(
             localContext.scope.rootElement,
@@ -556,7 +590,7 @@ export class Compiler {
             ),
           ),
         ]);
-
+        
         const template = t.arrowFunctionExpression(
           [localContext.scope.rootCtx],
           t.blockStatement([
@@ -565,11 +599,11 @@ export class Compiler {
             t.returnStatement(localContext.scope.rootElement),
           ]),
         );
-
+        
         path.replaceWith(template);
       },
     });
-
+    
     const eventDelegateFn = context.importHelper.requireId(
       context,
       'eventDelegate',
@@ -581,28 +615,28 @@ export class Compiler {
     const eventDelegateStat = t.expressionStatement(
       t.callExpression(eventDelegateFn, [eventNameStrLiterals]),
     );
-
+    
     ast.program.body.push(eventDelegateStat);
-
+    
     ast.program.body.unshift(...context.importHelper.generateImportDec());
   }
-
+  
   compile(code: string, metadata: SourceMetadata): CompileResult {
     const filename = metadata.filename;
     const isTSX = filename.endsWith('.tsx');
     const isTS = filename.endsWith('.ts') || isTSX;
     const plugins: ParserPlugin[] = ['jsx'];
-
+    
     if (isTS || isTSX) plugins.push('typescript');
-
+    
     const ast = parser.parse(code, {
       sourceType: metadata.type,
       ranges: true,
       plugins,
     });
-
+    
     this.transformAst(ast);
-
+    
     const compiled = generate(
       ast,
       {
@@ -615,7 +649,7 @@ export class Compiler {
       },
       code,
     );
-
+    
     return {
       code: compiled.code,
       map: compiled.map,
