@@ -305,10 +305,44 @@ export class Compiler {
     context.statements.push(...componentContext.statements);
   }
 
+  transfomForComponent(context: Context, node: t.JSXElement) {
+    const openingElement = node.openingElement;
+    const attributes = openingElement.attributes;
+    const componentFn = context.importHelper.requireId(
+      context,
+      'createForComponent',
+      this.environment,
+    );
+
+    const componentVar = this.generateUId(context, 'for_comp_');
+    const [props, , compileDirectives] = this.transformJSXAttribute(
+      context,
+      componentVar,
+      attributes,
+    );
+
+    const componentDec = t.variableDeclaration('const', [
+      t.variableDeclarator(
+        componentVar,
+        t.callExpression(componentFn, [
+          context.scope.rootElement,
+          context.scope.rootCtx,
+          props,
+        ]),
+      ),
+    ]);
+
+    context.statements.push(componentDec);
+  }
+
   transfomComponent(context: Context, node: t.JSXElement) {
     const openingElement = node.openingElement;
     const attributes = openingElement.attributes;
     const nameStr = getElementNameAsString(openingElement.name);
+
+    if (nameStr === 'For') {
+      return this.transfomForComponent(context, node);
+    }
 
     if (nameStr === 'Fragment') {
       return this.transfomFragmentComponent(context, node);
