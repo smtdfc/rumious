@@ -9,9 +9,9 @@ export type StateCommitType =
   | 'remove'
   | 'update';
 
-export type StateCommit = {
+export type StateCommit<T> = {
   type: StateCommitType;
-  target?: unknown;
+  target?: State<T>;
   value?: unknown;
   key?: string | number | symbol;
 };

@@ -1,5 +1,6 @@
 import { RenderContext, render } from '../render/index.js';
 import type { RenderContent } from '../types/index.js';
+import type { State } from '../state/index.js';
 
 export class Component<T extends object> {
   static tagName = 'rumious-component';
@@ -46,6 +47,19 @@ export interface ComponentConstructor<T extends object> {
 export type EmptyProps = object;
 
 export class Fragment extends Component<EmptyProps> {
+  template(): RenderContent {
+    throw new Error(
+      'RumiousRenderError: Component must be compile by RumiousCompiler',
+    );
+  }
+}
+
+export type ForProps<T> = {
+  template: (value: T) => RenderContent;
+  list: State<T[]>;
+};
+
+export class For extends Component<ForProps<unknown>> {
   template(): RenderContent {
     throw new Error(
       'RumiousRenderError: Component must be compile by RumiousCompiler',
