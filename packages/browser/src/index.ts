@@ -5,38 +5,49 @@ import {
   ComponentConstructor,
   State,
   Ref,
+  ForProps,
   createComponentElement,
   isRenderContent,
 } from '@rumious/core';
 
-/*
-function createMarkedFragment(startText = 'marker:start', endText = 'marker:end') {
+function createMarkedFragment() {
+  const start = document.createComment('r:start');
+  const end = document.createComment('r:end');
   const fragment = document.createDocumentFragment();
-  
-  const start = document.createComment(startText);
-  const end = document.createComment(endText);
-  fragment.appendChild(start);
-  fragment.appendChild(end);
-  
+  fragment.append(start, end);
+
   return {
     fragment,
-    start,
-    end,
-    replace(...newNodes: Node[]) {
-      // Remove all nodes between start and end
-      let node = start.nextSibling;
-      while (node && node !== end) {
-        const next = node.nextSibling;
-        node.parentNode?.removeChild(node);
-        node = next;
+
+    insertAt(el: Node, index: number) {
+      let ref = start.nextSibling;
+      let i = 0;
+      while (ref && ref !== end) {
+        if (i === index) break;
+        i++;
+        ref = ref.nextSibling;
       }
-      // Insert new content
-      newNodes.forEach(n => end.parentNode?.insertBefore(n, end));
-    }
+      end.parentNode!.insertBefore(el, ref ?? end);
+    },
+
+    insertRange(els: Node[], index: number) {
+      const before = () => {
+        let node = start.nextSibling;
+        let i = 0;
+        while (node && node !== end) {
+          if (i === index) return node;
+          if (node.nodeType === 1) i++;
+          node = node.nextSibling;
+        }
+        return end;
+      };
+      const ref = before();
+      for (let el of els) {
+        ref.parentNode!.insertBefore(el, ref);
+      }
+    },
   };
 }
-
-*/
 
 export function eventDelegate(events: string[]) {
   for (const name of events) {
@@ -212,4 +223,65 @@ export function ref(
   target: unknown,
 ) {
   if (target instanceof Ref) target.element = element;
+}
+
+export function createForComponent<T>(
+  parent: HTMLElement,
+  context: RenderContext,
+  props: ForProps<T>,
+) {
+  const tmpl = props.template;
+  const marker = createMarkedFragment();
+  const items: HTMLElement[] = [];
+
+  // Initial render
+  const initialList = props.list.get();
+  for (let i = 0; i < initialList.length; i++) {
+    const el = tmpl(initialList[i])(context).children[0] as HTMLElement;
+    items.push(el);
+  }
+
+  parent.appendChild(marker.fragment);
+  marker.insertRange(items, 0);
+
+  props.list.reactor.addInternalBinding(({ type, key, value }) => {
+    switch (type) {
+      case 'insert': {
+        const el = tmpl(value as T)(context).children[0] as HTMLElement;
+        items.splice(key as number, 0, el);
+        marker.insertAt(el, key as number);
+        break;
+      }
+
+      case 'remove': {
+        const removed = items.splice(key as number, 1)[0];
+        removed?.remove?.();
+        break;
+      }
+
+      case 'update': {
+        const newEl = tmpl(value as T)(context).children[0] as HTMLElement;
+        const oldEl = items[key as number];
+        if (oldEl !== newEl) {
+          items[key as number] = newEl;
+          oldEl.replaceWith(newEl);
+        }
+        break;
+      }
+
+      case 'set': {
+        for (const item of items) item.remove?.();
+        items.length = 0;
+
+        const fresh = (value as T[]).map((val) => {
+          const el = tmpl(val)(context).children[0] as HTMLElement;
+          items.push(el);
+          return el;
+        });
+
+        marker.insertRange(fresh, 0);
+        break;
+      }
+    }
+  });
 }
