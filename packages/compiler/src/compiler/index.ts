@@ -110,6 +110,18 @@ export class Compiler {
       );
     }
     
+    if (dName == 'view') {
+      //spec: view(context, element,value)
+      const viewFn = context.importHelper.requireId(
+        context,
+        'view',
+        this.environment,
+      );
+      return t.expressionStatement(
+        t.callExpression(viewFn, [context.scope.rootCtx, target, value]),
+      );
+    }
+    
     if (dName == 'model') {
       const detectValueChangeFn = context.importHelper.requireId(
         context,
@@ -133,6 +145,7 @@ export class Compiler {
         ]),
       );
     }
+    
     
     if (dName == 'on') {
       const createEventFn = context.importHelper.requireId(
