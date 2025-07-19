@@ -16,7 +16,7 @@ export type StateCommit<T> = {
   key?: string | number | symbol;
 };
 
-export type StateBinding = (commit: StateCommit<unknown>) => void;
+export type StateBinding = (commit?: StateCommit<unknown>) => void;
 
 export class StateReactor<T> {
   private bindings: Set<StateBinding> = new Set();

@@ -1,4 +1,5 @@
 # ⚡ Rumious
+
 ![npm](https://img.shields.io/npm/v/rumious)  
 ![downloads](https://img.shields.io/npm/dt/rumious)  
 ![bundle size](https://img.shields.io/bundlephobia/min/rumious)
@@ -6,15 +7,16 @@
 ![Language](https://img.shields.io/github/languages/top/smtdfc/rumious)
 ![GitHub license](https://img.shields.io/github/license/smtdfc/rumious)
 
-
 **Rumious** is a UI framework based on **Web Components**, enabling you to build modern interfaces without relying on Virtual DOM
 
 ## 🚀 Key Features
+
 - **Web Components** – Fully compatible with any framework or works independently.
 - **No Virtual DOM** – High performance with minimal resource usage.
 - **Lifecycle Hooks Support** – Control the rendering and removal process of components.
 
 ## 📦 Installation
+
 ```sh
 npm install rumious rumious-cli
 ```
@@ -29,14 +31,14 @@ Start by initializing a new Rumious project:
 
 ```sh
 rumious init start-app
-npm install 
+npm install
 ```
 
 This command will generate a project directory with the basic structure and configuration files.
 
 ### 2. Create Your First App
 
-Navigate to the *index.tsx* file and add the following code:
+Navigate to the _index.tsx_ file and add the following code:
 
 ```typescript
 import {RumiousApp, Fragment} from "rumious";
@@ -60,6 +62,7 @@ In this example, you are rendering a simple application with a heading and a but
 Once you've created your app, you can build it and start testing it locally.
 
 To build your project, run:
+
 ```sh
 rumious build dev
 npx http-server ./public -p 3000
@@ -70,7 +73,6 @@ After the build is complete, open your browser and go to http://localhost:3000 t
 ---
 
 By following these steps, you’ve created your first Rumious app, showcasing the power of Web Components in a lightweight and performant way. You can now customize and expand your project with more components and logic as needed.
-
 
 ## 📚 Documentation & Community
 
@@ -85,7 +87,6 @@ State Management Integration: Seamless integration with popular state management
 Improved Testing Utilities: Tools and guidelines for writing tests for Rumious components.
 
 Additional Lifecycle Hooks: More granular control over component updates and re-renders.
-
 
 ## 📄 License
 
