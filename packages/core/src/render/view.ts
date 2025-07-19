@@ -2,6 +2,10 @@ export class ViewControl{
   private target:HTMLElement | null = null;
   constructor(){}
   
+  setTarget(element:HTMLElement){
+    this.target = element;
+  }
+  
   addChild(child:HTMLElement){
     if(this.target) this.target.appendChild(child);
   }
