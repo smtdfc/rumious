@@ -2,10 +2,11 @@ import { RenderContext, render } from '../render/index.js';
 import type { RenderContent } from '../types/index.js';
 import type { State } from '../state/index.js';
 
-export class Component<T extends object> {
+export class Component < T extends object > {
   static tagName = 'rumious-component';
   private renderContext: RenderContext;
-
+  public children: RenderContent | null = null;
+  
   constructor(
     protected props: T,
     protected element: HTMLElement,
@@ -14,18 +15,18 @@ export class Component<T extends object> {
     this.renderContext = new RenderContext(parentContext.app, this);
     this.onCreate();
   }
-
+  
   onCreate() {}
   onRender() {}
   onDestroy() {}
   beforeRender() {}
   beforeMount() {}
   onMounted() {}
-
+  
   template(): RenderContent {
     throw new Error('RumiousRenderError: Cannot render empty component !');
   }
-
+  
   async requestRender() {
     await this.beforeRender();
     const content = await this.template();
@@ -35,18 +36,18 @@ export class Component<T extends object> {
   }
 }
 
-export interface ComponentConstructor<T extends object> {
-  new (
+export interface ComponentConstructor < T extends object > {
+  new(
     props: T,
     element: HTMLElement,
     parentContext: RenderContext,
-  ): Component<T>;
+  ): Component < T > ;
   tagName: string;
 }
 
 export type EmptyProps = object;
 
-export class Fragment extends Component<EmptyProps> {
+export class Fragment extends Component < EmptyProps > {
   template(): RenderContent {
     throw new Error(
       'RumiousRenderError: Component must be compile by RumiousCompiler',
@@ -54,12 +55,26 @@ export class Fragment extends Component<EmptyProps> {
   }
 }
 
-export type ForProps<T> = {
+export type ForProps < T > = {
   template: (value: T) => RenderContent;
-  list: State<T[]>;
+  list: State < T[] > ;
 };
 
-export class For extends Component<ForProps<unknown>> {
+export class For extends Component < ForProps < unknown >> {
+  template(): RenderContent {
+    throw new Error(
+      'RumiousRenderError: Component must be compile by RumiousCompiler',
+    );
+  }
+}
+
+export type IfProps < T > = {
+  onFalse ? :  RenderContent;
+  onTrue ? : RenderContent;
+  condition: State <T> | T;
+};
+
+export class If extends Component <IfProps< unknown >> {
   template(): RenderContent {
     throw new Error(
       'RumiousRenderError: Component must be compile by RumiousCompiler',

@@ -1,9 +1,14 @@
 import { ComponentConstructor, Component } from './component.js';
 import { RenderContext } from '../render/index.js';
+import type { RenderContent } from '../types/index.js';
 
 export class ComponentElement<T extends object> extends HTMLElement {
   public instance: Component<T> | null = null;
 
+  setSlot(tmpl:RenderContent){
+    if(this.instance) this.instance.children = tmpl;
+  }
+  
   async connectedCallback() {
     if (!this.instance) return;
     this.instance.onMounted();

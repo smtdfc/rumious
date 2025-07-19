@@ -16,7 +16,7 @@ export type StateCommit<T> = {
   key?: string | number | symbol;
 };
 
-export type StateBinding = (commit: StateCommit) => void;
+export type StateBinding = (commit: StateCommit<unknown>) => void;
 
 export class StateReactor<T> {
   private bindings: Set<StateBinding> = new Set();
@@ -43,7 +43,7 @@ export class StateReactor<T> {
     this.bindings.delete(binding);
   }
 
-  trigger(commit: StateCommit) {
+  trigger(commit: StateCommit<T>) {
     for (const cb of this.internalBindings) {
       this.triggerQueue.add(cb);
     }
