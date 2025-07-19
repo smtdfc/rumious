@@ -5,6 +5,7 @@ import {
   RenderContent,
   ComponentConstructor,
   State,
+  ViewControl,
   Ref,
   ForProps,
   IfProps,
@@ -240,6 +241,15 @@ export function ref(
 ) {
   if (target instanceof Ref) target.element = element;
 }
+
+export function view(
+  context: RenderContext,
+  element: HTMLElement,
+  value: unknown,
+) {
+  if (value instanceof ViewControl) value.setTarget(element);
+}
+
 
 export function createIfComponent < T > (
   parent: HTMLElement,
