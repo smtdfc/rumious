@@ -1,4 +1,4 @@
-import { RenderContext, render } from '../render/index.js';
+import { RenderContext, render,renderFrag } from '../render/index.js';
 import type { RenderContent } from '../types/index.js';
 import type { State } from '../state/index.js';
 
@@ -16,6 +16,13 @@ export class Component<T extends object> {
     this.onCreate();
   }
 
+  mountTo(
+    target:HTMLElement,
+    content:RenderContent
+  ){
+   target.appendChild(renderFrag(this.renderContext, content));
+  }
+  
   onCreate() {}
   onRender() {}
   onDestroy() {}
