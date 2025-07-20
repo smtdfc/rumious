@@ -34,7 +34,6 @@ export function createComponentElement<T extends object>(
   const element = document.createElement(tagName) as ComponentElement<T>;
   const instance = new component(props, element, context);
   element.instance = instance;
-  instance.element = element;
   instance.beforeMount();
   return element;
 }
