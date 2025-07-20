@@ -1,3 +1,3 @@
 export interface LoaderOptions {
-  configPath?: string;
+  configFile?: string;
 }
