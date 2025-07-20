@@ -17,7 +17,6 @@ export function renderFrag(
   return fragment;
 }
 
-
 export function render(
   target: HTMLElement,
   context: RenderContext,

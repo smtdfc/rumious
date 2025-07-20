@@ -1,4 +1,4 @@
-import { RenderContext, render,renderFrag } from '../render/index.js';
+import { RenderContext, render, renderFrag } from '../render/index.js';
 import type { RenderContent } from '../types/index.js';
 import type { State } from '../state/index.js';
 
@@ -6,7 +6,7 @@ export class Component<T extends object> {
   static tagName = 'rumious-component';
   private renderContext: RenderContext;
   public children: RenderContent | null = null;
-  
+
   constructor(
     protected props: T,
     protected element: HTMLElement,
@@ -16,13 +16,10 @@ export class Component<T extends object> {
     this.onCreate();
   }
 
-  mountTo(
-    target:HTMLElement,
-    content:RenderContent
-  ){
-   target.appendChild(renderFrag(this.renderContext, content));
+  mountTo(target: HTMLElement, content: RenderContent) {
+    target.appendChild(renderFrag(this.renderContext, content));
   }
-  
+
   onCreate() {}
   onRender() {}
   onDestroy() {}

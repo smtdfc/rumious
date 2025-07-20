@@ -48,7 +48,6 @@ export class App {
 
   private triggerHook(
     name: string,
-
     data: any,
   ) {
     if (this.hooks[name]) {

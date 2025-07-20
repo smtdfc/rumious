@@ -4,3 +4,4 @@ export * from './state/index.js';
 export * from './render/index.js';
 export * from './component/index.js';
 export * from './ref/index.js';
+export * from './context/index.js';
