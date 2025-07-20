@@ -6,7 +6,6 @@ export class Component<T extends object> {
   static tagName = 'rumious-component';
   private renderContext: RenderContext;
   public children: RenderContent | null = null;
-  public element: HTMLElement | null = null;
   
   constructor(
     protected props: T,
