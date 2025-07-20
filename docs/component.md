@@ -8,7 +8,7 @@ In Rumious, a **Component** is a powerful unit used to encapsulate and reuse UI 
 
 To create a component in Rumious, you extend the `Component` base class and implement the `template()` method:
 
-```ts
+```typescript
 import { Component } from '@rumious/core';
 
 class ExampleComponent extends Component<{ name: string }> {
@@ -31,7 +31,7 @@ Every Rumious component has a few important properties:
 
 An object containing the props passed to the component.
 
-```ts
+```typescript
 this.props.name; // Access a prop called 'name'
 ```
 
@@ -39,7 +39,7 @@ this.props.name; // Access a prop called 'name'
 
 The DOM element that represents the root of the component. This becomes available after mounting.
 
-```ts
+```typescript
 console.log(this.element); // Reference to the root HTML element
 ```
 
@@ -47,7 +47,7 @@ console.log(this.element); // Reference to the root HTML element
 
 Forces the component to re-render. Use it sparingly.
 
-```ts
+```typescript
 this.requestRender(); // ⚠️ Triggers a re-render manually
 ```
 
@@ -83,7 +83,7 @@ Called after each render, useful for post-render logic.
 
 Called right before the component is removed from the DOM. Use this to clean up listeners, intervals, etc.
 
-```ts
+```typescript
 class TimerComponent extends Component<{}> {
   interval: number;
 
@@ -109,7 +109,7 @@ class TimerComponent extends Component<{}> {
 
 Props are passed to a component via JSX:
 
-```ts
+```typescript
 <ExampleComponent name="Alice" />
 ```
 
@@ -119,7 +119,7 @@ Props are passed to a component via JSX:
 
 You can embed a component in the layout just like any other JSX tag:
 
-```ts
+```typescript
 app.setRootLayout(
   <div>
     <ExampleComponent name="Rumious" />

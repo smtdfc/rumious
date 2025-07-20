@@ -25,14 +25,14 @@ console.log(inputRef.value); // current input value
 #### `createRef<T>()`
 
 ```ts
-function createRef<T extends HTMLElement>(): Ref<T>
+function createRef<T extends HTMLElement>(): Ref<T>;
 ```
 
 Creates a new `Ref<T>` instance.
 
 ---
 
-##  Properties
+## Properties
 
 #### `element: T | null`
 
@@ -75,7 +75,7 @@ Gets or sets the `innerHTML` of the element.
 
 ---
 
-##  Methods
+## Methods
 
 #### `setTarget(target: T): void`
 
@@ -90,7 +90,7 @@ Returns `true` if the element is set (i.e., attached in the DOM), otherwise `fal
 
 ---
 
-##  Class Operations
+## Class Operations
 
 #### `addClass(name: string): void`
 
@@ -110,7 +110,7 @@ Toggles a class on the element.
 
 ---
 
-##  DOM Utilities
+## DOM Utilities
 
 #### `addChild(node: Node): void`
 
@@ -150,7 +150,7 @@ Removes an attribute from the element.
 
 ---
 
-##  Event Listeners
+## Event Listeners
 
 #### `on(event, listener): void`
 
@@ -178,7 +178,7 @@ Removes an event listener from the element.
 
 ---
 
-##  Focus Control
+## Focus Control
 
 #### `focus(): void`
 
@@ -192,7 +192,7 @@ Removes focus from the element.
 
 ---
 
-##  Visibility
+## Visibility
 
 #### `hide(): void`
 
@@ -206,7 +206,7 @@ Shows the element using the provided display value (default: `'block'`).
 
 ---
 
-##  Style
+## Style
 
 #### `setStyle(property: string, value: string): void`
 
@@ -217,4 +217,3 @@ Sets a CSS property on the element.
 #### `getStyle(property: string): string`
 
 Gets the value of a CSS property.
-
