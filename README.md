@@ -1,8 +1,8 @@
 # ⚡ Rumious
 
-![npm](https://img.shields.io/npm/v/rumious)  
-![downloads](https://img.shields.io/npm/dt/rumious)  
-![bundle size](https://img.shields.io/bundlephobia/min/rumious)
+![npm](https://img.shields.io/npm/v/@rumious/core)  
+![downloads](https://img.shields.io/npm/dt/@rumious/core)  
+![bundle size](https://img.shields.io/bundlephobia/min/@rumious/core)
 ![GitHub stars](https://img.shields.io/github/stars/smtdfc/rumious?style=social)
 ![Language](https://img.shields.io/github/languages/top/smtdfc/rumious)
 ![GitHub license](https://img.shields.io/github/license/smtdfc/rumious)
@@ -18,7 +18,7 @@
 ## 📦 Installation
 
 ```sh
-npm install rumious rumious-cli
+npm install @rumious/core @rumious/browser @rumious/cli
 ```
 
 ## 🔧 Basic Usage
@@ -41,17 +41,23 @@ This command will generate a project directory with the basic structure and conf
 Navigate to the _index.tsx_ file and add the following code:
 
 ```typescript
-import {RumiousApp, Fragment} from "rumious";
-const app = new RumiousApp({
-  root:document.getElementById("root")
+import {
+  Fragment,
+  createApp
+} from '@rumious/core';
+
+const app = createApp({
+  root: document.body
 });
 
-app.render(
+app.setRootLayout(
   <Fragment>
     <h1>Hello Rumious</h1>
-    <button on:click={async () => alert("Hello Rumious!")}>Click me!</button>
   </Fragment>
 );
+
+
+app.start();
 
 ```
 
@@ -64,7 +70,7 @@ Once you've created your app, you can build it and start testing it locally.
 To build your project, run:
 
 ```sh
-rumious build dev
+rumious dev
 npx http-server ./public -p 3000
 ```
 

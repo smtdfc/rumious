@@ -23,8 +23,7 @@
     "build:prod": "NODE_ENV=production rollup -c",
     "build:dev": "NODE_ENV=development rollup -c",
     "clean": "rm -rf dist",
-    "test": "node ../../test/compiler",
-    "prepare": "npm run build:dev",
+    "test": "node ../../test/rollup-plugin",
     "prepublishOnly": "cp ../../LICENSE . && npm run clean && npm run build:prod"
   },
   "keywords": [
@@ -33,10 +32,13 @@
     "loader",
     "framework",
     "rumious",
-    "webpack",
+    "rollup",
     "template",
     "transform"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/smtdfc/rumious"
@@ -44,7 +46,7 @@
   "bugs": {
     "url": "https://github.com/smtdfc/rumious/issues"
   },
-  "homepage": "https://github.com/smtdfc/rumious/tree/main/packages/webpack#readme",
+  "homepage": "https://github.com/smtdfc/rumious/tree/main/packages/rollup-plugin#readme",
   "engines": {
     "node": ">=18"
   },

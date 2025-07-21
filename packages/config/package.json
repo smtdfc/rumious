@@ -13,6 +13,9 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "dist/",
     "lib/",
@@ -23,8 +26,7 @@
     "build:prod": "NODE_ENV=production rollup -c",
     "build:dev": "NODE_ENV=development rollup -c",
     "clean": "rm -rf dist",
-    "test": "node ../../test/compiler",
-    "prepare": "npm run build:dev",
+    "test": "node ../../test/config",
     "prepublishOnly": "cp ../../LICENSE . && npm run clean && npm run build:prod"
   },
   "keywords": [
@@ -38,7 +40,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/smtdfc/rumious"
+    "url": "git+https://github.com/smtdfc/rumious.git"
   },
   "bugs": {
     "url": "https://github.com/smtdfc/rumious/issues"

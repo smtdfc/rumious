@@ -46,10 +46,7 @@ export class App {
     return instance;
   }
 
-  private triggerHook(
-    name: string,
-    data: any,
-  ) {
+  private triggerHook(name: string, data: any) {
     if (this.hooks[name]) {
       for (let i = 0; i < this.hooks[name].length; i++) {
         this.hooks[name][i](data);
@@ -68,10 +65,10 @@ export class App {
 
     //render
     if (this.rootLayout) {
-      const start = performance.now();
+      //const start = performance.now();
       render(this.config.root, this.renderContext, this.rootLayout);
-      const end = performance.now();
-      console.log(end - start);
+      //const end = performance.now();
+      //console.log(end - start);
     }
 
     //start modules
