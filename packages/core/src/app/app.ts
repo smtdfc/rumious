@@ -17,7 +17,7 @@ export const EVENT_DELEGATE_SYMBOL: unique symbol = Symbol(
 );
 export class App {
   private rootLayout: RenderContent | null = null;
-  private renderContext = new RenderContext(this, this);
+  public renderContext = new RenderContext(this, this);
   private hooks: AppHook = {
     onStart: [],
     onModuleAdded: [],
