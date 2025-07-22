@@ -5,15 +5,21 @@ export interface RouterModuleOption {
 }
 
 export interface RouteComponentProps {
-  routeSlot: State < unknown > ;
+  routeSlot: State<unknown>;
+  routeParams: State<Record<string, any>>;
 }
 
-export type WithRouteProps < ExtendedProps = {} > = RouteComponentProps & ExtendedProps;
-export type RouteComponent < ExtendedProps = {} > = ComponentConstructor < WithRouteProps < ExtendedProps >> ;
+export type WithRouteProps<ExtendedProps = {}> = RouteComponentProps &
+  ExtendedProps;
+export type RouteComponent<ExtendedProps = {}> = ComponentConstructor<
+  WithRouteProps<ExtendedProps>
+>;
 export interface RouterModuleOption {}
-export type RouteLayout = RouteComponent<object> | (() => RouteComponent<object>);
+export type RouteLayout =
+  | RouteComponent<object>
+  | (() => RouteComponent<object>);
 export interface RouteConfig {
   component: RouteLayout;
-  layout ? : RouteLayout[];
+  layout?: RouteLayout[];
 }
-export type RouteMap = Map < string, RouteConfig > ;
+export type RouteMap = Map<string, RouteConfig>;

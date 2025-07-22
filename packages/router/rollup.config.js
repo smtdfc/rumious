@@ -13,8 +13,9 @@ export default {
     format: 'esm',
     sourcemap: !isProduction,
     paths: {
-      '@rumious/core': !isProduction ?
-        '../../core/dist/index.js' : '@rumious/core',
+      '@rumious/core': !isProduction
+        ? '../../core/dist/index.js'
+        : '@rumious/core',
     },
   },
   plugins: [
@@ -24,8 +25,8 @@ export default {
     }),
     typescript({ tsconfig: './tsconfig.json' }),
     isProduction &&
-    terser({
-      maxWorkers: os.cpus().length || 1,
-    }),
+      terser({
+        maxWorkers: os.cpus().length || 1,
+      }),
   ],
 };

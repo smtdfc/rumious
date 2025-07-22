@@ -1,10 +1,10 @@
-import type {RouterModule} from '../module/index.js';
+import type { RouterModule } from '../module/index.js';
 
+export class BaseStrategy {
+  constructor(public router: RouterModule) {}
 
-export class BaseStrategy{
-  constructor(
-    public router:RouterModule
-  ){}
-  
-  start(){}
+  start() {}
+  redirect(path: string, replace: boolean = false) {
+    throw new Error('RumiousRouterError: Method is not implementation !');
+  }
 }
