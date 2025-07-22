@@ -146,43 +146,43 @@ export function appendDynamicValue(
   const end = document.createComment('_');
   parent.appendChild(start);
   parent.appendChild(end);
-  
+
   let prev: unknown = null;
   let currentNodes: Node[] = [];
-  
+
   const replaceRange = (nodes: Node[]) => {
     //if (end.parentNode !== parent) return;
-    
+
     const range = document.createRange();
     range.setStartAfter(start);
     range.setEndBefore(end);
-    range.deleteContents(); 
-    
+    range.deleteContents();
+
     const frag = document.createDocumentFragment();
     for (let node of nodes) {
       if (node.parentNode && node.parentNode !== parent) {
-        node = node.cloneNode(true); 
+        node = node.cloneNode(true);
       }
       frag.appendChild(node);
     }
-    
+
     range.insertNode(frag);
     currentNodes = nodes;
   };
-  
+
   const normalize = (val: unknown): Node[] => {
     if (Array.isArray(val)) {
       const flat: Node[] = [];
       for (const v of val) flat.push(...normalize(v));
       return flat;
     }
-    
+
     if (isRenderContent(val)) {
       return [val(context)];
     }
-    
+
     if (val == null || typeof val === 'boolean') return [];
-    
+
     if (typeof val === 'string' || typeof val === 'number') {
       if (
         currentNodes.length === 1 &&
@@ -194,18 +194,18 @@ export function appendDynamicValue(
         return [document.createTextNode(String(val))];
       }
     }
-    
+
     if (val instanceof Node) return [val];
-    
+
     return [document.createTextNode(String(val))];
   };
-  
+
   const update = (val: unknown) => {
     if (val === prev) return;
     prev = val;
-    
+
     const normalized = normalize(val);
-    
+
     if (
       normalized.length !== currentNodes.length ||
       normalized.some((n, i) => n !== currentNodes[i])
@@ -213,7 +213,7 @@ export function appendDynamicValue(
       replaceRange(normalized);
     }
   };
-  
+
   if (value instanceof State) {
     context.onRenderFinish.push(() => {
       value.reactor.addInternalBinding(() => update(value.get()));
@@ -304,8 +304,8 @@ export function createForComponent<T>(
   parent.appendChild(marker.fragment);
   marker.insertRange(items, 0);
   context.onRenderFinish.push(() => {
-    props.list.reactor.addInternalBinding((commit:any) => {
-      if(!commit) return
+    props.list.reactor.addInternalBinding((commit: any) => {
+      if (!commit) return;
       const { type, key, value } = commit;
       switch (type) {
         case 'insert': {
