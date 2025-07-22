@@ -12,8 +12,3 @@ export class Module {
     throw Error('RumiousModuleError: Module is not implement!');
   }
 }
-
-export type ModuleConstructor<T extends Module = Module> = new (
-  app: App,
-  options?: any,
-) => T;

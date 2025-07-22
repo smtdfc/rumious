@@ -1,5 +1,5 @@
 import type { AppConfig, RenderContent } from '../types/index.js';
-import { Module, ModuleConstructor } from './module.js';
+import { Module } from './module.js';
 import { RenderContext, render } from '../render/index.js';
 
 type AppHookCallback = (data: any) => any;
@@ -30,9 +30,9 @@ export class App {
 
   constructor(public config: AppConfig) {}
 
-  addModule<T extends Module,U>(
+  addModule<T extends Module, U>(
     Constructor: new (app: App, options?: U) => T,
-    options?:U,
+    options?: U,
   ): T {
     const instance = new Constructor(this, options);
     this.modules[instance.name] = instance;
