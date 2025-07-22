@@ -1,0 +1,54 @@
+{
+  "name": "@rumious/router",
+  "version": "0.0.1",
+  "description": "Router module for the Rumious framework.",
+  "license": "MIT",
+  "author": "smtdfc <me.smtdfc@gmail.com>",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist/",
+    "lib/",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build:prod": "NODE_ENV=production rollup -c",
+    "build:dev": "NODE_ENV=development rollup -c",
+    "clean": "rm -rf dist",
+    "test": "node ../../test/router ",
+    "prepublishOnly": "cp ../../LICENSE . && npm run clean && npm run build:prod"
+  },
+  "keywords": [
+    "router",
+    "framework",
+    "rumious",
+    "reactive",
+    "template",
+    "browser"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smtdfc/rumious.git"
+  },
+  "bugs": {
+    "url": "https://github.com/smtdfc/rumious/issues"
+  },
+  "homepage": "https://github.com/smtdfc/rumious/tree/main/packages/router#readme",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@rumious/core":"*"
+  }
+}
