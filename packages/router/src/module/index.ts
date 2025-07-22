@@ -12,7 +12,7 @@ import type {
   RouteLayout,
   RouteComponent,
 } from '../types/index.js';
-import { BaseStrategy, HashStrategy, HistoryStrategy } from '../strategies/index.js';
+import { BaseStrategy, HashStrategy, HistoryStrategy, MemoryStrategy } from '../strategies/index.js';
 
 function isLayoutFactory(l: RouteLayout): l is() => RouteComponent < object > {
   return (
@@ -43,6 +43,8 @@ export class RouterModule extends Module {
       this.strategy = new HashStrategy(this);
     } else if (options.strategy === 'history') {
       this.strategy = new HistoryStrategy(this);
+    } else if (options.strategy === 'memory') {
+      this.strategy = new MemoryStrategy(this);
     } else {
       throw new Error(
         `RuniousRouterModuleError: Unsupported strategy ${options.strategy}`,
