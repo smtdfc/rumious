@@ -30,9 +30,9 @@ export class App {
 
   constructor(public config: AppConfig) {}
 
-  addModule<T extends Module>(
-    Constructor: new (app: App, options?: any) => T,
-    options: ConstructorParameters<typeof Constructor>[1] = {},
+  addModule<T extends Module,U>(
+    Constructor: new (app: App, options?: U) => T,
+    options?:U,
   ): T {
     const instance = new Constructor(this, options);
     this.modules[instance.name] = instance;

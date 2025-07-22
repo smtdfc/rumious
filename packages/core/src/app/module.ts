@@ -6,11 +6,6 @@ export class Module {
     protected app: App,
   ) {}
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  static init(app: App, options: any) {
-    throw Error('RumiousModuleError: Module is not implement!');
-  }
-
   onBeforeRender() {}
 
   start() {
