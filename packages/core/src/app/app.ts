@@ -30,14 +30,11 @@ export class App {
 
   constructor(public config: AppConfig) {}
 
-  addModule(
-    Constructor: ModuleConstructor,
-
-    options: any = {},
-  ): Module {
+  addModule<T extends Module>(
+    Constructor: new (app: App, options?: any) => T,
+    options: ConstructorParameters<typeof Constructor>[1] = {},
+  ): T {
     const instance = new Constructor(this, options);
-    if (this.modules[instance.name])
-      console.warn(`RumiousWarn: Module ${instance.name} has existed!`);
     this.modules[instance.name] = instance;
     this.triggerHook('onModuleAdded', {
       name: instance.name,

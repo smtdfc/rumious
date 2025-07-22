@@ -18,6 +18,7 @@ export class Module {
   }
 }
 
-export interface ModuleConstructor {
-  new (app: App, options: any): Module;
-}
+export type ModuleConstructor<T extends Module = Module> = new (
+  app: App,
+  options?: any,
+) => T;
