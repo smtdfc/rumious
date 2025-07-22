@@ -146,69 +146,74 @@ export function appendDynamicValue(
   const end = document.createComment('_');
   parent.appendChild(start);
   parent.appendChild(end);
-
+  
   let prev: unknown = null;
   let currentNodes: Node[] = [];
-
+  
   const replaceRange = (nodes: Node[]) => {
-    // Remove all nodes between start and end
-    let n = start.nextSibling;
-    while (n && n !== end) {
-      const next = n.nextSibling;
-      parent.removeChild(n);
-      n = next;
+    //if (end.parentNode !== parent) return;
+    
+    const range = document.createRange();
+    range.setStartAfter(start);
+    range.setEndBefore(end);
+    range.deleteContents(); 
+    
+    const frag = document.createDocumentFragment();
+    for (let node of nodes) {
+      if (node.parentNode && node.parentNode !== parent) {
+        node = node.cloneNode(true); 
+      }
+      frag.appendChild(node);
     }
-
-    // Insert new nodes
-    for (const node of nodes) {
-      parent.insertBefore(node, end);
-    }
-
+    
+    range.insertNode(frag);
     currentNodes = nodes;
   };
-
+  
   const normalize = (val: unknown): Node[] => {
     if (Array.isArray(val)) {
       const flat: Node[] = [];
       for (const v of val) flat.push(...normalize(v));
       return flat;
     }
-
+    
     if (isRenderContent(val)) {
       return [val(context)];
     }
-
+    
     if (val == null || typeof val === 'boolean') return [];
-
+    
     if (typeof val === 'string' || typeof val === 'number') {
       if (
         currentNodes.length === 1 &&
         currentNodes[0].nodeType === Node.TEXT_NODE
       ) {
-        // reuse text node
         (currentNodes[0] as Text).textContent = String(val);
         return currentNodes;
       } else {
         return [document.createTextNode(String(val))];
       }
     }
-
+    
     if (val instanceof Node) return [val];
-
-    // Fallback
+    
     return [document.createTextNode(String(val))];
   };
-
+  
   const update = (val: unknown) => {
     if (val === prev) return;
     prev = val;
-
+    
     const normalized = normalize(val);
-    if (normalized !== currentNodes) {
+    
+    if (
+      normalized.length !== currentNodes.length ||
+      normalized.some((n, i) => n !== currentNodes[i])
+    ) {
       replaceRange(normalized);
     }
   };
-
+  
   if (value instanceof State) {
     context.onRenderFinish.push(() => {
       value.reactor.addInternalBinding(() => update(value.get()));
@@ -218,7 +223,6 @@ export function appendDynamicValue(
     update(value);
   }
 }
-
 export function createComponent<T extends object>(
   parent: HTMLElement,
   context: RenderContext,
@@ -300,7 +304,9 @@ export function createForComponent<T>(
   parent.appendChild(marker.fragment);
   marker.insertRange(items, 0);
   context.onRenderFinish.push(() => {
-    props.list.reactor.addInternalBinding(({ type, key, value }) => {
+    props.list.reactor.addInternalBinding((commit:any) => {
+      if(!commit) return
+      const { type, key, value } = commit;
       switch (type) {
         case 'insert': {
           const el = tmpl(value as T)(context).children[0] as HTMLElement;
