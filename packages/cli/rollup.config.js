@@ -12,6 +12,7 @@ export default {
     file: './dist/index.js',
     format: 'esm',
     sourcemap: !isProduction,
+    banner:"#!/usr/bin/env node"
   },
   plugins: [
     typescript({ tsconfig: './tsconfig.json' }),
