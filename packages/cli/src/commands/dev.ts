@@ -25,5 +25,6 @@ export function dev() {
   console.log(`[Rumious CLI]: Starting builder: ${builder}`);
   spawn(builderCommandMap[builder], ['-w'], {
     stdio: 'inherit',
+    shell: true
   });
 }

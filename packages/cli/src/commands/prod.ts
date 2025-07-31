@@ -23,8 +23,9 @@ export function prod() {
   }
   
   console.log(`[Rumious CLI]: Starting builder: ${builder}`);
-  spawn(builderCommandMap[builder], ['-w'], {
+  spawn(builderCommandMap[builder], [], {
     stdio: 'inherit',
+    shell: true,
     env: {
       ...process.env,
       NODE_ENV: 'production',

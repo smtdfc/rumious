@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "ESNext",
+		"strict": true,
+		"moduleResolution": "node",
+		"esModuleInterop": true,
+		"jsx": "preserve",
+		"jsxFactory": "RUMIOUS.createElement",
+		"jsxFragmentFactory": "RUMIOUS.Fragment",
+		"sourceMap": true,
+		"paths":{}
+	}
+}
