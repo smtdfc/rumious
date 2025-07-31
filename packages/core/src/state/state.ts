@@ -1,4 +1,4 @@
-import { StateReactor } from './reactor.js';
+import { StateReactor,StateBinding } from './reactor.js';
 
 export const STATE_SYMBOL: unique symbol = Symbol('State@Symbol');
 
@@ -197,4 +197,12 @@ export function isState(val: unknown): val is State<unknown> {
   return (
     typeof val === 'object' && val !== null && STATE_SYMBOL in (val as object)
   );
+}
+
+export function watch<T>(state:State<T>, callback:StateBinding){
+  state.reactor.addBinding(callback);
+}
+
+export function unwatch<T>(state:State<T>, callback:StateBinding){
+  state.reactor.removeBinding(callback);
 }
