@@ -65,7 +65,7 @@ describe("Rumious component test", (group) => {
     testProps,
   );
   
-  group.it("createComponentElement working", () => {
+  group.it("createComponentElement works", () => {
     expect(element).toBeInstanceOf(HTMLElement);
   });
   

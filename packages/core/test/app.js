@@ -42,11 +42,11 @@ describe('Rumious App test', (group) => {
     root: document.body
   });
   
-  group.it('createApp working ', () => {
+  group.it('createApp works ', () => {
     expect(app).toBeInstanceOf(App);
   });
   
-  group.it('App.setRootLayout working ', () => {
+  group.it('App.setRootLayout works ', () => {
     const layout = (ctx) => {
       appTestMock.layoutRendered = true;
       appTestMock.renderCtxPassed = ctx === app.renderContext;
@@ -58,7 +58,7 @@ describe('Rumious App test', (group) => {
     expect(app.rootLayout).toEqual(layout);
   });
   
-  group.it('App.addModule working ', () => {
+  group.it('App.addModule works ', () => {
     app.addModule(TestModule, testModOpt);
     expect(moduleTestMock.moduleAppPassed).toEqual(true);
     expect(moduleTestMock.moduleOptPassed).toEqual(true);
@@ -66,7 +66,7 @@ describe('Rumious App test', (group) => {
     expect(app.modules["test-module"]).toBeTruthy();
   });
   
-  group.it('App.start working ', () => {
+  group.it('App.start works ', () => {
     app.start();
     expect(appTestMock.layoutRendered).toEqual(true);
     expect(appTestMock.renderCtxPassed).toEqual(true);
