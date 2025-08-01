@@ -50,7 +50,7 @@ export class App {
       }
     }
   }
-
+  
   setRootLayout(layout: any) {
     this.rootLayout = layout;
   }
