@@ -55,7 +55,7 @@ export class RouterModule extends Module {
   private events: Record < string, RouterEventCallback[] > = {}
   constructor(
     protected app: App,
-    public options ? : RouterModuleOption = {}
+    public options ? : RouterModuleOption
   ) {
     super('router-module', app);
     if (options) {
@@ -65,11 +65,13 @@ export class RouterModule extends Module {
         this.strategy = new HistoryStrategy(this);
       } else if (options.strategy === 'memory') {
         this.strategy = new MemoryStrategy(this);
+      } else {
+        throw new Error(
+          `RuniousRouterModuleError: Unsupported strategy ${options.strategy}`,
+        );
       }
     } else {
-      throw new Error(
-        `RuniousRouterModuleError: Unsupported strategy ${options.strategy}`,
-      );
+      this.strategy = new HashStrategy(this);
     }
   }
   
