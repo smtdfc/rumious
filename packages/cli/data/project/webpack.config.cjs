@@ -9,7 +9,7 @@ module.exports = {
     clean: true
   },
   mode: isProduction ? "production" : "development",
-  devtool: !isProduction && 'source-map',
+  devtool: isProduction ? false : 'source-map',
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.jsx'],
   },

@@ -7,7 +7,7 @@
 ![Language](https://img.shields.io/github/languages/top/smtdfc/rumious)
 ![GitHub license](https://img.shields.io/github/license/smtdfc/rumious)
 
-**Rumious** is a UI framework based on **Web Components**, enabling you to build modern interfaces without relying on Virtual DOM
+**Rumious** is a Frontend framework based on **Web Components**, enabling you to build modern interfaces without relying on Virtual DOM
 
 ## 🚀 Key Features
 

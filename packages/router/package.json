@@ -1,6 +1,6 @@
 {
   "name": "@rumious/router",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Router module for the Rumious framework.",
   "license": "MIT",
   "author": "smtdfc <me.smtdfc@gmail.com>",

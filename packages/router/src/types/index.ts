@@ -1,25 +1,29 @@
 import type { ComponentConstructor, State } from '@rumious/core';
 
+export type RouteSlot = State < HTMLElement | null > ;
+export type RouteData ={
+  params:State<object>;
+  query:URLSearchParams | null;
+}
+
+export interface RouteProps {
+  routeSlot:RouteSlot | null;
+  routeData:RouteData;
+}
+
+export type RouteComponent = ComponentConstructor < RouteProps > ;
 export interface RouterModuleOption {
-  strategy: 'history' | 'hash' | 'memory';
+  strategy: "hash"
 }
 
-export interface RouteComponentProps {
-  routeSlot: State<unknown>;
-  routeParams: State<Record<string, any>>;
+export interface RouteComponentLoader {
+  type:"loader";
+  loader:() => ComponentConstructor < RouteProps >;
 }
 
-export type WithRouteProps<ExtendedProps = {}> = RouteComponentProps &
-  ExtendedProps;
-export type RouteComponent<ExtendedProps = {}> = ComponentConstructor<
-  WithRouteProps<ExtendedProps>
->;
-export interface RouterModuleOption {}
-export type RouteLayout =
-  | RouteComponent<object>
-  | (() => RouteComponent<object>);
-export interface RouteConfig {
-  component: RouteLayout;
-  layout?: RouteLayout[];
+export interface RouteConfig{
+  path:string;
+  component?:RouteComponent | RouteComponentLoader ;
+  layout?:RouteComponent | RouteComponentLoader;
+  childs?: RouteConfig[];
 }
-export type RouteMap = Map<string, RouteConfig>;

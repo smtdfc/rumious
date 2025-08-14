@@ -7,44 +7,65 @@ import {
 } from '@rumious/core';
 import type {
   RouterModuleOption,
-  RouteMap,
-  RouteConfig,
-  RouteLayout,
   RouteComponent,
+  RouteComponentLoader,
+  RouteSlot,
+  RouteConfig,
+  RouteData
 } from '../types/index.js';
 import { BaseStrategy, HashStrategy, HistoryStrategy, MemoryStrategy } from '../strategies/index.js';
 
-function isLayoutFactory(l: RouteLayout): l is() => RouteComponent < object > {
-  return (
-    typeof l === 'function' &&
-    !/^class\s/.test(Function.prototype.toString.call(l))
-  );
+export function createLoader(fn: () => RouteComponent): RouteComponentLoader {
+  return {
+    type: "loader",
+    loader: fn
+  }
 }
 
-export type RouterModuleEventCallback = () => unknown;
+export function isLayoutLoader(target: any): target is RouteComponentLoader {
+  return target.type === "loader" && typeof target.loader === 'function';
+}
 
+export async function resolveLayout(
+  layouts: (RouteComponentLoader | RouteComponent)[]
+): Promise < RouteComponent[] > {
+  let resolvedLayout: RouteComponent[] = [];
+  for (let i = 0; i < layouts.length; i++) {
+    let layout = layouts[i];
+    if (isLayoutLoader(layout)) resolvedLayout.push(await layout.loader());
+    else resolvedLayout.push(layout);
+  }
+  return resolvedLayout;
+}
+
+export type RouterEventCallback = () => unknown;
 export class RouterModule extends Module {
-  public routes: RouteMap = new Map < string, RouteConfig > ();
-  public strategy: BaseStrategy;
-  public params: State < Record < string, any >> = createState({});
-  public events = new Map < string, RouterModuleEventCallback[] > ();
-  public slots: State < HTMLElement | null > [] = [createState(null)];
-  public currentLayout: RouteComponent < object > [] = [];
+  private routeData: RouteData = {
+    params: createState({}),
+    query: null
+  }
   
+  private strategy: BaseStrategy;
+  private currentLayouts: RouteComponent[] = [];
+  private routeConfig: RouteConfig[] = [];
+  private slots: RouteSlot[] = [
+    createState(null)
+  ];
+  
+  private events: Record < string, RouterEventCallback[] > = {}
   constructor(
     protected app: App,
-    public options: RouterModuleOption = {
-      strategy: 'hash',
-    },
+    public options ? : RouterModuleOption = {}
   ) {
     super('router-module', app);
-    
-    if (options.strategy === 'hash') {
-      this.strategy = new HashStrategy(this);
-    } else if (options.strategy === 'history') {
-      this.strategy = new HistoryStrategy(this);
-    } else if (options.strategy === 'memory') {
-      this.strategy = new MemoryStrategy(this);
+    if (options) {
+      if (options.strategy === 'hash') {
+        this.strategy = new HashStrategy(this);
+      } else if (options.strategy === 'history') {
+        this.strategy = new HistoryStrategy(this);
+      } else if (options.strategy === 'memory') {
+        this.strategy = new MemoryStrategy(this);
+      }
     } else {
       throw new Error(
         `RuniousRouterModuleError: Unsupported strategy ${options.strategy}`,
@@ -52,161 +73,149 @@ export class RouterModule extends Module {
     }
   }
   
-  emit(name: string) {
-    const cbs = this.events.get(name);
-    if (!cbs) return;
-    for (const cb of cbs) cb();
+  on(name: string, callback: RouterEventCallback) {
+    if (!this.events[name]) this.events[name] = [];
+    this.events[name].push(callback);
   }
   
-  on(name: string, callback: RouterModuleEventCallback) {
-    let cbs = this.events.get(name);
-    if (!cbs) {
-      cbs = [];
-      this.events.set(name, cbs);
-    }
-    cbs.push(callback);
+  off(name: string, callback: RouterEventCallback) {
+    if (!this.events[name]) this.events[name] = [];
+    this.events[name] = this.events[name].filter(c => c !== callback);
   }
   
-  off(name: string, callback: RouterModuleEventCallback) {
-    const cbs = this.events.get(name);
-    if (!cbs) return;
-    this.events.set(
-      name,
-      cbs.filter((cb) => cb !== callback),
-    );
-  }
-  
-  setLayout(layouts: RouteComponent < object > []): number {
-    let changePos = -1;
-    for (let i = 0; i < layouts.length; i++) {
-      if (this.currentLayout[i] !== layouts[i]) {
-        changePos = i;
-        break;
-      }
-    }
-    
-    if (changePos === -1) return -1;
-    for (let i = 0; i < layouts.length + 1; i++) {
-      if (!this.slots[i]) this.slots[i] = createState(null);
-    }
-    
-    const element = this.buildNestedLayout(layouts, changePos);
-    
-    this.slots[changePos].set(element);
-    this.currentLayout = layouts;
-    return changePos;
-  }
-  
-  buildNestedLayout(
-    layouts: RouteComponent < object > [],
-    idx: number,
-  ): HTMLElement {
-    const layout = layouts[idx];
-    
-    if (idx + 1 < layouts.length) {
-      const nested = this.buildNestedLayout(layouts, idx + 1);
-      
-      this.slots[idx + 1].set(nested);
-      
-      return createComponentElement(layout, this.app.renderContext, {
-        routeSlot: this.slots[idx + 1],
-        routeParams: this.params,
-      });
-    }
-    
-    this.slots[idx + 1].set(null);
-    
-    return createComponentElement(layout, this.app.renderContext, {
-      routeSlot: this.slots[idx + 1],
-      routeParams: this.params,
-    });
-  }
-  
-  resolveLayout(layouts: RouteLayout[]): RouteComponent < object > [] {
-    const layoutComponents = [];
-    for (const l of layouts) {
-      if (isLayoutFactory(l)) layoutComponents.push(l());
-      else layoutComponents.push(l);
-    }
-    
-    return layoutComponents;
-  }
-  
-  resolveRoute(
-    path: string,
-  ): [boolean, RouteConfig | null, Record < string, any > ] {
-    let passed = false;
-    let params: Record < string, any > = {};
-    let routePassed: string = '';
-    const splitted = path.split('/').filter(Boolean);
-    const routes = Array.from(this.routes.keys());
-    
-    for (let i = 0; i < routes.length; i++) {
-      const routeSplitted = routes[i].split('/').filter(Boolean);
-      routePassed = routes[i];
-      params = {};
-      const isWildcard = routeSplitted[routeSplitted.length - 1] === '*';
-      const lenToCheck = isWildcard ?
-        routeSplitted.length - 1 :
-        routeSplitted.length;
-      
-      if (splitted.length < lenToCheck) continue;
-      
-      let match = true;
-      for (let j = 0; j < lenToCheck; j++) {
-        const routePart = routeSplitted[j];
-        const pathPart = splitted[j];
-        
-        if (routePart.startsWith(':')) {
-          const key = routePart.slice(1);
-          params[key] = pathPart;
-        } else if (routePart !== pathPart) {
-          match = false;
-          break;
-        }
-      }
-      
-      if (match && (isWildcard || lenToCheck === splitted.length)) {
-        passed = true;
-        break;
-      }
-    }
-    
-    if (passed) {
-      return [passed, this.routes.get(routePassed) ?? null, params];
-    }
-    
-    return [false, null, params];
-  }
-  
-  resolvePage(path: string) {
-    const url = new URL(path, window.location.origin);
-    
-    this.emit('page_change');
-    const [passed, config, params] = this.resolveRoute(url.pathname);
-    this.params.set(params);
-    if (passed && config) {
-      this.emit('page_matched');
-      this.setLayout(
-        this.resolveLayout([...(config.layout ?? []), config.component]),
-      );
-      this.emit('page_loaded');
-    } else {
-      this.emit('not_found');
+  private trigger(name: string) {
+    if (!this.events[name]) this.events[name] = [];
+    for (let cb of this.events[name]) {
+      cb();
     }
   }
-  
-  route(path: string, component: RouteLayout, layout ? : RouteLayout[]) {
-    this.routes.set(path, {
-      component,
-      layout,
-    });
-  }
-  
-  onBeforeRender() {}
   
   redirect(path: string, replace: boolean = false) {
     this.strategy.redirect(path, replace);
+  }
+  
+  route(c: RouteConfig[]) {
+    this.routeConfig = c;
+  }
+  
+  diffLayout(layouts: RouteComponent[]): number {
+    for (let i = 0; i < Math.max(this.currentLayouts.length, layouts.length); i++) {
+      if (this.currentLayouts[i] !== layouts[i]) {
+        return i;
+      }
+    }
+    return -1;
+  }
+  
+  async resolvePage(path: string) {
+    let layouts: (RouteComponent | RouteComponentLoader)[] = [];
+    const url = new URL(path, window.location.origin);
+    const query = url.searchParams;
+    const pathSplitted = path === "/" ? [""] : path.split("/").filter(Boolean);
+    const params: Record < string, string > = {};
+    
+    const walk = (
+      segments: string[],
+      routes: RouteConfig[]
+    ): boolean => {
+      if (segments.length === 0) {
+        const indexRoute = routes.find(r => r.path === "");
+        if (indexRoute?.component) {
+          layouts.push(indexRoute.component);
+          return true;
+        }
+        return false;
+      }
+      
+      const current = segments[0];
+      const rest = segments.slice(1);
+      
+      for (const route of routes) {
+        if (route.path === current || route.path.startsWith(":")) {
+          if (route.path.startsWith(":")) {
+            const key = route.path.slice(1);
+            params[key] = current;
+          }
+          
+          if (rest.length === 0 && route.component) {
+            layouts.push(route.component);
+            return true;
+          }
+          
+          if (route.layout) {
+            layouts.push(route.layout);
+          }
+          
+          const matched = walk(rest, route.childs || []);
+          if (matched) return true;
+          
+          // Rollback layout if child failed
+          if (route.layout) {
+            layouts.pop();
+          }
+          if (route.path.startsWith(":")) {
+            delete params[route.path.slice(1)];
+          }
+        }
+      }
+      
+      // Fallback wildcard
+      const wildcard = routes.find(r => r.path === "**");
+      if (wildcard?.component) {
+        layouts.push(wildcard.component);
+        return true;
+      }
+      
+      return false;
+    };
+    
+    const isMatched = walk(pathSplitted, this.routeConfig);
+    
+    if (!isMatched) {
+      layouts = [];
+    }
+    
+    this.routeData.params.set(params);
+    this.routeData.query = query;
+    
+    let resolvedLayout = await resolveLayout(layouts);
+    const changePos = this.diffLayout(resolvedLayout);
+    
+    if (changePos != -1 && layouts.length > 0) {
+      const addition = layouts.length - this.slots.length;
+      if (addition > 0) {
+        this.slots.push(...Array.from({ length: addition }).map(() => createState(null)));
+      }
+      this.currentLayouts = resolvedLayout;
+      this.buildLayout(changePos);
+    }
+  }
+  
+  buildLayout(start: number): RouteSlot {
+    let layout: HTMLElement;
+    if (!this.currentLayouts[start + 1]) {
+      layout = createComponentElement(
+        this.currentLayouts[start],
+        this.app.renderContext,
+        {
+          routeSlot: null,
+          routeData: this.routeData
+        }
+      );
+    } else {
+      let props = {
+        routeSlot: this.buildLayout(start + 1),
+        routeData: this.routeData
+      }
+      
+      layout = createComponentElement(
+        this.currentLayouts[start],
+        this.app.renderContext,
+        props
+      );
+    }
+    this.slots[start].set(layout);
+    return this.slots[start];
   }
   
   start() {
