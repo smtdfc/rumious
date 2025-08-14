@@ -11,11 +11,12 @@ import type {
   RouteComponentLoader,
   RouteSlot,
   RouteConfig,
-  RouteData
+  RouteData,
+  LoaderFunction
 } from '../types/index.js';
 import { BaseStrategy, HashStrategy, HistoryStrategy, MemoryStrategy } from '../strategies/index.js';
 
-export function createLoader(fn: () => RouteComponent): RouteComponentLoader {
+export function createLoader(fn: LoaderFunction): RouteComponentLoader {
   return {
     type: "loader",
     loader: fn
@@ -39,6 +40,7 @@ export async function resolveLayout(
 }
 
 export type RouterEventCallback = () => unknown;
+
 export class RouterModule extends Module {
   private routeData: RouteData = {
     params: createState({}),

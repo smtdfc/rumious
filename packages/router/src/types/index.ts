@@ -16,9 +16,13 @@ export interface RouterModuleOption {
   strategy: "hash"
 }
 
+export type LoaderFunction = 
+  | (() => Promise<RouteComponent>)
+  | (() => RouteComponent);
+
 export interface RouteComponentLoader {
   type:"loader";
-  loader:() => ComponentConstructor < RouteProps >;
+  loader: LoaderFunction;
 }
 
 export interface RouteConfig{
@@ -27,3 +31,4 @@ export interface RouteConfig{
   layout?:RouteComponent | RouteComponentLoader;
   childs?: RouteConfig[];
 }
+
