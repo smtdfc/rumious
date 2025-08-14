@@ -46,7 +46,7 @@ export interface ComponentConstructor<T extends object> {
     element: HTMLElement,
     parentContext: RenderContext,
   ): Component<T>;
-  tagName: string;
+  tagName?: string;
 }
 
 export type EmptyProps = object;
