@@ -27,7 +27,7 @@ export class Component<T extends object> {
   beforeMount() {}
   onMounted() {}
 
-  template(): RenderContent {
+  template(): RenderContent | Promise<RenderContent>{
     throw new Error('RumiousRenderError: Cannot render empty component !');
   }
 

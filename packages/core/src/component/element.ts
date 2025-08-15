@@ -21,14 +21,19 @@ export class ComponentElement<T extends object> extends HTMLElement {
   }
 }
 
+export const componentClasses = new Map<string, typeof HTMLElement>();
+
 export function createComponentElement<T extends object>(
   component: ComponentConstructor<T>,
   context: RenderContext,
   props: T,
 ) {
-  const tagName = component.tagName ?? 'rumious-component';
-  if (!window.customElements.get(tagName)) {
-    window.customElements.define(tagName, ComponentElement);
+  const tagName = component.tagName ?? `rumious-component-${componentClasses.size}`;
+  
+  if (!componentClasses.has(tagName)) {
+    class CE extends ComponentElement<T> {}
+    window.customElements.define(tagName, CE);
+    componentClasses.set(tagName, CE);
   }
 
   const element = document.createElement(tagName) as ComponentElement<T>;
