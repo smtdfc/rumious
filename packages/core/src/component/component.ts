@@ -64,7 +64,7 @@ export type ForProps<T> = {
   list: State<T[]>;
 };
 
-export class For extends Component<ForProps<unknown>> {
+export class For < T = unknown > extends Component < ForProps < T >> {
   template(): RenderContent {
     throw new Error(
       'RumiousRenderError: Component must be compile by RumiousCompiler',
@@ -78,7 +78,7 @@ export type IfProps<T> = {
   condition: State<T> | T;
 };
 
-export class If extends Component<IfProps<unknown>> {
+export class If<T = any> extends Component<IfProps<T>> {
   template(): RenderContent {
     throw new Error(
       'RumiousRenderError: Component must be compile by RumiousCompiler',
