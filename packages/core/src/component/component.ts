@@ -61,7 +61,7 @@ export class Fragment extends Component<EmptyProps> {
 
 export type ForProps<T> = {
   template: (value: T) => RenderContent;
-  list: State<T[]>;
+  list: State<T[]> | T[];
 };
 
 export class For < T = unknown > extends Component < ForProps < T >> {
