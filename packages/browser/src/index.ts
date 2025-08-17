@@ -291,7 +291,7 @@ export function createForComponent < T > (
   const items: HTMLElement[] = [];
   
   // Initial render
-  const initialList = props.list.get();
+  const initialList =  props.list instanceof State ? props.list.get() : props.list ;
   for (let i = 0; i < initialList.length; i++) {
     const el = tmpl(initialList[i])(context).children[0] as HTMLElement;
     items.push(el);
@@ -299,8 +299,9 @@ export function createForComponent < T > (
   
   parent.appendChild(marker.fragment);
   marker.insertRange(items, 0);
+  if(!(props.list instanceof State)) return;
   context.onRenderFinish.push(() => {
-    props.list.reactor.addInternalBinding((commit: any) => {
+    props.list instanceof State && props.list.reactor.addInternalBinding((commit: any) => {
       if (!commit) return;
       const { type, key, value } = commit;
       switch (type) {
