@@ -19,11 +19,11 @@ import {
 import { getAttrValue, getAttrAsValue } from './value.js';
 import { SINGLE_DIRECTIVES, DOUBLE_DIRECTIVES } from './directives.js';
 import { mergePrimitives } from '../utils/index.js';
+import { ExpressionTransform } from './expression.js';
 
 const traverse = (
   typeof _traverse === 'function' ? _traverse : (_traverse as any).default
 ) as any;
-
 const generate = (
   typeof _generate === 'function' ? _generate : (_generate as any).default
 ) as any;
@@ -31,17 +31,17 @@ const generate = (
 export class Compiler {
   public eventNames: string[] = [];
   public environment: string;
-  constructor(public options: Partial<CompilerOptions> = {}) {
+  constructor(public options: Partial < CompilerOptions > = {}) {
     this.environment = options.environment ?? '@rumious/browser';
   }
-
+  
   generateUId(context: Context, name: string): t.Identifier {
     if (!context.program)
       throw Error('RumiousCompileError: Cannot create unique identifier !');
     const id = context.program.scope.generateUidIdentifier(name);
     return id;
   }
-
+  
   transfomDirective(
     context: Context,
     target: t.Identifier,
@@ -51,16 +51,20 @@ export class Compiler {
     const splitted = name.split(':');
     const dName = splitted[0];
     const dModifier = splitted[1] ?? '';
-
+    const [exprAst, deps] = new ExpressionTransform().transform(value);
+    
     if (dName == 'bind') {
-      const reactiveFn = context.importHelper.requireId(
+      const reactiveCallbackFn = context.importHelper.requireId(
         context,
-        'reactive',
+        'reactiveCallback',
         this.environment,
       );
-      //spec: reactive(context,function, value)
+      
+      let reactiveValue: t.ArrowFunctionExpression | t.Expression = deps.size > 0 ? exprAst : value;
+
+      //spec: reactiveCallback(context,function, value,deps=[])
       return t.expressionStatement(
-        t.callExpression(reactiveFn, [
+        t.callExpression(reactiveCallbackFn, [
           context.scope.rootCtx,
           t.arrowFunctionExpression(
             [t.identifier('value')],
@@ -71,33 +75,39 @@ export class Compiler {
             ),
             false,
           ),
-          value,
+          reactiveValue,
+          t.arrayExpression([...deps])
         ]),
       );
     }
-
+    
     if (dName == 'attr') {
-      const reactiveFn = context.importHelper.requireId(
+      const reactiveCallbackFn = context.importHelper.requireId(
         context,
-        'reactive',
+        'reactiveCallback',
         this.environment,
       );
+      
+      let reactiveValue: t.ArrowFunctionExpression | t.Expression = deps.size > 0 ? exprAst : value;
+      
+      //spec: reactiveCallback(context,function, value,deps=[])
       return t.expressionStatement(
-        t.callExpression(reactiveFn, [
+        t.callExpression(reactiveCallbackFn, [
           context.scope.rootCtx,
           t.arrowFunctionExpression(
             [t.identifier('value')],
             t.callExpression(
-              t.memberExpression(target, t.identifier('setAttribute')),
-              [t.stringLiteral(dModifier), t.identifier('value')],
+              t.memberExpression(target, t.identifier("setAttribute")),
+              [t.identifier('value')],
             ),
             false,
           ),
-          value,
+          reactiveValue,
+          t.arrayExpression([...deps])
         ]),
       );
     }
-
+    
     if (dName == 'ref') {
       //spec: ref(context, element,value)
       const refFn = context.importHelper.requireId(
@@ -109,7 +119,7 @@ export class Compiler {
         t.callExpression(refFn, [context.scope.rootCtx, target, value]),
       );
     }
-
+    
     if (dName == 'view') {
       //spec: view(context, element,value)
       const viewFn = context.importHelper.requireId(
@@ -121,7 +131,7 @@ export class Compiler {
         t.callExpression(viewFn, [context.scope.rootCtx, target, value]),
       );
     }
-
+    
     if (dName == 'model') {
       const detectValueChangeFn = context.importHelper.requireId(
         context,
@@ -133,7 +143,7 @@ export class Compiler {
         'setStateValue',
         this.environment,
       );
-
+      
       return t.expressionStatement(
         t.callExpression(detectValueChangeFn, [
           t.arrowFunctionExpression(
@@ -145,7 +155,7 @@ export class Compiler {
         ]),
       );
     }
-
+    
     if (dName == 'on') {
       const createEventFn = context.importHelper.requireId(
         context,
@@ -162,7 +172,8 @@ export class Compiler {
         ]),
       );
     }
-
+    
+    //Fallback 
     const directiveObjId = context.importHelper.requireId(
       context,
       'directives',
@@ -176,7 +187,7 @@ export class Compiler {
       ),
     );
   }
-
+  
   transformJSXAttribute(
     context: Context,
     target: t.Identifier,
@@ -189,7 +200,7 @@ export class Compiler {
       const attr = attributes[i];
       if (t.isJSXAttribute(attr)) {
         const [name, isNamespace] = getAttrNameAsString(attr);
-
+        
         if (isNamespace && name.split(':')[0] == 'compile') {
           const modifier = name.split(':')[1];
           switch (modifier) {
@@ -203,7 +214,7 @@ export class Compiler {
           }
           continue;
         }
-
+        
         const value = getAttrValue(attr);
         if (
           (!isNamespace && SINGLE_DIRECTIVES.includes(name)) ||
@@ -217,20 +228,20 @@ export class Compiler {
         }
       }
     }
-
+    
     return [
       t.objectExpression(attributesExpr),
       directiveStats,
       compileDirective,
     ];
   }
-
+  
   transformJSXElement(context: Context, node: t.JSXElement) {
     const openingElement = node.openingElement;
     const attributes = openingElement.attributes;
     const name = openingElement.name;
     let isComponent = false;
-
+    
     const nameStr = getElementNameAsString(name);
     if (t.isJSXIdentifier(name) && isComponentName(nameStr)) isComponent = true;
     if (
@@ -238,11 +249,11 @@ export class Compiler {
       isComponentName(getElementNameAsString(name.property))
     )
       isComponent = true;
-
+    
     if (isComponent) {
       return this.transfomComponent(context, node);
     }
-
+    
     //spec: element(root,context,tagName,attrs)
     const elementVar = this.generateUId(context, 'ele_');
     const elementFn = context.importHelper.requireId(
@@ -266,9 +277,9 @@ export class Compiler {
         ]),
       ),
     ]);
-
+    
     context.statements.push(elementDec, ...directives);
-
+    
     const elementContext: Context = {
       importHelper: context.importHelper,
       scope: {
@@ -282,12 +293,12 @@ export class Compiler {
         compileDirectives,
       ),
     };
-
+    
     if (node.children.length == 0) return;
     this.transformNodes(elementContext, node.children);
     context.statements.push(...elementContext.statements);
   }
-
+  
   transfomFragmentComponent(context: Context, node: t.JSXElement) {
     const openingElement = node.openingElement;
     const attributes = openingElement.attributes;
@@ -297,7 +308,7 @@ export class Compiler {
       componentVar,
       attributes,
     );
-
+    
     const componentContext: Context = {
       importHelper: context.importHelper,
       scope: {
@@ -311,12 +322,12 @@ export class Compiler {
         compileDirectives,
       ),
     };
-
+    
     this.transformNodes(componentContext, node.children);
-
+    
     context.statements.push(...componentContext.statements);
   }
-
+  
   transfomIfComponent(context: Context, node: t.JSXElement) {
     const openingElement = node.openingElement;
     const attributes = openingElement.attributes;
@@ -325,14 +336,14 @@ export class Compiler {
       'createIfComponent',
       this.environment,
     );
-
+    
     const componentVar = this.generateUId(context, 'if_comp_');
-    const [props, ,] = this.transformJSXAttribute(
+    const [props, , ] = this.transformJSXAttribute(
       context,
       componentVar,
       attributes,
     );
-
+    
     const componentDec = t.variableDeclaration('const', [
       t.variableDeclarator(
         componentVar,
@@ -343,10 +354,10 @@ export class Compiler {
         ]),
       ),
     ]);
-
+    
     context.statements.push(componentDec);
   }
-
+  
   transfomForComponent(context: Context, node: t.JSXElement) {
     const openingElement = node.openingElement;
     const attributes = openingElement.attributes;
@@ -355,14 +366,14 @@ export class Compiler {
       'createForComponent',
       this.environment,
     );
-
+    
     const componentVar = this.generateUId(context, 'for_comp_');
-    const [props, ,] = this.transformJSXAttribute(
+    const [props, , ] = this.transformJSXAttribute(
       context,
       componentVar,
       attributes,
     );
-
+    
     const componentDec = t.variableDeclaration('const', [
       t.variableDeclarator(
         componentVar,
@@ -373,27 +384,27 @@ export class Compiler {
         ]),
       ),
     ]);
-
+    
     context.statements.push(componentDec);
   }
-
+  
   transfomComponent(context: Context, node: t.JSXElement) {
     const openingElement = node.openingElement;
     const attributes = openingElement.attributes;
     const nameStr = getElementNameAsString(openingElement.name);
-
+    
     if (nameStr === 'If') {
       return this.transfomIfComponent(context, node);
     }
-
+    
     if (nameStr === 'For') {
       return this.transfomForComponent(context, node);
     }
-
+    
     if (nameStr === 'Fragment') {
       return this.transfomFragmentComponent(context, node);
     }
-
+    
     const name = getElementNameAsExpr(openingElement.name);
     const componentFn = context.importHelper.requireId(
       context,
@@ -406,7 +417,7 @@ export class Compiler {
       componentVar,
       attributes,
     );
-
+    
     const componentDec = t.variableDeclaration('const', [
       t.variableDeclarator(
         componentVar,
@@ -418,9 +429,9 @@ export class Compiler {
         ]),
       ),
     ]);
-
+    
     context.statements.push(componentDec);
-
+    
     if (node.children.length == 0) return;
     const componentContext: Context = {
       importHelper: context.importHelper,
@@ -435,7 +446,7 @@ export class Compiler {
         compileDirectives,
       ),
     };
-
+    
     const createRootFragStat = t.variableDeclaration('const', [
       t.variableDeclarator(
         componentContext.scope.rootElement,
@@ -448,9 +459,9 @@ export class Compiler {
         ),
       ),
     ]);
-
+    
     this.transformNodes(componentContext, node.children);
-
+    
     const setSlotCall = t.expressionStatement(
       t.callExpression(
         t.memberExpression(componentVar, t.identifier('setSlot')),
@@ -467,13 +478,12 @@ export class Compiler {
         ],
       ),
     );
-
+    
     context.statements.push(setSlotCall);
   }
-
+  
   transformNodes(
     context: Context,
-
     nodes: any[],
   ) {
     let textBuffer = '';
@@ -495,9 +505,8 @@ export class Compiler {
       }
       textBuffer = '';
     };
-
-    const preserveWhitespace: unknown =
-      context.compileDirectives.preserveWhitespace;
+    
+    const preserveWhitespace: unknown = context.compileDirectives.preserveWhitespace;
     for (const node of nodes) {
       if (t.isJSXText(node)) {
         let text = node.value;
@@ -527,29 +536,33 @@ export class Compiler {
     }
     flushText();
   }
-
+  
   transformJSXExpressionContainer(
     context: Context,
     node: t.JSXExpressionContainer,
   ) {
     const expression = node.expression;
     if (t.isJSXEmptyExpression(expression)) return;
-    const appendDynamicValueFn = context.importHelper.requireId(
+    const reactivePartFn = context.importHelper.requireId(
       context,
-      'appendDynamicValue',
+      'reactivePart',
       this.environment,
     );
+    
+    let [exprAst, deps] = new ExpressionTransform().transform(expression);
+    let newExpr: t.ArrowFunctionExpression | t.Expression = deps.size > 0 ? exprAst : expression;
     const appendDynamicValueStat = t.expressionStatement(
-      t.callExpression(appendDynamicValueFn, [
+      t.callExpression(reactivePartFn, [
         context.scope.rootCtx,
         context.scope.rootElement,
-        expression,
+        newExpr,
+        t.arrayExpression([...deps])
       ]),
     );
-
     context.statements.push(appendDynamicValueStat);
+    
   }
-
+  
   transformAst(ast: t.File) {
     const context: Context = {
       importHelper: new ImportHelper(),
@@ -562,19 +575,19 @@ export class Compiler {
         preserveWhitespace: true,
       },
     };
-
+    
     traverse(ast, {
       Program: (path: NodePath) => {
         context.program = path;
         context.scope.rootElement = this.generateUId(context, 'root');
         context.scope.rootCtx = this.generateUId(context, 'ctx');
       },
-
+      
       JSXAttribute: (path: NodePath) => {
         console.log(path);
       },
-
-      JSXElement: (path: NodePath<t.JSXElement>) => {
+      
+      JSXElement: (path: NodePath < t.JSXElement > ) => {
         const localContext: Context = {
           importHelper: context.importHelper,
           scope: {
@@ -587,9 +600,9 @@ export class Compiler {
             preserveWhitespace: true,
           },
         };
-
+        
         this.transformJSXElement(localContext, path.node);
-
+        
         const createRootFragStat = t.variableDeclaration('const', [
           t.variableDeclarator(
             localContext.scope.rootElement,
@@ -602,7 +615,7 @@ export class Compiler {
             ),
           ),
         ]);
-
+        
         const template = t.arrowFunctionExpression(
           [localContext.scope.rootCtx],
           t.blockStatement([
@@ -611,11 +624,11 @@ export class Compiler {
             t.returnStatement(localContext.scope.rootElement),
           ]),
         );
-
+        
         path.replaceWith(template);
       },
     });
-
+    
     const eventDelegateFn = context.importHelper.requireId(
       context,
       'eventDelegate',
@@ -627,44 +640,59 @@ export class Compiler {
     const eventDelegateStat = t.expressionStatement(
       t.callExpression(eventDelegateFn, [eventNameStrLiterals]),
     );
-
+    
     ast.program.body.push(eventDelegateStat);
-
+    
     ast.program.body.unshift(...context.importHelper.generateImportDec());
   }
-
+  
   compile(code: string, metadata: SourceMetadata): CompileResult {
     const filename = metadata.filename;
     const isTSX = filename.endsWith('.tsx');
     const isTS = filename.endsWith('.ts') || isTSX;
     const plugins: ParserPlugin[] = ['jsx'];
-
+    
     if (isTS || isTSX) plugins.push('typescript');
-
+    
     const ast = parser.parse(code, {
       sourceType: metadata.type,
       ranges: true,
       plugins,
     });
-
+    
     this.transformAst(ast);
-
+    
     const compiled = generate(
       ast,
       {
         comments: false,
         concise: false,
         compact: false,
-        sourcemap: true,
+        sourceMaps: true,
         sourceFileName: metadata.filename,
         jsescOption: { minimal: true },
       },
       code,
     );
-
+    
     return {
       code: compiled.code,
       map: compiled.map,
     };
   }
 }
+
+const compiler = new Compiler({
+  environment: "@rumious/browser"
+})
+
+const result = compiler.compile(
+  `let a = <div>{a.get()+100}</div>;`,
+  {
+    filename: "index.js",
+    type: 'module'
+  }
+);
+
+console.log(result.code);
+console.log(result.map);
