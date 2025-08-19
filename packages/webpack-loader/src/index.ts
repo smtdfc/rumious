@@ -16,21 +16,21 @@ function readJSON<T = any>(path: string): T {
 }
 
 export default function rumiousLoader(
-  this: LoaderContext < object > ,
+  this: LoaderContext<object>,
   source: string,
 ): void {
   const callback = this.async();
   const options: LoaderOptions = this.getOptions() as LoaderOptions;
-  const config: Config = options.configFile ?
-    readJSON < Config > (options.configFile) :
-    {
-      environment: '@rumious/browser',
-    };
-  
+  const config: Config = options.configFile
+    ? readJSON<Config>(options.configFile)
+    : {
+        environment: '@rumious/browser',
+      };
+
   const compiler = new Compiler({
     environment: config.environment,
   });
-  
+
   try {
     const { code, map } = compiler.compile(source, {
       filename: this.resourcePath,

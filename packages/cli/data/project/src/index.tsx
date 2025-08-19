@@ -1,16 +1,9 @@
-import {
-  Fragment,
-  createApp,
-} from '@rumious/core';
+import { Fragment, createApp } from '@rumious/core';
 
 const app = createApp({
-  root: document.body
+  root: document.body,
 });
 
-app.setRootLayout(
-  <Fragment>
-    Hello from Rumious 
-  </Fragment>
-);
+app.setRootLayout(<Fragment>Hello from Rumious</Fragment>);
 
 app.start();

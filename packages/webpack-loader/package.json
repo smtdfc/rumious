@@ -1,6 +1,6 @@
 {
   "name": "@rumious/webpack-loader",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A Webpack loader for transforming JSX into optimized JavaScript code during the build process.",
   "license": "MIT",
   "author": "smtdfc <me.smtdfc@gmail.com>",

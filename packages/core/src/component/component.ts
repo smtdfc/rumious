@@ -27,7 +27,7 @@ export class Component<T extends object> {
   beforeMount() {}
   onMounted() {}
 
-  template(): RenderContent | Promise<RenderContent>{
+  template(): RenderContent | Promise<RenderContent> {
     throw new Error('RumiousRenderError: Cannot render empty component !');
   }
 
@@ -64,7 +64,7 @@ export type ForProps<T> = {
   list: State<T[]> | T[];
 };
 
-export class For < T = unknown > extends Component < ForProps < T >> {
+export class For<T = unknown> extends Component<ForProps<T>> {
   template(): RenderContent {
     throw new Error(
       'RumiousRenderError: Component must be compile by RumiousCompiler',

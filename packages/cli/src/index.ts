@@ -4,7 +4,7 @@ import * as commands from './commands/index.js';
 const cli = cac('rumious');
 
 cli
-  .option('--no-install', "Do not automatically install packages using npm")
+  .option('--no-install', 'Do not automatically install packages using npm')
   .command('init', 'Create new project ')
   .action((options) => commands.init(options));
 
@@ -22,7 +22,7 @@ cli
 
 cli
   .command('gen <type> <name>', 'Create components/router')
-  .action((itemType,name) => commands.gen(itemType,name));
+  .action((itemType, name) => commands.gen(itemType, name));
 
 cli.parse();
 

@@ -6,17 +6,17 @@ declare global {
     interface IntrinsicElements {
       [elemName: string]: any;
     }
-    
+
     type Element = RenderContent;
-    
-    interface ElementClass extends Component < any > {
-      template(): RenderContent | Promise < RenderContent > ;
+
+    interface ElementClass extends Component<any> {
+      template(): RenderContent | Promise<RenderContent>;
     }
-    
+
     interface ElementAttributesProperty {
       props: {};
     }
-    
+
     interface ElementChildrenAttribute {
       children: {};
     }

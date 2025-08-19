@@ -27,7 +27,7 @@ class ExampleComponent extends Component<{ name: string }> {
 
 Every Rumious component has a few important properties:
 
-### `this.props`
+#### `this.props`
 
 An object containing the props passed to the component.
 
@@ -35,7 +35,7 @@ An object containing the props passed to the component.
 this.props.name; // Access a prop called 'name'
 ```
 
-### `this.element`
+#### `this.element`
 
 The DOM element that represents the root of the component. This becomes available after mounting.
 
@@ -43,7 +43,7 @@ The DOM element that represents the root of the component. This becomes availabl
 console.log(this.element); // Reference to the root HTML element
 ```
 
-### `this.requestRender()`
+#### `this.requestRender()`
 
 Forces the component to re-render. Use it sparingly.
 
@@ -59,27 +59,27 @@ this.requestRender(); // ⚠️ Triggers a re-render manually
 
 Rumious provides a set of lifecycle methods that allow you to hook into different phases of a component's existence:
 
-### `onCreate()`
+#### `onCreate()`
 
 Called when the component is first instantiated, before anything is rendered.
 
-### `beforeMount()`
+#### `beforeMount()`
 
 Called just before the component is added to the DOM.
 
-### `onMounted()`
+#### `onMounted()`
 
 Called after the component is successfully inserted into the DOM.
 
-### `beforeRender()`
+#### `beforeRender()`
 
 Called before each render (initial or update).
 
-### `onRender()`
+#### `onRender()`
 
 Called after each render, useful for post-render logic.
 
-### `onDestroy()`
+#### `onDestroy()`
 
 Called right before the component is removed from the DOM. Use this to clean up listeners, intervals, etc.
 

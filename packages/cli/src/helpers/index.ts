@@ -1,6 +1,5 @@
-import { readFileSync,writeFileSync, mkdirSync  } from 'fs';
-import { resolve,dirname } from 'path';
-
+import { readFileSync, writeFileSync, mkdirSync } from 'fs';
+import { resolve, dirname } from 'path';
 
 export function readJSON<T = any>(path: string): T {
   try {
@@ -14,8 +13,8 @@ export function readJSON<T = any>(path: string): T {
 
 export function renderTemplateToFile(
   templatePath: string,
-  data: Record < string, any > ,
-  outputPath: string
+  data: Record<string, any>,
+  outputPath: string,
 ) {
   const template = readFileSync(templatePath, 'utf8');
   const content = renderTemplate(template, data);
@@ -24,7 +23,10 @@ export function renderTemplateToFile(
   writeFileSync(outputPath, content, 'utf8');
 }
 
-export function renderTemplate(template: string, data: Record < string, any > ): string {
+export function renderTemplate(
+  template: string,
+  data: Record<string, any>,
+): string {
   return template.replace(/\{\{\s*(\w+)\s*\}\}/g, (_, key) => {
     return data[key] != null ? String(data[key]) : '';
   });

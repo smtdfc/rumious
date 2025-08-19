@@ -3,8 +3,8 @@ import resolve from '@rollup/plugin-node-resolve';
 
 export default [
   {
-    input:  './.testious/node.js',
-    external:["testious","testious-node-runner"],
+    input: './.testious/node.js',
+    external: ['testious', 'testious-node-runner'],
     output: {
       file: './.testious/dist/node.runner.js',
       format: 'esm',
@@ -19,14 +19,14 @@ export default [
       file: './.testious/dist/browser.runner.js',
       format: 'iife',
       sourcemap: true,
-      name: "TestiousBrowserRunner"
+      name: 'TestiousBrowserRunner',
     },
     plugins: [
       resolve({
         browser: true,
-        extensions: ['.js', '.mjs']
+        extensions: ['.js', '.mjs'],
       }),
-      commonjs()
+      commonjs(),
     ],
-  }
+  },
 ];

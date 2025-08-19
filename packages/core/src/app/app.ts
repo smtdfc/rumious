@@ -15,6 +15,7 @@ export const APP_SYMBOL: unique symbol = Symbol('AppSymbol');
 export const EVENT_DELEGATE_SYMBOL: unique symbol = Symbol(
   'EventDelegateSymbol',
 );
+
 export class App {
   private rootLayout: RenderContent | null = null;
   public renderContext = new RenderContext(this, this);
@@ -50,7 +51,7 @@ export class App {
       }
     }
   }
-  
+
   setRootLayout(layout: any) {
     this.rootLayout = layout;
   }

@@ -1,14 +1,14 @@
 const path = require('path');
 
-const isProduction = process.env.NODE_ENV == "production";
+const isProduction = process.env.NODE_ENV == 'production';
 module.exports = {
   entry: './src/index.tsx',
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, './public/dist'),
-    clean: true
+    clean: true,
   },
-  mode: isProduction ? "production" : "development",
+  mode: isProduction ? 'production' : 'development',
   devtool: isProduction ? false : 'source-map',
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.jsx'],
@@ -20,39 +20,43 @@ module.exports = {
         exclude: /node_modules/,
         use: [
           {
-            loader: path.join(__dirname, './node_modules/@rumious/webpack-loader/dist/index.js'),
+            loader: path.join(
+              __dirname,
+              './node_modules/@rumious/webpack-loader/dist/index.js',
+            ),
             options: {
-              configFile: './rumious.config.json'
-            }
+              configFile: './rumious.config.json',
+            },
           },
           {
             loader: 'ts-loader',
             options: {
-              transpileOnly: true
-            }
+              transpileOnly: true,
+            },
           },
-          
-        ]
+        ],
       },
-      
+
       {
         test: /\.jsx$/,
         exclude: /node_modules/,
         use: [
-        {
-          loader: path.join(__dirname, './node_modules/@rumious/webpack-loader/dist/index.js'),
-          options: {
-            configFile: './rumious.config.json'
-          }
-        }]
+          {
+            loader: path.join(
+              __dirname,
+              './node_modules/@rumious/webpack-loader/dist/index.js',
+            ),
+            options: {
+              configFile: './rumious.config.json',
+            },
+          },
+        ],
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
-        type: 'asset/resource'
-      }
-    ]
-    
+        type: 'asset/resource',
+      },
+    ],
   },
   plugins: [],
-  
 };

@@ -28,8 +28,9 @@ export function createComponentElement<T extends object>(
   context: RenderContext,
   props: T,
 ) {
-  const tagName = component.tagName ?? `rumious-component-${componentClasses.size}`;
-  
+  const tagName =
+    component.tagName ?? `rumious-component-${componentClasses.size}`;
+
   if (!componentClasses.has(tagName)) {
     class CE extends ComponentElement<T> {}
     window.customElements.define(tagName, CE);
