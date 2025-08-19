@@ -14,8 +14,8 @@
     "lint-staged": "^16.1.2",
     "rollup": "4.34.4",
     "testious": "^1.0.1",
-    "testious-browser-env": "^0.0.2",
-    "testious-browser-runner": "^0.0.6",
+    "testious-browser-runner": "^0.0.9",
+    "testious-server": "^0.0.2",
     "tslib": "^2.8.1",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.36.0"
