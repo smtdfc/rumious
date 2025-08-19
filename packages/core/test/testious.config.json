@@ -1,3 +1,6 @@
 {
-  "browserTestEntry": "./index.js"
+  "runners": ["browser"],
+  "entry": {
+    "browser": "index.js"
+  }
 }

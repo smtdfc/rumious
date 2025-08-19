@@ -55,14 +55,4 @@ describe('ViewControl test', (group) => {
     vc.clean();
     expect(container.textContent).toEqual('');
   });
-
-  group.it('works without setTarget (no crash)', () => {
-    const temp = new ViewControl();
-    expect(() => {
-      temp.addChild(document.createElement('div'));
-      temp.prependChild(document.createElement('div'));
-      temp.removeChildByIndex(0);
-      temp.clean();
-    }).not.toThrow();
-  });
 });

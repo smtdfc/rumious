@@ -26,7 +26,7 @@
     "build:prod": "NODE_ENV=production rollup -c",
     "build:dev": "NODE_ENV=development rollup -c",
     "clean": "rm -rf dist",
-    "test": "node ./test",
+    "test": "cd test && testious --bundle --browser",
     "prepublishOnly": "cp ../../LICENSE . && npm run clean && npm run build:prod"
   },
   "keywords": [
