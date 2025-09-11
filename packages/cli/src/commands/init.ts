@@ -30,7 +30,7 @@ export function init(options: any) {
       shell: true,
     });
 
-    spawn('npm', ['i', '-D', '@rumious/webpack-loader'], {
+    spawn('npm', ['i', '-D','webpack','webpack-cli','ts-loader', '@rumious/webpack-loader'], {
       stdio: 'inherit',
       shell: true,
     });
