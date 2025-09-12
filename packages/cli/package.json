@@ -1,6 +1,6 @@
 {
   "name": "@rumious/cli",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "A CLI for Rumious Framework.",
   "license": "MIT",
   "author": "smtdfc <me.smtdfc@gmail.com>",
@@ -27,11 +27,11 @@
     "LICENSE"
   ],
   "scripts": {
-    "build:prod": "NODE_ENV=production rollup -c",
-    "build:dev": "NODE_ENV=development rollup -c",
-    "clean": "rm -rf dist",
+    "build:prod": "cross-env NODE_ENV=production rollup -c",
+    "build:dev": "cross-env  NODE_ENV=development rollup -c",
+    "clean": "shx rm -rf dist",
     "test": "node ../../test/cli",
-    "prepublishOnly": "cp ../../LICENSE . && npm run clean && npm run build:prod"
+    "prepublishOnly": "shx cp  ../../LICENSE . && npm run clean && npm run build:prod"
   },
   "keywords": [
     "compiler",
