@@ -24,6 +24,18 @@ export class ExpressionTransform {
             }
           }
         },
+
+        CallExpression(path: NodePath<t.CallExpression>) {
+          if (t.isIdentifier(path.node.callee, { name: '$' })) {
+            path.traverse({
+              Identifier(innerPath) {
+                if (innerPath.node.name !== '$') {
+                  deps.add(innerPath.node);
+                }
+              },
+            });
+          }
+        },
       },
       undefined,
       undefined,
