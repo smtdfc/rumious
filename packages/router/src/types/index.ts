@@ -1,4 +1,5 @@
 import type { ComponentConstructor, State } from '@rumious/core';
+import type { RouterModule } from '../module/index.js';
 
 export type RouteSlot = State<HTMLElement | null>;
 export type RouteData = {
@@ -9,6 +10,7 @@ export type RouteData = {
 export interface RouteProps {
   routeSlot: RouteSlot | null;
   routeData: RouteData;
+  router: RouterModule;
 }
 
 export type RouteComponent = ComponentConstructor<RouteProps>;

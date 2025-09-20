@@ -58,10 +58,7 @@ export class RouterModule extends Module {
   private slots: RouteSlot[] = [createState(null)];
 
   private events: Record<string, RouterEventCallback[]> = {};
-  constructor(
-    protected app: App,
-    public options?: RouterModuleOption,
-  ) {
+  constructor(protected app: App, public options?: RouterModuleOption) {
     super('router-module', app);
     if (options) {
       if (options.strategy === 'hash') {
@@ -210,12 +207,14 @@ export class RouterModule extends Module {
         {
           routeSlot: null,
           routeData: this.routeData,
+          router: this,
         },
       );
     } else {
       let props = {
         routeSlot: this.buildLayout(start + 1),
         routeData: this.routeData,
+        router: this,
       };
 
       layout = createComponentElement(
