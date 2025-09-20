@@ -51,7 +51,7 @@
   "sideEffects": false,
   "dependencies": {},
   "peerDependencies": {
-    "@rumious/core": "*"
+    "@rumious/core": "workspace:*"
   },
   "devDependencies": {}
 }

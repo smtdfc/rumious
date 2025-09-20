@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
-    "outDir": "./dist",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "esModuleInterop": true,
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
@@ -9,13 +11,8 @@
     "declaration": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
     "paths": {
-      "@rumious/compiler": ["../compiler/dist/index.d.ts"],
-      "@rumious/config": ["../config/dist/index.d.ts"]
+      "@rumious/*": ["./packages/*/dist/index.d.ts"]
     }
-  },
-  "include": ["./src", "./src/global.d.ts"]
+  }
 }

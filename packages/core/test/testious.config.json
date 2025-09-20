@@ -1,6 +1,0 @@
-{
-  "runners": ["browser"],
-  "entry": {
-    "browser": "index.js"
-  }
-}

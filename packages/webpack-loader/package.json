@@ -51,11 +51,11 @@
   },
   "sideEffects": false,
   "dependencies": {
-    "@rumious/compiler": "*",
-    "@rumious/config": "*"
+    "@rumious/compiler": "workspace:*",
+    "@rumious/config": "workspace:*"
   },
   "peerDependencies": {
-    "@rumious/core": "*",
+    "@rumious/core": "workspace:*",
     "webpack": "^5.0.0"
   }
 }

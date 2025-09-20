@@ -2,12 +2,15 @@ import typescript from '@rollup/plugin-typescript';
 import commonjs from '@rollup/plugin-commonjs';
 import terser from '@rollup/plugin-terser';
 import os from 'os';
+import { getWorkspacePackages } from '../../helpers/index.js';
 
 const isProduction = process.env.NODE_ENV === 'production';
+const localPackages = getWorkspacePackages();
 
 export default {
   input: 'src/index.ts',
   external: [
+    ...Object.keys(localPackages),
     '@babel/parser',
     '@babel/traverse',
     '@babel/generator',

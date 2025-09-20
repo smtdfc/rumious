@@ -57,7 +57,7 @@
     "@babel/types": "^7.27.3"
   },
   "peerDependencies": {
-    "@rumious/core": "*"
+    "@rumious/core": "workspace:*"
   },
   "devDependencies": {
     "@types/babel__generator": "^7.27.0",

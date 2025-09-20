@@ -1,21 +1,7 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "./dist",
-    "esModuleInterop": true,
-    "sourceMap": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "declaration": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "paths": {
-      "@rumious/compiler": ["../compiler/dist/index.d.ts"],
-      "@rumious/config": ["../config/dist/index.d.ts"]
-    }
+    "outDir": "./dist"
   },
   "include": ["./src", "./src/global.d.ts"]
 }

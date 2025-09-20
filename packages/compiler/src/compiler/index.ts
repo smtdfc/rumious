@@ -20,7 +20,6 @@ import { getAttrValue, getAttrAsValue } from './value.js';
 import { SINGLE_DIRECTIVES, DOUBLE_DIRECTIVES } from './directives.js';
 import { mergePrimitives } from '../utils/index.js';
 import { ExpressionTransform } from './expression.js';
-import { Metadata } from './metadata.js';
 
 const traverse = (
   typeof _traverse === 'function' ? _traverse : (_traverse as any).default
@@ -32,8 +31,6 @@ const generate = (
 export class Compiler {
   public eventNames: string[] = [];
   public environment: string;
-  public metadata: Metadata = {};
-
   constructor(public options: Partial<CompilerOptions> = {}) {
     this.environment = options.environment ?? '@rumious/browser';
   }
