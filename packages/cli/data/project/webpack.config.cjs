@@ -20,18 +20,18 @@ module.exports = {
         exclude: /node_modules/,
         use: [
           {
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: true,
+            },
+          },
+          {
             loader: path.join(
               __dirname,
               './node_modules/@rumious/webpack-loader/dist/index.js',
             ),
             options: {
               configFile: './rumious.config.json',
-            },
-          },
-          {
-            loader: 'ts-loader',
-            options: {
-              transpileOnly: true,
             },
           },
         ],
@@ -53,10 +53,17 @@ module.exports = {
         ],
       },
       {
-        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        test: /\.css$/i, // CSS
+        use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.(png|svg|jpg|jpeg|gif|webp)$/i,
         type: 'asset/resource',
       },
     ],
   },
   plugins: [],
+  cache: {
+    type: 'filesystem',
+  },
 };

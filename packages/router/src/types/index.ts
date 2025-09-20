@@ -13,7 +13,7 @@ export interface RouteProps {
 
 export type RouteComponent = ComponentConstructor<RouteProps>;
 export interface RouterModuleOption {
-  strategy: 'hash';
+  strategy: 'hash' | 'history' | 'memory';
 }
 
 export type LoaderFunction =

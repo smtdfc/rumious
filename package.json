@@ -1,7 +1,8 @@
 {
   "workspaces": [
-    "./packages"
+    "packages/*"
   ],
+  "private": true,
   "type": "module",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.6",
@@ -13,22 +14,16 @@
     "@typescript-eslint/parser": "^8.36.0",
     "cross-env": "^10.0.0",
     "eslint": "^9.31.0",
-    "husky": "^9.1.7",
-    "jsdom": "^26.1.0",
-    "lint-staged": "^16.1.2",
-    "rollup": "4.34.4",
     "shx": "^0.4.0",
-    "testious": "^1.0.1",
-    "testious-browser-runner": "^0.0.9",
-    "testious-server": "^0.0.2",
     "tslib": "^2.8.1",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.36.0"
+    "typescript-eslint": "^8.36.0",
+    "rollup": "4.x",
+    "webpack": "5.x",
+    "vite": "^7.x"
   },
   "scripts": {
-    "prepare": "husky",
     "lint": "eslint --fix .",
-    "format": "prettier . --write",
-    "test": "echo 1"
+    "format": "prettier . --write"
   }
 }

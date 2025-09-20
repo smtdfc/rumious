@@ -1,14 +1,13 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
     "strict": true,
-    "moduleResolution": "node",
     "esModuleInterop": true,
     "jsx": "preserve",
-    "jsxFactory": "RUMIOUS.createElement",
-    "jsxFragmentFactory": "RUMIOUS.Fragment",
     "sourceMap": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "paths": {}
-  }
+  },
+  "include": ["src", "src/declarations.d.ts"]
 }

@@ -25,15 +25,11 @@ export function init(options: any) {
   if (options.install) {
     console.log(`[Rumious CLI]: Installing ...`);
 
-    spawn('npm', ['i', '@rumious/core', '@rumious/browser'], {
+    spawn('npm', ['i'], {
       stdio: 'inherit',
       shell: true,
     });
 
-    spawn('npm', ['i', '-D','webpack','webpack-cli','ts-loader', '@rumious/webpack-loader'], {
-      stdio: 'inherit',
-      shell: true,
-    });
   }
 
   console.log('[Rumious CLI]: Project created successfully');

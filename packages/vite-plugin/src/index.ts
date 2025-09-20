@@ -1,4 +1,4 @@
-import { Plugin } from 'rollup';
+import type { Plugin } from 'vite';
 import type { PluginOption } from './types/index.js';
 import { Compiler } from '@rumious/compiler';
 import type { Config } from '@rumious/config';
@@ -17,7 +17,11 @@ function readJSON<T = any>(path: string): T {
 
 export default function (options: PluginOption = {}): Plugin {
   return {
-    name: 'rollup-plugin-rumious',
+    name: 'vite-plugin-rumious',
+
+    configResolved(config) {
+      console.log('Resolved Vite config:', config.root);
+    },
 
     transform(source: string, id: string) {
       const config: Config = options.configFile
@@ -42,7 +46,7 @@ export default function (options: PluginOption = {}): Plugin {
         };
       } catch (err: any) {
         this.warn(
-          `[rumious-rollup-plugin] Compile failed for ${id}:\n${err.message}`,
+          `[vite-plugin-rumious] Compile failed for ${id}:\n${err.message}`,
         );
         return null;
       }

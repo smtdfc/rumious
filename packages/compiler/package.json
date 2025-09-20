@@ -26,7 +26,6 @@
     "build:prod": "cross-env NODE_ENV=production rollup -c",
     "build:dev": "cross-env  NODE_ENV=development rollup -c",
     "clean": "shx rm -rf dist",
-    "test": "node ../../test/cli",
     "prepublishOnly": "shx cp  ../../LICENSE . && npm run clean && npm run build:prod"
   },
   "keywords": [

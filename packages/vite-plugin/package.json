@@ -1,7 +1,7 @@
 {
-  "name": "@rumious/rollup-plugin",
+  "name": "@rumious/vite-plugin",
   "version": "0.0.1",
-  "description": "A Rollup plugin for transforming JSX into optimized JavaScript code during the build process.",
+  "description": "A Vite plugin for transforming JSX into optimized JavaScript code during the build process.",
   "license": "MIT",
   "author": "smtdfc <me.smtdfc@gmail.com>",
   "type": "module",
@@ -31,7 +31,7 @@
     "loader",
     "framework",
     "rumious",
-    "rollup",
+    "vite",
     "template",
     "transform"
   ],
@@ -45,7 +45,7 @@
   "bugs": {
     "url": "https://github.com/smtdfc/rumious/issues"
   },
-  "homepage": "https://github.com/smtdfc/rumious/tree/main/packages/rollup-plugin#readme",
+  "homepage": "https://github.com/smtdfc/rumious/tree/main/packages/vite-plugin#readme",
   "engines": {
     "node": ">=18"
   },
@@ -56,6 +56,6 @@
   },
   "peerDependencies": {
     "@rumious/core": "*",
-    "rollup": "4.34.4"
+    "vite": "7.x"
   }
 }

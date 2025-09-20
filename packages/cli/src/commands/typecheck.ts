@@ -17,7 +17,7 @@ export function typecheck() {
   }
 
   console.log('[Rumious CLI]: Starting TSC');
-  spawn('tsc', ['--noEmit'], {
+  spawn('npx tsc', ['--noEmit'], {
     stdio: 'inherit',
     shell: true,
   });
