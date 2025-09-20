@@ -1,6 +1,6 @@
 {
   "name": "@rumious/rollup-plugin",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A Rollup plugin for transforming JSX into optimized JavaScript code during the build process.",
   "license": "MIT",
   "author": "smtdfc <me.smtdfc@gmail.com>",
@@ -51,11 +51,11 @@
   },
   "sideEffects": false,
   "dependencies": {
-    "@rumious/compiler": "*",
-    "@rumious/config": "*"
+    "@rumious/compiler": "workspace:*",
+    "@rumious/config": "workspace:*"
   },
   "peerDependencies": {
-    "@rumious/core": "*",
-    "rollup": "4.34.4"
+    "@rumious/core": "workspace:*",
+    "rollup": "4.x"
   }
 }

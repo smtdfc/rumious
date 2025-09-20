@@ -20,6 +20,14 @@ export default function (options: PluginOption = {}): Plugin {
     name: 'rollup-plugin-rumious',
 
     transform(source: string, id: string) {
+      if (
+        !id.endsWith('.tsx') &&
+        !id.endsWith('.jsx') &&
+        !id.endsWith('.ts') &&
+        !id.endsWith('.js')
+      ) {
+        return null;
+      }
       const config: Config = options.configFile
         ? readJSON<Config>(options.configFile)
         : {
