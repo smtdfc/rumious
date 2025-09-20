@@ -10,10 +10,40 @@ export function prod() {
   const config = readJSON<Config>(path.join(cwd, 'rumious.config.json'));
 
   console.log('[Rumious CLI]: Detecting builder ');
+  console.log('[Rumious CLI]: Detecting builder ');
   const builderCommandMap: {
-    [name: string]: string;
+    [name: string]: () => void;
   } = {
-    webpack: 'webpack',
+    webpack: () => {
+      spawn('webpack ', ['-w'], {
+        stdio: 'inherit',
+        shell: true,
+        env: {
+          ...process.env,
+          NODE_ENV: 'production',
+        },
+      });
+    },
+    rollup: () => {
+      spawn('rollup ', ['-c', '-w'], {
+        stdio: 'inherit',
+        shell: true,
+        env: {
+          ...process.env,
+          NODE_ENV: 'production',
+        },
+      });
+    },
+    vite: () => {
+      spawn('vite build', [], {
+        stdio: 'inherit',
+        shell: true,
+        env: {
+          ...process.env,
+          NODE_ENV: 'production',
+        },
+      });
+    },
   };
 
   const builder = config.builder ? config.builder.name : 'webpack';
@@ -23,12 +53,5 @@ export function prod() {
   }
 
   console.log(`[Rumious CLI]: Starting builder: ${builder}`);
-  spawn(builderCommandMap[builder], [], {
-    stdio: 'inherit',
-    shell: true,
-    env: {
-      ...process.env,
-      NODE_ENV: 'production',
-    },
-  });
+  builderCommandMap[builder]();
 }

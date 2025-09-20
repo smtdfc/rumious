@@ -11,9 +11,26 @@ export function dev() {
 
   console.log('[Rumious CLI]: Detecting builder ');
   const builderCommandMap: {
-    [name: string]: string;
+    [name: string]: () => void;
   } = {
-    webpack: 'webpack',
+    webpack: () => {
+      spawn('webpack ', ['-w'], {
+        stdio: 'inherit',
+        shell: true,
+      });
+    },
+    rollup: () => {
+      spawn('rollup ', ['-c', '-w'], {
+        stdio: 'inherit',
+        shell: true,
+      });
+    },
+    vite: () => {
+      spawn('vite ', [], {
+        stdio: 'inherit',
+        shell: true,
+      });
+    },
   };
 
   const builder = config.builder ? config.builder.name : 'webpack';
@@ -23,8 +40,5 @@ export function dev() {
   }
 
   console.log(`[Rumious CLI]: Starting builder: ${builder}`);
-  spawn(builderCommandMap[builder], ['-w'], {
-    stdio: 'inherit',
-    shell: true,
-  });
+  builderCommandMap[builder]();
 }
