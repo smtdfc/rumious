@@ -29,7 +29,6 @@ export function init(options: any) {
       stdio: 'inherit',
       shell: true,
     });
-
   }
 
   console.log('[Rumious CLI]: Project created successfully');

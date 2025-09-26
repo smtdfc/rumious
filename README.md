@@ -66,8 +66,6 @@ Join us on GitHub Discussions / Discord to share ideas and contribute.
 - 🔧 **Enhanced CLI** – Better project scaffolding & dev tooling.
 - 🪝 **More Lifecycle Hooks** – Finer control of DOM attachment & cleanup.
 - 🧩 **Lightweight State Management** – Built-in or compatible with external libs.
-- 🧪 **Testing Utilities** – Easier unit + integration testing for Rumious apps.
-- 🌐 **Optional Pre-render/SSR Add-on** – For cases where SEO matters, but not core focus.
 
 ---
 
