@@ -4,6 +4,7 @@ import type { State } from '../state/index.js';
 
 export class Component<T extends object> {
   static tagName = 'rumious-component';
+  static className?: string;
   private renderContext: RenderContext;
   public children: RenderContent | null = null;
 
@@ -47,6 +48,7 @@ export interface ComponentConstructor<T extends object> {
     parentContext: RenderContext,
   ): Component<T>;
   tagName?: string;
+  className?: string;
 }
 
 export type EmptyProps = object;

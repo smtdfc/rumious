@@ -38,6 +38,10 @@ export function createComponentElement<T extends object>(
   }
 
   const element = document.createElement(tagName) as ComponentElement<T>;
+  if (component.className) {
+    element.className = component.className;
+  }
+
   const instance = new component(props, element, context);
   element.instance = instance;
   instance.beforeMount();
