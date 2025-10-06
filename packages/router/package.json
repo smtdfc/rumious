@@ -1,6 +1,6 @@
 {
   "name": "@rumious/router",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "description": "Router module for the Rumious framework.",
   "license": "MIT",
   "author": "smtdfc <me.smtdfc@gmail.com>",
@@ -47,7 +47,10 @@
   "engines": {
     "node": ">=18"
   },
-  "dependencies": {
+  "peerDependencies": {
+    "@rumious/core": "^3.x"
+  },
+  "devDependencies": {
     "@rumious/core": "workspace:*"
   }
 }

@@ -143,6 +143,9 @@ export class RouterModule extends Module {
           }
 
           if (rest.length === 0 && route.component) {
+            if (route.layout) {
+              layouts.push(route.layout);
+            }
             layouts.push(route.component);
             return true;
           }
@@ -150,10 +153,10 @@ export class RouterModule extends Module {
           if (route.layout) {
             layouts.push(route.layout);
           }
-
+          console.log(1);
           const matched = walk(rest, route.childs || []);
           if (matched) return true;
-
+          console.log(1);
           // Rollback layout if child failed
           if (route.layout) {
             layouts.pop();
