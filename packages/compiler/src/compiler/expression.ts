@@ -6,8 +6,8 @@ const traverse = (
 ) as any;
 
 export class ExpressionTransform {
-  transform(ast: t.Expression): [t.Expression, Set<t.Identifier>] {
-    const deps = new Set<t.Identifier>();
+  transform(ast: t.Expression): [t.Expression, Set<t.Expression>] {
+    const deps = new Set<t.Expression>();
     const newAst = t.cloneNode(ast);
 
     traverse(
@@ -18,10 +18,8 @@ export class ExpressionTransform {
             t.isIdentifier(path.node.property, { name: 'get' }) &&
             !path.node.computed
           ) {
-            const obj = path.node.object;
-            if (t.isIdentifier(obj)) {
-              deps.add(obj);
-            }
+            const target = path.node.object;
+            deps.add(t.cloneNode(target, true));
           }
         },
 
@@ -30,7 +28,7 @@ export class ExpressionTransform {
             path.traverse({
               Identifier(innerPath) {
                 if (innerPath.node.name !== '$') {
-                  deps.add(innerPath.node);
+                  deps.add(t.cloneNode(innerPath.node, true));
                 }
               },
             });
