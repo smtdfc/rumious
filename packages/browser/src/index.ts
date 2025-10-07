@@ -364,3 +364,59 @@ export function createForComponent<T>(
       });
   });
 }
+
+export function detectValueChange(
+  callback: (value: any) => void,
+  element: HTMLElement,
+) {
+  if (element instanceof HTMLInputElement) {
+    const type = element.type.toLowerCase();
+    switch (type) {
+      case 'checkbox':
+        element.addEventListener('change', () => {
+          callback(element.checked);
+        });
+        break;
+      case 'radio':
+        element.addEventListener('change', () => {
+          if (element.checked) callback(element.value);
+        });
+        break;
+      case 'file':
+        element.addEventListener('change', () => {
+          callback(element.files); // FileList
+        });
+        break;
+      case 'number':
+        element.addEventListener('input', () => {
+          const val = element.value;
+          const num = val === '' ? null : Number(val);
+          callback(num);
+        });
+        break;
+      default:
+        // text, password, email, url, etc.
+        element.addEventListener('input', () => {
+          callback(element.value);
+        });
+    }
+  } else if (element instanceof HTMLTextAreaElement) {
+    element.addEventListener('input', () => {
+      callback(element.value);
+    });
+  } else if (element instanceof HTMLSelectElement) {
+    element.addEventListener('change', () => {
+      callback(element.value);
+    });
+  } else if (element.isContentEditable) {
+    element.addEventListener('input', () => {
+      callback(element.innerText);
+    });
+  } else {
+    console.warn('Element type not supported for value detection', element);
+  }
+}
+
+export function setStateValue(state: State<any>, value: any) {
+  state.set(value);
+}
