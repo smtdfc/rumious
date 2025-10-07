@@ -1,4 +1,5 @@
 import typescript from '@rollup/plugin-typescript';
+import typescript from '@rollup/plugin-typescript';
 import commonjs from '@rollup/plugin-commonjs';
 import terser from '@rollup/plugin-terser';
 import os from 'os';

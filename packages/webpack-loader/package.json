@@ -1,6 +1,6 @@
 {
   "name": "@rumious/webpack-loader",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A Webpack loader for transforming JSX into optimized JavaScript code during the build process.",
   "license": "MIT",
   "author": "smtdfc <me.smtdfc@gmail.com>",
@@ -50,9 +50,13 @@
     "node": ">=18"
   },
   "sideEffects": false,
-  "dependencies": {
+  "devDependencies": {
     "@rumious/compiler": "workspace:*",
     "@rumious/config": "workspace:*"
+  },
+  "dependencies": {
+    "@rumious/compiler": "1.x",
+    "@rumious/config": "0.x"
   },
   "peerDependencies": {
     "@rumious/core": "workspace:*",
