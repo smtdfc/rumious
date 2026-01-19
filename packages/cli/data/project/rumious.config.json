@@ -1,6 +1,0 @@
-{
-  "environment": "@rumious/browser",
-  "builder": {
-    "name": "vite"
-  }
-}
