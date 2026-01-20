@@ -1,0 +1,24 @@
+{
+  "name": "rumious",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/smtdfc/rumious#readme",
+  "bugs": {
+    "url": "https://github.com/smtdfc/rumious/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smtdfc/rumious.git"
+  },
+  "license": "MIT",
+  "author": "smtdfc",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "rollup": "^4.55.2",
+    "typescript": "^5.9.3"
+  }
+}
