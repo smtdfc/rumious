@@ -1,0 +1,33 @@
+{
+  "name": "@rumious/vite-plugin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "pnpm tsc",
+    "test": "vitest"
+  },
+  "keywords": [
+    "vite",
+    "plugin",
+    "rumious"
+  ],
+  "author": "smtdfc",
+  "license": "MIT",
+  "packageManager": "pnpm@10.28.1",
+  "dependencies": {
+    "@rumious/compiler": "workspace:*"
+  },
+  "devDependencies": {
+    "vite": "^7.3.1"
+  },
+  "files": [
+    "dist"
+  ]
+}
