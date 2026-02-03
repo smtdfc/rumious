@@ -1,4 +1,4 @@
-import { expect, test, describe } from "bun:test";
+import { expect, test, describe } from "vitest";
 import { compile } from "../dist/index.js";
 
 describe("Compiler test", () => {
@@ -51,7 +51,7 @@ describe("Compiler test", () => {
       },
     );
 
-    console.log(result.code);
+    // console.log(result.code);
 
     expect(result.code).toEqual(expect.stringContaining("@rumious/runtime"));
     expect(result.code).toEqual(expect.stringContaining("$$template"));
