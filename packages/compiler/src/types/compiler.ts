@@ -1,19 +1,22 @@
-import type { TSESTree } from "@typescript-eslint/typescript-estree";
-
-export type StaticProp = {
-  type: "static_prop";
-  name: string;
-  value: string;
-  loc: {
-    name: TSESTree.SourceLocation;
-    value: TSESTree.SourceLocation;
-  };
-};
-
-export type ListProp = Array<StaticProp>;
-export type Prop = StaticProp;
+import type { Expression } from "@babel/types";
 
 export type CompileOptions = {
-  sourcemap: boolean;
-  inlineSourcemap: boolean;
+  strictMode: boolean;
+  filename: string;
+  sourceMapFile: string;
 };
+
+export type DynamicAttribute = {
+  type: "attr";
+  expr: Expression;
+  path: string;
+  name: string;
+};
+
+export type ExpressionPart = {
+  type: "expr";
+  expr: Expression;
+  path: string;
+};
+
+export type DynamicPart = DynamicAttribute | ExpressionPart;

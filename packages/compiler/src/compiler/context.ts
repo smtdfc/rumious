@@ -1,20 +1,41 @@
-import type { TSESTree } from "@typescript-eslint/typescript-estree";
-import { Emitter } from "./emitter.js";
-import type { CompileOptions } from "../types/compiler.js";
+import {
+  identifier,
+  importDeclaration,
+  importSpecifier,
+  stringLiteral,
+  type Identifier,
+  type ImportSpecifier,
+  type Statement,
+} from "@babel/types";
+import { StringBuilder } from "./template.js";
+import type { DynamicPart } from "../types/compiler.js";
 
 export class CompileContext {
-  public code;
-  public ast;
-  public emitter;
-  constructor(
-    code: string,
-    ast: TSESTree.Program,
-    input: string,
-    output: string,
-    options?: CompileOptions,
-  ) {
-    this.code = code;
-    this.ast = ast;
-    this.emitter = new Emitter(input, code, output, options);
+  count = 0;
+  imports: Record<string, Identifier> = {};
+  statements: Statement[] = [];
+  htmlTemplate = new StringBuilder();
+  dynamicParts: DynamicPart[] = [];
+  nodePathInstructions: string[] = [];
+  templateVar: Identifier = identifier("unknown");
+  rootVar: Identifier = identifier("unknown");
+
+  ensureImport(id: string) {
+    if (!this.imports[id]) this.imports[id] = identifier(id);
+    return this.imports[id];
+  }
+
+  getImportStatement() {
+    let specifiers: ImportSpecifier[] = [];
+
+    for (let imp in this.imports) {
+      specifiers.push(importSpecifier(this.imports[imp]!, this.imports[imp]!));
+    }
+
+    return importDeclaration(specifiers, stringLiteral("@rumious/runtime"));
+  }
+
+  generateID(prefix = "_") {
+    return `${prefix}_${this.count++}`;
   }
 }
