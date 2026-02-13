@@ -1,5 +1,5 @@
 {
-  "name": "@rumious/vite-plugin",
+  "name": "@rumious/vite-plugin-rumious",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.js",
@@ -9,6 +9,7 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "type": "module",
   "scripts": {
     "build": "pnpm tsc",
     "test": "vitest"

@@ -18,8 +18,6 @@ import {
   isStringLiteral,
   memberExpression,
   stringLiteral,
-  variableDeclaration,
-  variableDeclarator,
   type Identifier,
   type JSXAttribute,
   type JSXElement,
@@ -31,9 +29,9 @@ import {
   type Statement,
 } from "@babel/types";
 import { CompileContext } from "./context.js";
-import { isComponent } from "../utils/name.js";
 import { AstHelpers } from "./helpers.js";
 import { isComponentName } from "./utils.js";
+import { DependencyExtractor } from "./expression.js";
 
 const traverseFn = (traverse as any).default || traverse;
 const generatorFn = (generate as any).default || generate;
@@ -70,11 +68,16 @@ export class Compiler {
           ` ${this.getAttrNameAsString(attrName)}="${attrValue.value}" `,
         );
       } else if (isJSXExpressionContainer(attrValue)) {
+        const deps = DependencyExtractor.extract(
+          this.getValueAsExpr(attrValue.expression)!,
+        );
+
         ctx.dynamicParts.push({
           type: "attr",
           name: this.getAttrNameAsString(attrName)!,
           expr: this.getValueAsExpr(attrValue.expression)!,
           path: ctx.nodePathInstructions.slice().join(""),
+          deps,
         });
       }
     }
@@ -133,6 +136,7 @@ export class Compiler {
       type: "expr",
       expr: this.getValueAsExpr(node.expression)!,
       path: ctx.nodePathInstructions.slice().join(""),
+      deps: DependencyExtractor.extract(this.getValueAsExpr(node.expression)!),
     });
   }
 
@@ -186,11 +190,26 @@ export class Compiler {
       if (part.type === "attr") {
         const currentNode = pathCache.get(part.path)!;
         effects.push(
-          AstHelpers.setAttribute(currentNode, part.name, part.expr),
+          AstHelpers.addEffect(
+            ctx,
+            [AstHelpers.setAttribute(currentNode, part.name, part.expr, ctx)],
+            part.deps,
+          ),
         );
       } else if (part.type === "expr") {
         const currentNode = pathCache.get(part.path)!;
-        effects.push(AstHelpers.setTextContent(currentNode, part.expr));
+        const rememberKey = `key_${currentNode.name}_${part.path}`;
+        const r = identifier(ctx.generateID("range"));
+        effects.push(
+          AstHelpers.addEffect(
+            ctx,
+            [
+              AstHelpers.getRange(r, currentNode, rememberKey, ctx),
+              AstHelpers.setTextContent(r, part.expr, ctx),
+            ],
+            part.deps,
+          ),
+        );
       }
     }
 
@@ -210,11 +229,14 @@ export class Compiler {
 
     const context = new CompileContext();
     const ast = parser.parse(code, parseOptions);
-    const templateVar = AstHelpers.createIdentifier(context.generateID("temp"));
+
     const s = this;
 
     traverseFn(ast, {
       JSXElement(path: NodePath<JSXElement>) {
+        const templateVar = AstHelpers.createIdentifier(
+          context.generateID("temp"),
+        );
         const rootVarName = context.generateID("root");
         const rootIdentifier = AstHelpers.createIdentifier(rootVarName);
         const ctxVarName = context.generateID("ctx");
@@ -222,6 +244,7 @@ export class Compiler {
         const templateClonedVar = AstHelpers.createIdentifier("temp_cloned");
         context.templateVar = templateClonedVar;
         context.rootVar = rootIdentifier;
+        context.ctxVar = ctxIdentifier;
 
         context.nodePathInstructions = ["f"];
         context.statements.push(
@@ -232,7 +255,7 @@ export class Compiler {
           expressionStatement(
             callExpression(
               memberExpression(rootIdentifier, identifier("appendChild")),
-              [templateVar],
+              [templateClonedVar],
             ),
           ),
         );
@@ -244,6 +267,7 @@ export class Compiler {
           rootIdentifier,
           ctxIdentifier,
           context.statements,
+          context,
         );
 
         path.replaceWith(fn);
@@ -257,6 +281,7 @@ export class Compiler {
 
         context.nodePathInstructions = [];
         context.statements = [];
+        context.htmlTemplate.clear();
       },
     });
 

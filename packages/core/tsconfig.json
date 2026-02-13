@@ -5,7 +5,8 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "target": "ES2015",
-    "module": "ESNext"
+    "module": "ESNext",
+    "exactOptionalPropertyTypes": false
   },
   "include": ["src/**/*"],
   "exclude": ["test/**/*", "node_modules"]

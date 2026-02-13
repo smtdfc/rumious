@@ -11,12 +11,14 @@ export type DynamicAttribute = {
   expr: Expression;
   path: string;
   name: string;
+  deps: Expression[];
 };
 
 export type ExpressionPart = {
   type: "expr";
   expr: Expression;
   path: string;
+  deps: Expression[];
 };
 
 export type DynamicPart = DynamicAttribute | ExpressionPart;

@@ -3,5 +3,6 @@ dist
 
 .env
 *.tsbuildinfo
+local
 
 .vscode

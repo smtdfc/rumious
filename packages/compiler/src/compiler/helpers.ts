@@ -1,4 +1,6 @@
 import {
+  arrayExpression,
+  arrayPattern,
   arrowFunctionExpression,
   blockStatement,
   callExpression,
@@ -81,7 +83,21 @@ export const AstHelpers = {
     return stat;
   },
 
-  setAttribute(id: Identifier, name: string, expr: Expression) {
+  addEffect(ctx: CompileContext, expr: Statement[], deps: Expression[] = []) {
+    return expressionStatement(
+      callExpression(memberExpression(ctx.ctxVar, identifier("addEffect")), [
+        arrowFunctionExpression([], blockStatement(expr)),
+        arrayExpression(deps),
+      ]),
+    );
+  },
+
+  setAttribute(
+    id: Identifier,
+    name: string,
+    expr: Expression,
+    ctx: CompileContext,
+  ) {
     return expressionStatement(
       callExpression(memberExpression(id, identifier("setAttribute")), [
         stringLiteral(name),
@@ -90,34 +106,56 @@ export const AstHelpers = {
     );
   },
 
-  setTextContent(id: Identifier, expr: Expression) {
-    return expressionStatement(
-      callExpression(memberExpression(id, identifier("setAttribute")), [
-        stringLiteral("textContent"),
-        expr,
-      ]),
-    );
+  setTextContent(id: Identifier, expr: Expression, ctx: CompileContext) {
+    let fn = ctx.ensureImport("$$text");
+    return expressionStatement(callExpression(fn, [id, expr, ctx.ctxVar]));
   },
 
-  createRootFn(root: Identifier, ctx: Identifier, stats: Statement[] = []) {
-    return arrowFunctionExpression(
-      [ctx],
-      blockStatement([
-        variableDeclaration("const", [
-          variableDeclarator(
-            root,
-            callExpression(
-              memberExpression(
-                identifier("document"),
-                identifier("createDocumentFragment"),
+  getRange(
+    id: Identifier,
+    node: Identifier,
+    rememberKey: string,
+    ctx: CompileContext,
+  ) {
+    let fn = ctx.ensureImport("$$range");
+    let stat = variableDeclaration("const", [
+      variableDeclarator(
+        id,
+        callExpression(fn, [node, stringLiteral(rememberKey), ctx.ctxVar]),
+      ),
+    ]);
+
+    return stat;
+  },
+
+  createRootFn(
+    root: Identifier,
+    ctx: Identifier,
+    stats: Statement[] = [],
+    context: CompileContext,
+  ) {
+    const fn = context.ensureImport("$$createRenderer");
+
+    return callExpression(fn, [
+      arrowFunctionExpression(
+        [ctx],
+        blockStatement([
+          variableDeclaration("const", [
+            variableDeclarator(
+              root,
+              callExpression(
+                memberExpression(
+                  identifier("document"),
+                  identifier("createDocumentFragment"),
+                ),
+                [],
               ),
-              [],
             ),
-          ),
+          ]),
+          ...stats,
+          returnStatement(root),
         ]),
-        ...stats,
-        returnStatement(root),
-      ]),
-    );
+      ),
+    ]);
   },
 };

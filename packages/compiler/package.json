@@ -3,13 +3,21 @@
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "type": "module",
   "scripts": {
-    "test": "bun test",
     "build": "pnpm tsc"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "rumious",
+    "compiler"
+  ],
+  "author": "smtdfc",
   "license": "MIT",
   "dependencies": {
     "@babel/generator": "^7.28.6",
@@ -30,5 +38,8 @@
     "@types/babel__generator": "^7.27.0",
     "@types/babel__traverse": "^7.28.0",
     "@types/node": "^25.1.0"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }

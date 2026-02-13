@@ -1,7 +1,7 @@
 import { Compiler } from "@rumious/compiler";
 import type { Plugin } from "vite";
 
-export default function myTsPlugin(): Plugin {
+export default function vitePluginRumious(): Plugin {
   const compiler = new Compiler();
   return {
     name: "vite-plugin-rumious",

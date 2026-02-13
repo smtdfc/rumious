@@ -22,12 +22,12 @@ describe("Compiler test", () => {
     );
   });
 
-  test("should add @rumious/runtime into compiled code", () => {
+  test("should add runtime into compiled code", () => {
     const result = compile("<div>This is div tag</div>", {
       filename: "index.ts",
     });
 
-    expect(result.code).toEqual(expect.stringContaining("@rumious/runtime"));
+    expect(result.code).toEqual(expect.stringContaining("@rumious/core"));
   });
 
   test("should transform jsx into template", () => {
@@ -35,7 +35,7 @@ describe("Compiler test", () => {
       filename: "index.ts",
     });
 
-    expect(result.code).toEqual(expect.stringContaining("@rumious/runtime"));
+    expect(result.code).toEqual(expect.stringContaining("@rumious/core"));
     expect(result.code).toEqual(expect.stringContaining("$$template"));
   });
 
@@ -53,7 +53,7 @@ describe("Compiler test", () => {
 
     // console.log(result.code);
 
-    expect(result.code).toEqual(expect.stringContaining("@rumious/runtime"));
+    expect(result.code).toEqual(expect.stringContaining("@rumious/core"));
     expect(result.code).toEqual(expect.stringContaining("$$template"));
     expect(result.code).toEqual(expect.stringContaining("$$walk"));
     expect(result.code).toEqual(expect.stringContaining(`setAttribute("b",`));

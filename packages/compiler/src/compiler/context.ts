@@ -19,6 +19,7 @@ export class CompileContext {
   nodePathInstructions: string[] = [];
   templateVar: Identifier = identifier("unknown");
   rootVar: Identifier = identifier("unknown");
+  ctxVar: Identifier = identifier("unknown");
 
   ensureImport(id: string) {
     if (!this.imports[id]) this.imports[id] = identifier(id);
@@ -32,10 +33,10 @@ export class CompileContext {
       specifiers.push(importSpecifier(this.imports[imp]!, this.imports[imp]!));
     }
 
-    return importDeclaration(specifiers, stringLiteral("@rumious/runtime"));
+    return importDeclaration(specifiers, stringLiteral("@rumious/core"));
   }
 
   generateID(prefix = "_") {
-    return `${prefix}_${this.count++}`;
+    return `${prefix}_${this.count++}_${Date.now().toString(36).substring(2, 8)}`;
   }
 }

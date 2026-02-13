@@ -3,5 +3,3 @@ ignoredBuiltDependencies:
 packages:
   - "apps/*"
   - "packages/*"
-  # Loại bỏ các thư mục không mong muốn (ví dụ: test)
-  - "!**/test/**"
