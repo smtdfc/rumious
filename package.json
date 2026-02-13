@@ -15,12 +15,10 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest --environment=happy-dom"
   },
   "devDependencies": {
     "@types/bun": "^1.3.8",
-    "@vitest/browser-playwright": "^4.0.18",
-    "@vitest/browser-preview": "^4.0.18",
     "happy-dom": "^20.6.1",
     "rollup": "^4.55.2",
     "typescript": "^5.9.3",
