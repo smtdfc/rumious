@@ -3,10 +3,13 @@ import {
   arrayPattern,
   arrowFunctionExpression,
   blockStatement,
+  booleanLiteral,
   callExpression,
   expressionStatement,
   identifier,
   memberExpression,
+  objectExpression,
+  objectProperty,
   returnStatement,
   stringLiteral,
   variableDeclaration,
@@ -92,6 +95,45 @@ export const AstHelpers = {
     );
   },
 
+  createComponent(
+    id: Identifier,
+    node: Identifier,
+    componentExpr: Expression,
+    props: Record<string, Expression>,
+    ctx: CompileContext,
+  ) {
+    const propsObject = objectExpression(
+      Object.entries(props).map(([key, value]) =>
+        objectProperty(identifier(key), value),
+      ),
+    );
+
+    let fn = ctx.ensureImport("$$component");
+    let stat = variableDeclaration("const", [
+      variableDeclarator(
+        id,
+        callExpression(fn, [componentExpr, node, ctx.ctxVar, propsObject]),
+      ),
+    ]);
+
+    return stat;
+  },
+
+  createForComponent(
+    node: Identifier,
+    template: Expression,
+    data: Expression,
+    key: Expression,
+    other: Expression,
+    ctx: CompileContext,
+  ) {
+    let fn = ctx.ensureImport("$$for");
+
+    return expressionStatement(
+      callExpression(fn, [node, ctx.ctxVar, template, data, other, key]),
+    );
+  },
+
   setAttribute(
     id: Identifier,
     name: string,
@@ -106,9 +148,28 @@ export const AstHelpers = {
     );
   },
 
-  setTextContent(id: Identifier, expr: Expression, ctx: CompileContext) {
-    let fn = ctx.ensureImport("$$text");
+  setDynamicContent(id: Identifier, expr: Expression, ctx: CompileContext) {
+    let fn = ctx.ensureImport("$$dynamic");
     return expressionStatement(callExpression(fn, [id, expr, ctx.ctxVar]));
+  },
+
+  event(
+    id: Identifier,
+    name: string,
+    expr: Expression,
+    isCapture: boolean,
+    ctx: CompileContext,
+  ) {
+    let fn = ctx.ensureImport("$$event");
+    return expressionStatement(
+      callExpression(fn, [
+        id,
+        stringLiteral(name),
+        expr,
+        ctx.ctxVar,
+        booleanLiteral(isCapture),
+      ]),
+    );
   },
 
   getRange(

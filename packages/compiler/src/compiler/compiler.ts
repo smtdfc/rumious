@@ -3,25 +3,29 @@ import traverse, { NodePath } from "@babel/traverse";
 import generate from "@babel/generator";
 import type { CompileOptions } from "../types/compiler.js";
 import {
-  assignmentExpression,
   callExpression,
   expressionStatement,
   identifier,
+  inherits,
   isExpression,
   isJSXAttribute,
   isJSXElement,
   isJSXEmptyExpression,
   isJSXExpressionContainer,
   isJSXIdentifier,
+  isJSXMemberExpression,
   isJSXNamespacedName,
   isJSXText,
   isStringLiteral,
   memberExpression,
+  objectExpression,
   stringLiteral,
+  type Expression,
   type Identifier,
   type JSXAttribute,
   type JSXElement,
   type JSXExpressionContainer,
+  type JSXIdentifier,
   type JSXMemberExpression,
   type JSXSpreadAttribute,
   type JSXText,
@@ -39,11 +43,109 @@ const generatorFn = (generate as any).default || generate;
 export class Compiler {
   constructor() {}
 
-  component(
-    node: JSXElement | JSXMemberExpression,
-    ctx: CompileContext,
-    parent: Identifier,
-  ) {}
+  forComponent(node: JSXElement, ctx: CompileContext, parent: Identifier) {
+    let openElement = node.openingElement;
+    const props = this.extractAllComponentProps(node);
+
+    if (!props["template"]) {
+      throw new Error("For component must be template prop.");
+    }
+
+    if (!props["data"]) {
+      throw new Error("For component must be data prop.");
+    }
+
+    if (!props["key"]) {
+      throw new Error("For component must be key prop.");
+    }
+    ctx.htmlTemplate.append(`<!${Date.now()}/>`);
+
+    ctx.parts.push({
+      type: "for",
+      path: ctx.nodePathInstructions.slice().join(""),
+      template: props["template"],
+      data: props["data"],
+      key: props["key"],
+      other: props["other"] ?? objectExpression([]),
+    });
+  }
+
+  fragment(node: JSXElement, ctx: CompileContext, parent: Identifier) {
+    for (let index = 0; index < node.children.length; index++) {
+      const children = node.children[index];
+
+      if (index > 0) {
+        ctx.nodePathInstructions.push("s");
+      }
+
+      this.node(children!, ctx, parent);
+    }
+  }
+
+  component(node: JSXElement, ctx: CompileContext, parent: Identifier) {
+    let openElement = node.openingElement;
+    let elementName = openElement.name;
+
+    if (isJSXIdentifier(elementName) || isJSXMemberExpression(elementName)) {
+      if (isJSXIdentifier(elementName)) {
+        let name = this.getAttrNameAsString(elementName);
+
+        switch (name) {
+          case "Fragment":
+            this.fragment(node, ctx, parent);
+            return;
+          case "For":
+            this.forComponent(node, ctx, parent);
+            return;
+        }
+      }
+
+      ctx.htmlTemplate.append(`<!${Date.now()}/>`);
+      const componentExpr = this.getNameAsExpr(elementName);
+      const props = this.extractAllComponentProps(node);
+      ctx.parts.push({
+        type: "component",
+        expr: componentExpr,
+        path: ctx.nodePathInstructions.slice().join(""),
+        props,
+      });
+    }
+  }
+
+  extractAllComponentProps(node: JSXElement) {
+    const props: Record<string, Expression> = {};
+
+    for (
+      let index = 0;
+      index < node.openingElement.attributes.length;
+      index++
+    ) {
+      const attr = node.openingElement.attributes[index]!;
+      if (isJSXAttribute(attr)) {
+        const attrName = this.getAttrNameAsString(attr.name)!;
+        const attrValue = this.getValueAsExpr(attr.value!);
+        props[attrName] = attrValue!;
+      }
+    }
+
+    return props;
+  }
+
+  getNameAsExpr(node: JSXIdentifier | JSXMemberExpression) {
+    if (isJSXIdentifier(node)) {
+      let name = identifier(node.name);
+      inherits(name, node);
+      return name;
+    } else if (isJSXMemberExpression(node)) {
+      let object = this.getNameAsExpr(node.object);
+      let property = this.getNameAsExpr(node.property);
+      let member = memberExpression(object, property);
+      inherits(member, node);
+      return member;
+    } else {
+      throw new Error("Unsupported element name type");
+    }
+  }
 
   getAttrNameAsString(node: Node) {
     if (isJSXIdentifier(node)) {
@@ -56,12 +158,57 @@ export class Compiler {
   getValueAsExpr(node: Node) {
     if (isExpression(node)) return node;
     else if (isJSXEmptyExpression(node)) return stringLiteral("");
+    else if (isJSXText(node)) return stringLiteral(node.value);
+    else if (isJSXExpressionContainer(node))
+      return this.getValueAsExpr(node.expression);
+    else if (isStringLiteral(node)) return node;
+    else throw new Error("Unsupported attribute value type");
+  }
+
+  handleOnDirective(
+    eventName: string,
+    value: Expression,
+    ctx: CompileContext,
+    isCapture: boolean = false,
+  ) {
+    ctx.events.add(eventName);
+    ctx.parts.push({
+      type: "event",
+      name: eventName,
+      handler: value,
+      isCapture,
+      path: ctx.nodePathInstructions.slice().join(""),
+    });
   }
 
   attribute(node: JSXAttribute | JSXSpreadAttribute, ctx: CompileContext) {
     if (isJSXAttribute(node)) {
       let attrName = node.name;
       let attrValue = node.value;
+
+      if (isJSXNamespacedName(attrName)) {
+        let namespace = attrName.namespace.name;
+        let name = attrName.name.name;
+
+        switch (namespace) {
+          case "on":
+            this.handleOnDirective(
+              name,
+              this.getValueAsExpr(attrValue!),
+              ctx,
+              false,
+            );
+            return;
+          case "capture":
+            this.handleOnDirective(
+              name,
+              this.getValueAsExpr(attrValue!),
+              ctx,
+              true,
+            );
+            return;
+        }
+      }
 
       if (isStringLiteral(attrValue)) {
         ctx.htmlTemplate.append(
@@ -72,7 +219,7 @@ export class Compiler {
           this.getValueAsExpr(attrValue.expression)!,
         );
 
-        ctx.dynamicParts.push({
+        ctx.parts.push({
           type: "attr",
           name: this.getAttrNameAsString(attrName)!,
           expr: this.getValueAsExpr(attrValue.expression)!,
@@ -95,20 +242,25 @@ export class Compiler {
 
       ctx.htmlTemplate.append(`>`);
 
-      let marker = ctx.nodePathInstructions.length - 1;
+      const preChildrenLength = ctx.nodePathInstructions.length;
+
       for (let index = 0; index < node.children.length; index++) {
         const children = node.children[index];
+
         if (index === 0) {
           ctx.nodePathInstructions.push("f");
         } else {
           ctx.nodePathInstructions.push("s");
         }
+
         this.node(children!, ctx, parent);
       }
 
-      ctx.nodePathInstructions.length = marker + 1;
+      ctx.nodePathInstructions.length = preChildrenLength;
 
       ctx.htmlTemplate.append(`</${elementName.name}>`);
+    } else {
+      this.component(node, ctx, parent);
     }
   }
 
@@ -132,7 +284,7 @@ export class Compiler {
     parent: Identifier,
   ) {
     ctx.htmlTemplate.append(`<!${Date.now()}/>`);
-    ctx.dynamicParts.push({
+    ctx.parts.push({
       type: "expr",
       expr: this.getValueAsExpr(node.expression)!,
       path: ctx.nodePathInstructions.slice().join(""),
@@ -149,7 +301,7 @@ export class Compiler {
     let effects: Statement[] = [];
     const pathCache = new Map<string, Identifier>();
 
-    const sortedParts = [...ctx.dynamicParts].sort(
+    const sortedParts = [...ctx.parts].sort(
       (a, b) => a.path.length - b.path.length,
     );
 
@@ -205,9 +357,54 @@ export class Compiler {
             ctx,
             [
               AstHelpers.getRange(r, currentNode, rememberKey, ctx),
-              AstHelpers.setTextContent(r, part.expr, ctx),
+              AstHelpers.setDynamicContent(r, part.expr, ctx),
             ],
             part.deps,
+          ),
+        );
+      } else if (part.type === "component") {
+        const currentNode = pathCache.get(part.path)!;
+        const componentInstance = identifier(ctx.generateID("component"));
+        effects.push(
+          AstHelpers.createComponent(
+            componentInstance,
+            currentNode,
+            part.expr,
+            part.props,
+            ctx,
+          ),
+        );
+      } else if (part.type === "event") {
+        const currentNode = pathCache.get(part.path)!;
+        effects.push(
+          AstHelpers.event(
+            currentNode,
+            part.name,
+            part.handler,
+            part.isCapture,
+            ctx,
+          ),
+        );
+      } else if (part.type === "for") {
+        const currentNode = pathCache.get(part.path)!;
+        const rememberKey = `key_${currentNode.name}_${part.path}_for`;
+        const r = identifier(ctx.generateID("range"));
+
+        effects.push(
+          AstHelpers.addEffect(
+            ctx,
+            [
+              AstHelpers.getRange(r, currentNode, rememberKey, ctx),
+              AstHelpers.createForComponent(
+                r,
+                part.template,
+                part.data,
+                part.key,
+                part.other,
+                ctx,
+              ),
+            ],
+            [],
           ),
         );
       }
@@ -282,6 +479,7 @@ export class Compiler {
         context.nodePathInstructions = [];
         context.statements = [];
         context.htmlTemplate.clear();
+        context.parts = [];
       },
     });
 

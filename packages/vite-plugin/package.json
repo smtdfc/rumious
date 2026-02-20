@@ -1,5 +1,5 @@
 {
-  "name": "@rumious/vite-plugin-rumious",
+  "name": "@rumious/vite-plugin",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.js",

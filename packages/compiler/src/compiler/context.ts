@@ -8,18 +8,19 @@ import {
   type Statement,
 } from "@babel/types";
 import { StringBuilder } from "./template.js";
-import type { DynamicPart } from "../types/compiler.js";
+import type { Part } from "../types/compiler.js";
 
 export class CompileContext {
   count = 0;
   imports: Record<string, Identifier> = {};
   statements: Statement[] = [];
   htmlTemplate = new StringBuilder();
-  dynamicParts: DynamicPart[] = [];
+  parts: Part[] = [];
   nodePathInstructions: string[] = [];
   templateVar: Identifier = identifier("unknown");
   rootVar: Identifier = identifier("unknown");
   ctxVar: Identifier = identifier("unknown");
+  events = new Set();
 
   ensureImport(id: string) {
     if (!this.imports[id]) this.imports[id] = identifier(id);

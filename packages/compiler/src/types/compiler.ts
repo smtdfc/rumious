@@ -6,7 +6,7 @@ export type CompileOptions = {
   sourceMapFile: string;
 };
 
-export type DynamicAttribute = {
+export type AttributePart = {
   type: "attr";
   expr: Expression;
   path: string;
@@ -21,4 +21,33 @@ export type ExpressionPart = {
   deps: Expression[];
 };
 
-export type DynamicPart = DynamicAttribute | ExpressionPart;
+export type ComponentPart = {
+  type: "component";
+  expr: Expression;
+  path: string;
+  props: Record<string, Expression>;
+};
+
+export type ForPart = {
+  type: "for";
+  path: string;
+  template: Expression;
+  data: Expression;
+  key: Expression;
+  other: Expression;
+};
+
+export type EventPart = {
+  type: "event";
+  name: string;
+  path: string;
+  isCapture: boolean;
+  handler: Expression;
+};
+
+export type Part =
+  | EventPart
+  | AttributePart
+  | ExpressionPart
+  | ComponentPart
+  | ForPart;

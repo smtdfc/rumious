@@ -6,22 +6,38 @@ export class State<T> {
     this._value = initialValue;
   }
 
-  public get(): T {
+  get(): T {
     return this._value;
   }
 
-  public set(newValue: T): void {
+  set(newValue: T): void {
     if (Object.is(this._value, newValue)) return;
     this._value = newValue;
     this.subscribers.forEach((subscriber) => subscriber(newValue));
   }
 
-  public subscribe(subscriber: (value: T) => void): void {
+  update(updateFn: (value: T) => T) {
+    const oldValue = this._value;
+    const newValue = updateFn(oldValue);
+
+    this.set(newValue);
+  }
+
+  mutate(fn: (value: T) => void) {
+    fn(this._value);
+    this.subscribers.forEach((subscriber) => subscriber(this._value));
+  }
+
+  subscribe(subscriber: (value: T) => void): void {
     this.subscribers.add(subscriber);
   }
 
-  public unsubscribe(subscriber: (value: T) => void): void {
+  unsubscribe(subscriber: (value: T) => void): void {
     this.subscribers.delete(subscriber);
+  }
+
+  toString() {
+    return this._value;
   }
 }
 

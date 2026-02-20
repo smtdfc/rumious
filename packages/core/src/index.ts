@@ -10,3 +10,5 @@ export class App {
 export * from "./state";
 export * from "./component";
 export * from "./runtime";
+export * from "./types";
+export { isDevMode } from "./utils";

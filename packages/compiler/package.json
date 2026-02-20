@@ -26,6 +26,7 @@
     "@babel/traverse": "^7.28.6",
     "@babel/types": "^7.28.6",
     "@jridgewell/gen-mapping": "^0.3.13",
+    "@swc/core": "^1.15.11",
     "@types/babel__template": "^7.4.4",
     "@typescript-eslint/typescript-estree": "^8.53.1",
     "astring": "^1.9.0",

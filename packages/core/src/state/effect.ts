@@ -14,7 +14,9 @@ export class Effect {
   ) {
     this.lastDeps = [...deps];
 
-    for (const dep of deps) {
+    for (let i = 0; i < deps.length; i++) {
+      const dep = deps[i];
+
       if (dep === undefined) {
         throw new Error("Effect dependencies cannot contain undefined values.");
       }
@@ -24,7 +26,7 @@ export class Effect {
       }
     }
 
-    this.run();
+    // this.run(); // Effect only triggered on connectedCallback, not on creation
   }
 
   public run() {
@@ -50,6 +52,16 @@ export class Effect {
     if (this.cleanup) {
       this.cleanup();
       this.cleanup = undefined;
+    }
+
+    const deps = this.deps;
+    const len = deps.length;
+
+    for (let i = 0; i < len; i++) {
+      const dep = deps[i];
+      if (dep instanceof State) {
+        dep.unsubscribe(this.run);
+      }
     }
   }
 }

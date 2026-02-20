@@ -1,25 +1,35 @@
 import {
-  BaseComponentElement,
+  type BaseComponentElement,
   defineComponentElement,
   type Renderer,
 } from "../runtime";
 import type { ComponentLifecycle } from "./lifecycle";
 
 export type Factory<T> = (l: ComponentLifecycle, props: T) => any;
-export class ComponentMetadata<T> {
+export class ComponentMetadata<T = any> {
   constructor(
     private _constructor: any,
     public tagName: string,
+    public registrationName: string,
+    public isBuiltIn: boolean,
     public props: T = {} as T,
   ) {}
 
-  createElement() {
-    if (!this._constructor) {
-      throw new Error("Component constructor is not defined");
+  createElement(props: T = {} as T, key?: string) {
+    let ele: BaseComponentElement;
+
+    if (this.isBuiltIn) {
+      ele = document.createElement(this.tagName, {
+        is: this.registrationName,
+      }) as any;
+    } else {
+      ele = document.createElement(this.tagName) as any;
     }
 
-    let ele = document.createElement(this.tagName);
-    return ele as BaseComponentElement;
+    (ele as any).__props = props;
+    ele.__key = key;
+
+    return ele;
   }
 }
 
@@ -31,6 +41,8 @@ export function component<T>(
   return new ComponentMetadata(
     m.ComponentElement,
     tagName,
-    {} /* Trust me */,
+    m.registrationName,
+    m.isBuiltIn,
+    {},
   ) as any;
 }
