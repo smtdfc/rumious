@@ -7,24 +7,34 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    },
-    "./types/jsx": {
-      "types": "./dist/types/jsx.d.ts"
     }
   },
-  "scripts": {
-    "build": "pnpm tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "homepage": "https://github.com/smtdfc/rumious#readme",
+  "bugs": {
+    "url": "https://github.com/smtdfc/rumious/issues"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smtdfc/rumious.git"
+  },
+  "license": "MIT",
+  "author": "smtdfc",
+  "type": "module",
+  "scripts": {
+    "prepublishOnly": "npm run build:prod",
+    "build:dev": "pnpm tsc",
+    "build:prod": "pnpm rollup -c rollup.config.js",
+    "build:types": "tsc --project tsconfig.json --emitDeclarationOnly --declaration --declarationDir dist",
+    "test": "vitest"
+  },
+  "keywords": [
+    "framework",
+    "rumious"
+  ],
   "packageManager": "pnpm@10.28.1",
+  "dependencies": {},
+  "devDependencies": {},
   "files": [
     "dist"
-  ],
-  "dependencies": {},
-  "devDependencies": {
-    "typescript": "^5.9.3"
-  }
+  ]
 }

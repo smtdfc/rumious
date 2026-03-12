@@ -1,4 +1,4 @@
-import { Compiler } from "@rumious/compiler";
+import { compile, CompileOption } from "@rumious/compiler";
 import type { Plugin } from "vite";
 
 export default function vitePluginRumious(): Plugin {
@@ -9,13 +9,11 @@ export default function vitePluginRumious(): Plugin {
     config(config) {},
 
     async transform(code: string, id: string) {
-      const compiler = new Compiler();
       if (id.endsWith(".tsx") || id.endsWith(".jsx")) {
-        const result = await compiler.compile(code, {
-          filename: id,
-          sourceMapFile: id,
-          // strictMode: true,
-        });
+        let compileOption = new CompileOption();
+        compileOption.file_name = id;
+
+        const result = await compile(code, compileOption);
 
         return {
           code: result.code,

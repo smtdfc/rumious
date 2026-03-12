@@ -6,7 +6,9 @@
     "outDir": "./dist",
     "target": "ES2015",
     "module": "ESNext",
-    "exactOptionalPropertyTypes": false
+    "declaration": true,
+    "declarationDir": "dist",
+    "emitDeclarationOnly": false
   },
   "include": ["src/**/*"],
   "exclude": ["test/**/*", "node_modules"]

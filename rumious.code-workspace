@@ -5,6 +5,6 @@
     },
   ],
   "settings": {
-    "cSpell.words": ["Rumious"],
+    "cSpell.words": ["Codegen", "ctxt", "rumious", "srcmap"],
   },
 }
