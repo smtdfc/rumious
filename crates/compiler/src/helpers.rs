@@ -3,29 +3,44 @@ use std::{collections::HashMap, vec};
 use swc_common::{DUMMY_SP, SyntaxContext};
 use swc_core::ecma::utils::{ExprFactory, private_ident, quote_ident};
 use swc_ecma_ast::{
-    ArrowExpr, BindingIdent, BlockStmt, BlockStmtOrExpr, CallExpr, Decl, Expr, Ident, ImportDecl,
-    ImportNamedSpecifier, ImportSpecifier, Lit, MemberExpr, ModuleDecl, ModuleItem, Pat,
-    ReturnStmt, Stmt, Str, VarDecl, VarDeclKind, VarDeclarator,
+    ArrayLit, ArrowExpr, BindingIdent, BlockStmt, BlockStmtOrExpr, CallExpr, Decl, Expr,
+    ExprOrSpread, ExprStmt, Id, Ident, ImportDecl, ImportNamedSpecifier, ImportSpecifier, Lit,
+    MemberExpr, MemberProp, ModuleDecl, ModuleExportName, ModuleItem, Pat, ReturnStmt, Stmt, Str,
+    VarDecl, VarDeclKind, VarDeclarator,
 };
 
 use crate::context::{Context, Counter};
 
 pub struct ImportHelper {
     names: HashMap<String, Ident>,
+    alias_counter: u64,
 }
 
 impl ImportHelper {
     pub fn new() -> Self {
         Self {
             names: HashMap::new(),
+            alias_counter: 0,
         }
     }
 
+    fn next_alias(&mut self) -> Ident {
+        self.alias_counter += 1;
+        Ident::new(
+            format!("$$__r{}", self.alias_counter).into(),
+            DUMMY_SP,
+            SyntaxContext::empty(),
+        )
+    }
+
     pub fn get(&mut self, name: &str) -> Ident {
-        self.names
-            .entry(name.to_string())
-            .or_insert_with(|| Ident::new(name.into(), DUMMY_SP, SyntaxContext::empty()))
-            .clone()
+        if let Some(existing) = self.names.get(name) {
+            return existing.clone();
+        }
+
+        let alias = self.next_alias();
+        self.names.insert(name.to_string(), alias.clone());
+        alias
     }
 
     pub fn to_import_decl(&self, src_path: &str) -> Option<ModuleItem> {
@@ -35,12 +50,16 @@ impl ImportHelper {
 
         let mut specifiers: Vec<ImportSpecifier> = self
             .names
-            .values()
-            .map(|ident| {
+            .iter()
+            .map(|(imported_name, local_alias)| {
                 ImportSpecifier::Named(ImportNamedSpecifier {
                     span: DUMMY_SP,
-                    local: ident.clone(),
-                    imported: None,
+                    local: local_alias.clone(),
+                    imported: Some(ModuleExportName::Ident(Ident::new(
+                        imported_name.clone().into(),
+                        DUMMY_SP,
+                        SyntaxContext::empty(),
+                    ))),
                     is_type_only: false,
                 })
             })
@@ -135,6 +154,33 @@ impl ASTHelper {
                     ];
 
                     all_stats.extend(stats);
+
+                    all_stats.push(Stmt::Expr(ExprStmt {
+                        span: DUMMY_SP,
+                        expr: Box::new(Expr::Call(CallExpr {
+                            span: DUMMY_SP,
+                            ctxt: SyntaxContext::empty(),
+
+                            callee: MemberExpr {
+                                span: DUMMY_SP,
+                                obj: Box::new(Expr::Ident(ctx.frag_var.clone())),
+                                prop: MemberProp::Ident(
+                                    Ident::new(
+                                        "appendChild".into(),
+                                        DUMMY_SP,
+                                        SyntaxContext::empty(),
+                                    )
+                                    .into(),
+                                ),
+                            }
+                            .as_callee(),
+                            args: vec![ExprOrSpread {
+                                spread: None,
+                                expr: Box::new(Expr::Ident(ctx.root_var.clone())),
+                            }],
+                            type_args: None,
+                        })),
+                    }));
                     all_stats.push(Stmt::Return(ReturnStmt {
                         span: DUMMY_SP,
                         arg: Some(Expr::Ident(ctx.frag_var.clone()).into()),
@@ -219,5 +265,114 @@ impl ASTHelper {
                 type_args: None,
             }),
         )
+    }
+
+    pub fn create_effect(
+        stmts: Vec<Stmt>,
+        ctx_var: &Ident,
+        import_manager: &mut ImportHelper,
+    ) -> Stmt {
+        let create_template_fn = import_manager.get("$$effect");
+
+        let arrow_fn = ArrowExpr {
+            span: DUMMY_SP,
+            params: vec![],
+            body: Box::new(BlockStmtOrExpr::BlockStmt(BlockStmt {
+                span: DUMMY_SP,
+                stmts,
+                ctxt: SyntaxContext::empty(),
+            })),
+            is_async: false,
+            is_generator: false,
+            type_params: None,
+            return_type: None,
+            ctxt: SyntaxContext::empty(),
+        };
+
+        Stmt::Expr(ExprStmt {
+            span: DUMMY_SP,
+            expr: Box::new(Expr::Call(CallExpr {
+                span: DUMMY_SP,
+                ctxt: SyntaxContext::empty(),
+                callee: create_template_fn.as_callee(),
+                args: vec![
+                    ExprOrSpread {
+                        spread: None,
+                        expr: Box::new(Expr::Arrow(arrow_fn)),
+                    },
+                    Expr::Array(ArrayLit {
+                        span: DUMMY_SP,
+                        elems: vec![],
+                    })
+                    .as_arg(),
+                    ctx_var.clone().as_arg(),
+                ],
+                type_args: None,
+            })),
+        })
+    }
+
+    pub fn create_range(node: &Ident, source: &Ident, import_manager: &mut ImportHelper) -> Stmt {
+        let create_template_fn = import_manager.get("$$createRange");
+        Self::const_decl(
+            node,
+            Expr::Call(CallExpr {
+                span: DUMMY_SP,
+                ctxt: SyntaxContext::empty(),
+                callee: create_template_fn.as_callee(),
+                args: vec![source.clone().as_arg()],
+                type_args: None,
+            }),
+        )
+    }
+
+    pub fn create_component(
+        node: &Ident,
+        ctx_var: &Ident,
+        expr: &Expr,
+        props: &Expr,
+        import_manager: &mut ImportHelper,
+    ) -> Stmt {
+        let create_template_fn = import_manager.get("$$createComponent");
+        Stmt::Expr(ExprStmt {
+            span: DUMMY_SP,
+            expr: Expr::Call(CallExpr {
+                span: DUMMY_SP,
+                ctxt: SyntaxContext::empty(),
+                callee: create_template_fn.as_callee(),
+                args: vec![
+                    node.clone().as_arg(),
+                    ctx_var.clone().as_arg(),
+                    expr.clone().as_arg(),
+                    props.clone().as_arg(),
+                ],
+                type_args: None,
+            })
+            .into(),
+        })
+    }
+
+    pub fn create_text(
+        node: &Ident,
+        ctx_var: &Ident,
+        expr: &Expr,
+        import_manager: &mut ImportHelper,
+    ) -> Stmt {
+        let text_fn = import_manager.get("$$text");
+        Stmt::Expr(ExprStmt {
+            span: DUMMY_SP,
+            expr: Expr::Call(CallExpr {
+                span: DUMMY_SP,
+                ctxt: SyntaxContext::empty(),
+                callee: text_fn.as_callee(),
+                args: vec![
+                    node.clone().as_arg(),
+                    ctx_var.clone().as_arg(),
+                    expr.clone().as_arg(),
+                ],
+                type_args: None,
+            })
+            .into(),
+        })
     }
 }

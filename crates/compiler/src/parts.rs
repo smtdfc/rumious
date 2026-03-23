@@ -18,9 +18,18 @@ pub struct ExpressionPart {
 
 impl ExpressionPart {}
 
+pub struct ComponentPart {
+    pub expr: Expr,
+    pub path: PathInstruction,
+    pub props: Expr,
+}
+
+impl ComponentPart {}
+
 pub enum Part {
     DynamicAttr(DynamicAttrPart),
     Expression(ExpressionPart),
+    ComponentPart(ComponentPart),
 }
 
 impl Part {
@@ -28,6 +37,7 @@ impl Part {
         match self {
             Part::DynamicAttr(d) => d.path.len(),
             Part::Expression(e) => e.path.len(),
+            Part::ComponentPart(c) => c.path.len(),
         }
     }
 
@@ -35,6 +45,7 @@ impl Part {
         match self {
             Part::DynamicAttr(d) => &d.path,
             Part::Expression(e) => &e.path,
+            Part::ComponentPart(c) => &c.path,
         }
     }
 }

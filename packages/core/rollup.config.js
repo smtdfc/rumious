@@ -28,29 +28,29 @@ export default [
           },
         },
       }),
-      terser({
-        compress: {
-          ecma: 2020,
-          module: true,
-          toplevel: true,
-          unsafe: true,
-          passes: 3,
-          drop_console: true,
-          pure_getters: true,
-          keep_fargs: false,
-          unsafe_arrows: true,
-        },
-        format: {
-          comments: false,
-          ascii_only: true,
-        },
-        mangle: {
-          toplevel: true,
-          properties: {
-            regex: /^_/,
-          },
-        },
-      }),
+      // terser({
+      //   compress: {
+      //     ecma: 2020,
+      //     module: true,
+      //     toplevel: true,
+      //     unsafe: true,
+      //     passes: 3,
+      //     drop_console: true,
+      //     pure_getters: true,
+      //     keep_fargs: false,
+      //     unsafe_arrows: true,
+      //   },
+      //   format: {
+      //     comments: false,
+      //     ascii_only: true,
+      //   },
+      //   mangle: {
+      //     toplevel: true,
+      //     properties: {
+      //       regex: /^_/,
+      //     },
+      //   },
+      // }),
     ],
   },
   {

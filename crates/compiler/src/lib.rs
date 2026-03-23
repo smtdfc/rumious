@@ -36,9 +36,14 @@ mod tests {
     #[test]
     fn check() {
         let code = "
-            const a = 100;
-            const b = <h1>hello</h1>
-            const c = <h2>snsn</h2>
+          import { createApp } from '@rumious/core';
+
+const app = createApp(document.getElementById('root')!);
+function Hello() {
+  return <h1>Hello</h1>;
+}
+app.attach(<Hello/>);
+
 
         ";
 
@@ -50,5 +55,34 @@ mod tests {
 
         println!("Code: {}", result.code);
         println!("Map: {}", result.map);
+    }
+
+    #[test]
+    fn forwards_component_props_and_keeps_sourcemap() {
+        let code = "
+          import { createApp } from '@rumious/core';
+
+const app = createApp(document.getElementById('root')!);
+function Hello(ins, props) {
+  return <h1>{props.title}</h1>;
+}
+const n = 3;
+const rest = { extra: true };
+app.attach(<Hello title=\"Hi\" count={n} {...rest} disabled />);
+        ";
+
+        let options = CompileOption {
+            file_name: "hello-props.ts".to_string(),
+        };
+
+        let result = compile(&code, Some(options)).expect("Error");
+
+        assert!(result.code.contains("Hello, {"));
+        assert!(result.code.contains("\"title\": \"Hi\""));
+        assert!(result.code.contains("\"count\": n"));
+        assert!(result.code.contains("...rest"));
+        assert!(result.code.contains("\"disabled\": true"));
+
+        assert!(result.map.contains("\"sources\":[\"hello-props.ts\"]"));
     }
 }

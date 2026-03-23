@@ -1,3 +1,4 @@
+use swc_common::util::take::Take;
 use swc_core::ecma::visit::{VisitMut, VisitMutWith};
 use swc_ecma_ast::Expr;
 
@@ -28,10 +29,14 @@ impl VisitMut for Visitor {
         match node {
             Expr::JSXElement(element) => {
                 let mut context = Context::new(&mut self.counter);
-                Transformer::transform_element(element, &mut context);
-
+                Transformer::transform_element(element, &mut context, true);
+                let hydaration_stmts = Transformer::generate_hydration(
+                    &mut context,
+                    &mut self.counter,
+                    &mut self.import_helper,
+                );
                 let renderer_fn =
-                    ASTHelper::render_fn(vec![], &mut context, &mut self.import_helper);
+                    ASTHelper::render_fn(hydaration_stmts, &mut context, &mut self.import_helper);
                 *node = ASTHelper::create_renderer(renderer_fn, &mut self.import_helper);
                 self.contexts.push(context);
             }
@@ -42,21 +47,42 @@ impl VisitMut for Visitor {
     }
 
     fn visit_mut_module(&mut self, node: &mut swc_ecma_ast::Module) {
+        // 1. Chạy visit để thu thập thông tin
         node.visit_mut_children_with(self);
 
-        let mut new_items = Vec::new();
+        let mut imports = Vec::new();
+        let mut templates = Vec::new();
+        let mut rest_of_body = Vec::new();
 
+        // 2. Phân loại node.body hiện tại (những gì người dùng viết)
+        for item in node.body.take() {
+            if item.is_module_decl() {
+                // Giữ lại các dòng import gốc (import { createApp } ...)
+                imports.push(item);
+            } else {
+                // Các code logic khác
+                rest_of_body.push(item);
+            }
+        }
+
+        // 3. Tạo các khai báo Template từ context
         for ctx in &self.contexts {
             let template = ASTHelper::create_template(&ctx.html, &mut self.import_helper);
             let template_decl = ASTHelper::const_decl(&ctx.template_var, template);
-            new_items.push(swc_ecma_ast::ModuleItem::Stmt(template_decl));
+            templates.push(swc_ecma_ast::ModuleItem::Stmt(template_decl));
         }
 
-        new_items.append(&mut node.body);
-        if let Some(import_stmt) = self.import_helper.to_import_decl("@rumious/core") {
-            new_items.insert(0, import_stmt);
+        // 4. Lấy Import của Compiler (ví dụ: $$createTemplate)
+        let mut final_body = Vec::new();
+        if let Some(compiler_import) = self.import_helper.to_import_decl("@rumious/core") {
+            final_body.push(compiler_import);
         }
 
-        node.body = new_items;
+        // 5. Gộp theo thứ tự mong muốn:
+        final_body.extend(imports); // Import gốc của user
+        final_body.extend(templates); // Các biến $$_template...
+        final_body.extend(rest_of_body); // Logic app.attach...
+
+        node.body = final_body;
     }
 }

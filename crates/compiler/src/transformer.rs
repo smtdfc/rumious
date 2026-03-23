@@ -12,15 +12,16 @@ use std::{
 
 use swc_common::{DUMMY_SP, cache};
 use swc_ecma_ast::{
-    Expr, Ident, JSXAttrName, JSXAttrOrSpread, JSXAttrValue, JSXElement, JSXElementChild,
-    JSXElementName, JSXExpr, JSXExprContainer, JSXText, Lit, Null, Stmt, Str,
+    Bool, Expr, Ident, JSXAttrName, JSXAttrOrSpread, JSXAttrValue, JSXElement, JSXElementChild,
+    JSXElementName, JSXExpr, JSXExprContainer, JSXText, KeyValueProp, Lit, Null, ObjectLit, Prop,
+    PropName, PropOrSpread, Stmt, Str,
 };
 
 use crate::{
     context::{Context, Counter, Path, PathInstruction, PathInstructionKind},
     helpers::{ASTHelper, ImportHelper},
-    parts::{DynamicAttrPart, ExpressionPart, Part},
-    utils::is_component,
+    parts::{ComponentPart, DynamicAttrPart, ExpressionPart, Part},
+    utils::{get_expr_from_jsx_name, is_component},
 };
 
 pub struct Transformer;
@@ -52,6 +53,54 @@ impl Transformer {
             JSXAttrValue::JSXElement(e) => Expr::Lit(Lit::Null(Null { span: DUMMY_SP })),
             JSXAttrValue::JSXFragment(e) => Expr::Lit(Lit::Null(Null { span: DUMMY_SP })),
         }
+    }
+
+    fn get_component_props_expr(attrs: &[JSXAttrOrSpread]) -> Expr {
+        let mut props: Vec<PropOrSpread> = vec![];
+
+        for attr in attrs {
+            match attr {
+                JSXAttrOrSpread::JSXAttr(jsx_attr) => {
+                    let key = Self::get_attr_name_as_str(&jsx_attr.name);
+                    let value_expr = match jsx_attr.value.as_ref() {
+                        None => Expr::Lit(Lit::Bool(Bool {
+                            span: DUMMY_SP,
+                            value: true,
+                        })),
+                        Some(JSXAttrValue::Str(str_lit)) => Expr::Lit(Lit::Str(str_lit.clone())),
+                        Some(JSXAttrValue::JSXExprContainer(expr_container)) => {
+                            match &expr_container.expr {
+                                JSXExpr::Expr(expr) => *expr.clone(),
+                                JSXExpr::JSXEmptyExpr(_) => {
+                                    Expr::Lit(Lit::Null(Null { span: DUMMY_SP }))
+                                }
+                            }
+                        }
+                        Some(JSXAttrValue::JSXElement(el)) => Expr::JSXElement(el.clone()),
+                        Some(JSXAttrValue::JSXFragment(fragment)) => {
+                            Expr::JSXFragment(fragment.clone())
+                        }
+                    };
+
+                    props.push(PropOrSpread::Prop(Box::new(Prop::KeyValue(KeyValueProp {
+                        key: PropName::Str(Str {
+                            span: DUMMY_SP,
+                            value: key.into(),
+                            raw: None,
+                        }),
+                        value: Box::new(value_expr),
+                    }))));
+                }
+                JSXAttrOrSpread::SpreadElement(spread) => {
+                    props.push(PropOrSpread::Spread(spread.clone()));
+                }
+            }
+        }
+
+        Expr::Object(ObjectLit {
+            span: DUMMY_SP,
+            props,
+        })
     }
 
     pub fn transform_attr(node: &JSXAttrOrSpread, ctx: &mut Context) {
@@ -88,12 +137,18 @@ impl Transformer {
         }
     }
 
-    pub fn transform_element(node: &JSXElement, ctx: &mut Context) {
+    pub fn transform_element(node: &JSXElement, ctx: &mut Context, is_root: bool) {
         let opening = &node.opening;
         let name = &opening.name;
 
         if !is_component(name) && matches!(name, JSXElementName::Ident(_)) {
+            println!("element");
             if let JSXElementName::Ident(element_name) = name {
+                let pre_element_length = ctx.node_path_instructions.len();
+                if is_root {
+                    ctx.node_path_instructions.mark(PathInstructionKind::First);
+                }
+
                 write!(&mut ctx.html, "<{} ", element_name.sym);
 
                 for attr in &opening.attrs {
@@ -111,12 +166,35 @@ impl Transformer {
                         ctx.node_path_instructions
                             .mark(PathInstructionKind::Sibling);
                     }
+
+                    Self::transform_element_child(children, ctx);
                 }
 
                 ctx.node_path_instructions.truncate(pre_child_length);
                 write!(&mut ctx.html, "</{}>", element_name.sym);
+
+                ctx.node_path_instructions.truncate(pre_element_length);
             }
+        } else {
+            if is_root {
+                ctx.node_path_instructions.mark(PathInstructionKind::First);
+            }
+
+            Self::transform_component(node, ctx);
         }
+    }
+
+    pub fn transform_component(node: &JSXElement, ctx: &mut Context) {
+        let key = ctx.counter.increase();
+        let opening = &node.opening;
+
+        write!(&mut ctx.html, "<!{}/>", key);
+        println!("PATH: {}", ctx.node_path_instructions.to_string());
+        ctx.parts.push(Part::ComponentPart(ComponentPart {
+            expr: get_expr_from_jsx_name(opening.name.clone()),
+            path: ctx.node_path_instructions.clone(),
+            props: Self::get_component_props_expr(&opening.attrs),
+        }));
     }
 
     pub fn transform_text(node: &JSXText, ctx: &mut Context) {
@@ -144,7 +222,7 @@ impl Transformer {
         match child {
             JSXElementChild::JSXElement(node) => {
                 let element = &**node;
-                Self::transform_element(&element, ctx);
+                Self::transform_element(&element, ctx, false);
             }
 
             JSXElementChild::JSXText(node) => {
@@ -163,42 +241,96 @@ impl Transformer {
         ctx: &mut Context,
         counter: &mut Counter,
         import_manager: &mut ImportHelper,
-    ) {
+    ) -> Vec<Stmt> {
         let mut stats: Vec<Stmt> = vec![];
         let mut effects: Vec<Stmt> = vec![];
         let mut path_cache: HashMap<String, Ident> = HashMap::new();
+
         ctx.parts.sort_by(|a, b| a.path_len().cmp(&b.path_len()));
 
         for part in &ctx.parts {
             let key = part.path().to_string();
-            if !path_cache.contains_key(&key) {
-                let mut best_parent_path = "";
-                let mut relative_path = "";
 
+            let node_var = if let Some(cached_ident) = path_cache.get(&key) {
+                cached_ident.clone()
+            } else {
+                let mut best_parent_path = String::new();
                 for cached_path in path_cache.keys() {
                     if key.starts_with(cached_path) && cached_path.len() > best_parent_path.len() {
-                        best_parent_path = cached_path;
-                        relative_path = &key[cached_path.len()..];
+                        best_parent_path = cached_path.clone();
                     }
                 }
 
-                let node_var = ASTHelper::generate_ident("$$_node".to_string(), counter);
-                let mut source_ident = &ctx.root_var;
-                if best_parent_path != "" {
-                    source_ident = path_cache.get(best_parent_path).expect("REASON");
-                }
-
-                if relative_path == "" {
-                    path_cache.insert(key, source_ident.clone());
+                let source_ident = if best_parent_path.is_empty() {
+                    ctx.root_var.clone()
                 } else {
+                    path_cache
+                        .get(&best_parent_path)
+                        .expect("Path must exist in cache")
+                        .clone()
+                };
+
+                let relative_path = &key[best_parent_path.len()..];
+
+                if relative_path.is_empty() {
+                    path_cache.insert(key.clone(), source_ident.clone());
+                    source_ident
+                } else {
+                    let new_node_ident = ASTHelper::generate_ident("$$_node".to_string(), counter);
+
                     stats.push(ASTHelper::create_walker(
+                        &new_node_ident,
+                        &source_ident,
+                        relative_path,
+                        import_manager,
+                    ));
+
+                    path_cache.insert(key.clone(), new_node_ident.clone());
+                    new_node_ident
+                }
+            };
+
+            match part {
+                Part::ComponentPart(component) => {
+                    let range_var = ASTHelper::generate_ident("range".to_owned(), counter);
+
+                    effects.push(ASTHelper::create_range(
+                        &range_var,
                         &node_var,
-                        source_ident,
-                        &key,
+                        import_manager,
+                    ));
+
+                    effects.push(ASTHelper::create_component(
+                        &range_var,
+                        &ctx.ctx_var,
+                        &component.expr,
+                        &component.props,
                         import_manager,
                     ));
                 }
+
+                Part::Expression(part) => {
+                    let range_var = ASTHelper::generate_ident("range".to_owned(), counter);
+
+                    effects.push(ASTHelper::create_range(
+                        &range_var,
+                        &node_var,
+                        import_manager,
+                    ));
+
+                    effects.push(ASTHelper::create_text(
+                        &range_var,
+                        &ctx.ctx_var,
+                        &part.expr,
+                        import_manager,
+                    ));
+                }
+
+                _ => {}
             }
         }
+
+        stats.extend(effects);
+        stats
     }
 }

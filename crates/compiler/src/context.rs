@@ -1,5 +1,3 @@
-use std::hash::DefaultHasher;
-use std::hash::{Hash, Hasher};
 use std::vec;
 use swc_ecma_ast::Ident;
 
@@ -56,14 +54,28 @@ impl Counter {
     pub fn new() -> Self {
         Self { counter: 0 }
     }
+
+    fn to_base36(mut value: u128) -> String {
+        const ALPHABET: &[u8; 36] = b"0123456789abcdefghijklmnopqrstuvwxyz";
+
+        if value == 0 {
+            return "0".to_string();
+        }
+
+        let mut chars: Vec<char> = Vec::new();
+        while value > 0 {
+            let digit = (value % 36) as usize;
+            chars.push(ALPHABET[digit] as char);
+            value /= 36;
+        }
+
+        chars.iter().rev().collect()
+    }
+
     pub fn increase(&mut self) -> String {
         self.counter += 1;
 
-        let mut hasher = DefaultHasher::new();
-        self.counter.hash(&mut hasher);
-        let hash_value = hasher.finish();
-
-        format!("{:x}", hash_value)
+        Self::to_base36(self.counter as u128)
     }
 }
 
