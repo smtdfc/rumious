@@ -1,33 +1,59 @@
-import type { CleanupFunc, EffectFunc } from "./effect";
+import type { EffectFunc } from "./effect";
 
-export let effectQueue = {
-  pending: [] as EffectFunc[],
-  seen: new Set<EffectFunc>(),
-  cleanups: new Map<EffectFunc, CleanupFunc>(),
-  isFlushing: false,
-};
+const pending: EffectFunc[] = [];
+const queued = new Set<EffectFunc>();
 
-export function flushQueue() {
-  effectQueue.isFlushing = true;
+let isFlushing = false;
+let isScheduled = false;
 
-  const queue = effectQueue.pending;
-  effectQueue.pending = [];
-  effectQueue.seen.clear();
-
-  const len = queue.length;
-  for (let i = 0; i < len; i++) {
-    const fn = queue[i]!;
-
-    fn();
+export function enqueueEffect(fn: EffectFunc) {
+  if (queued.has(fn)) {
+    return;
   }
 
-  if (effectQueue.pending.length > 0) {
-    flushQueue();
-  } else {
-    effectQueue.isFlushing = false;
+  queued.add(fn);
+  pending.push(fn);
+  scheduleFlush();
+}
+
+export function scheduleFlush() {
+  if (isFlushing || isScheduled) {
+    return;
+  }
+
+  isScheduled = true;
+  queueMicrotask(flushQueue);
+}
+
+export function flushQueue() {
+  if (isFlushing) {
+    return;
+  }
+
+  isScheduled = false;
+  isFlushing = true;
+
+  try {
+    for (let i = 0; i < pending.length; i++) {
+      const fn = pending[i]!;
+
+      if (!queued.delete(fn)) {
+        continue;
+      }
+
+      fn();
+    }
+
+    pending.length = 0;
+  } finally {
+    isFlushing = false;
+
+    if (pending.length > 0) {
+      scheduleFlush();
+    }
   }
 }
 
-export function disposeEffect(fn: EffectFunc) {
-  effectQueue.seen.delete(fn);
+export function removeQueuedEffect(fn: EffectFunc) {
+  queued.delete(fn);
 }

@@ -1,4 +1,8 @@
-import { disposeEffect, type EffectFunc } from "../effect/index.js";
+import {
+  enqueueEffect,
+  removeQueuedEffect,
+  type EffectFunc,
+} from "../effect/index.js";
 import type { State } from "../state/state.js";
 import type { Context } from "./context.js";
 
@@ -21,21 +25,22 @@ export function $$effect(fn: EffectFunc, deps: State<any>[], ctx: Context) {
 
   ctx.deferrers.push(() => {
     for (let i = 0; i < deps.length; i++) {
-      const unsub = deps[i]?.subscribe(runEffect)!;
+      const unsub = deps[i]!.subscribe(runEffect);
       unsubs.push(unsub);
     }
-    runEffect();
+
+    enqueueEffect(runEffect);
   });
 
   ctx.cleanups.push(() => {
     for (let i = 0; i < unsubs.length; i++) {
-      unsubs[i]?.();
+      unsubs[i]!();
     }
 
     if (lastCleanup) {
       lastCleanup();
     }
 
-    disposeEffect(runEffect);
+    removeQueuedEffect(runEffect);
   });
 }

@@ -1,4 +1,4 @@
-import { effectQueue, flushQueue, type EffectFunc } from "../effect/index.js";
+import { enqueueEffect, type EffectFunc } from "../effect/index.js";
 
 export type StateOptions<T> = {
   equal?: (oldValue: T, newValue: T) => boolean;
@@ -43,11 +43,8 @@ export class State<T> {
   }
 
   private trigger() {
-    this.subscribers.forEach((fn) => effectQueue.pending.push(fn));
-
-    if (!effectQueue.isFlushing) {
-      effectQueue.isFlushing = true;
-      queueMicrotask(flushQueue);
+    for (const fn of this.subscribers) {
+      enqueueEffect(fn);
     }
   }
 

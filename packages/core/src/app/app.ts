@@ -16,7 +16,7 @@ export class App {
     const defs = this.context.deferrers;
     const len = defs.length;
     for (let i = 0; i < len; i++) {
-      defs[i]();
+      defs[i]?.();
     }
 
     this.context.deferrers = [];

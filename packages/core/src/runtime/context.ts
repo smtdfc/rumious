@@ -1,29 +1,23 @@
-import type { EffectFunc } from "../effect/index.js";
+type Cleanable = {
+  clean: () => void;
+};
 
 export class Context {
-  public childrens: any[] = [];
-  public deferrers: any[] = [];
-  public cleanups: any[] = [];
+  public childrens: Cleanable[] = [];
+  public deferrers: (() => void)[] = [];
+  public cleanups: (() => void)[] = [];
+
   constructor(public parent?: Context) {}
+
   clean() {
     while (this.childrens.length > 0) {
-      const child = this.childrens.pop();
-      if (child && typeof child.clean === "function") {
-        child.clean();
-      }
+      this.childrens.pop()!.clean();
     }
 
     while (this.cleanups.length > 0) {
-      const cleanupFn = this.cleanups.pop();
-      if (typeof cleanupFn === "function") {
-        try {
-          cleanupFn();
-        } catch (e) {
-          throw e;
-        }
-      }
+      this.cleanups.pop()!();
     }
 
-    this.deferrers = [];
+    this.deferrers.length = 0;
   }
 }

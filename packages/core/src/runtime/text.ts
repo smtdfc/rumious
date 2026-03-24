@@ -9,11 +9,7 @@ export function $$text(
   expr: any,
   deps: State<any>[] = [],
 ) {
-  const localDeps = deps.slice();
-
-  if (expr instanceof State) {
-    localDeps.push(expr);
-  }
+  const localDeps = expr instanceof State ? deps.concat(expr) : deps;
 
   $$effect(
     () => {
