@@ -19,6 +19,7 @@ use swc_ecma_ast::{
 
 use crate::{
     context::{Context, Counter, Path, PathInstruction, PathInstructionKind},
+    deps_extractor::DepsExtractor,
     helpers::{ASTHelper, ImportHelper},
     parts::{ComponentPart, DynamicAttrPart, ExpressionPart, Part},
     utils::{get_expr_from_jsx_name, is_component},
@@ -121,11 +122,13 @@ impl Transformer {
 
                     JSXAttrValue::JSXExprContainer(expr_container) => {
                         let expr = Self::get_attr_value_as_expr(value);
+                        let deps = DepsExtractor::extract(&expr);
 
                         ctx.parts.push(Part::DynamicAttr(DynamicAttrPart {
+                            name: name.clone(),
                             expr,
                             path: ctx.node_path_instructions.clone(),
-                            deps: vec![],
+                            deps,
                         }));
                     }
 
@@ -207,10 +210,11 @@ impl Transformer {
         match &node.expr {
             JSXExpr::Expr(expr) => {
                 let expr = &**expr;
+                let deps = DepsExtractor::extract(expr);
                 ctx.parts.push(Part::Expression(ExpressionPart {
                     expr: expr.clone(),
                     path: ctx.node_path_instructions.clone(),
-                    deps: vec![],
+                    deps,
                 }));
             }
 
@@ -292,16 +296,8 @@ impl Transformer {
 
             match part {
                 Part::ComponentPart(component) => {
-                    let range_var = ASTHelper::generate_ident("range".to_owned(), counter);
-
-                    effects.push(ASTHelper::create_range(
-                        &range_var,
-                        &node_var,
-                        import_manager,
-                    ));
-
                     effects.push(ASTHelper::create_component(
-                        &range_var,
+                        &node_var,
                         &ctx.ctx_var,
                         &component.expr,
                         &component.props,
@@ -309,19 +305,23 @@ impl Transformer {
                     ));
                 }
 
-                Part::Expression(part) => {
-                    let range_var = ASTHelper::generate_ident("range".to_owned(), counter);
-
-                    effects.push(ASTHelper::create_range(
-                        &range_var,
+                Part::DynamicAttr(attr) => {
+                    effects.push(ASTHelper::create_attr(
                         &node_var,
+                        &attr.name,
+                        &ctx.ctx_var,
+                        &attr.expr,
+                        &attr.deps,
                         import_manager,
                     ));
+                }
 
+                Part::Expression(part) => {
                     effects.push(ASTHelper::create_text(
-                        &range_var,
+                        &node_var,
                         &ctx.ctx_var,
                         &part.expr,
+                        &part.deps,
                         import_manager,
                     ));
                 }

@@ -312,20 +312,6 @@ impl ASTHelper {
         })
     }
 
-    pub fn create_range(node: &Ident, source: &Ident, import_manager: &mut ImportHelper) -> Stmt {
-        let create_template_fn = import_manager.get("$$createRange");
-        Self::const_decl(
-            node,
-            Expr::Call(CallExpr {
-                span: DUMMY_SP,
-                ctxt: SyntaxContext::empty(),
-                callee: create_template_fn.as_callee(),
-                args: vec![source.clone().as_arg()],
-                type_args: None,
-            }),
-        )
-    }
-
     pub fn create_component(
         node: &Ident,
         ctx_var: &Ident,
@@ -356,9 +342,33 @@ impl ASTHelper {
         node: &Ident,
         ctx_var: &Ident,
         expr: &Expr,
+        deps: &[Expr],
         import_manager: &mut ImportHelper,
     ) -> Stmt {
         let text_fn = import_manager.get("$$text");
+
+        let deps_elems: Vec<Option<swc_ecma_ast::ExprOrSpread>> = deps
+            .iter()
+            .map(|dep| {
+                Some(swc_ecma_ast::ExprOrSpread {
+                    spread: None,
+                    expr: Box::new(dep.clone()),
+                })
+            })
+            .collect();
+
+        // Wrap expr in arrow function: () => expr
+        let expr_fn = Expr::Arrow(ArrowExpr {
+            ctxt: SyntaxContext::empty(),
+            span: DUMMY_SP,
+            params: vec![],
+            body: Box::new(BlockStmtOrExpr::Expr(Box::new(expr.clone()))),
+            is_async: false,
+            is_generator: false,
+            type_params: None,
+            return_type: None,
+        });
+
         Stmt::Expr(ExprStmt {
             span: DUMMY_SP,
             expr: Expr::Call(CallExpr {
@@ -368,7 +378,76 @@ impl ASTHelper {
                 args: vec![
                     node.clone().as_arg(),
                     ctx_var.clone().as_arg(),
-                    expr.clone().as_arg(),
+                    expr_fn.as_arg(),
+                    swc_ecma_ast::ExprOrSpread {
+                        spread: None,
+                        expr: Box::new(Expr::Array(ArrayLit {
+                            span: DUMMY_SP,
+                            elems: deps_elems,
+                        })),
+                    },
+                ],
+                type_args: None,
+            })
+            .into(),
+        })
+    }
+
+    pub fn create_attr(
+        node: &Ident,
+        attr_name: &str,
+        ctx_var: &Ident,
+        expr: &Expr,
+        deps: &[Expr],
+        import_manager: &mut ImportHelper,
+    ) -> Stmt {
+        let attr_fn = import_manager.get("$$attr");
+
+        let deps_elems: Vec<Option<swc_ecma_ast::ExprOrSpread>> = deps
+            .iter()
+            .map(|dep| {
+                Some(swc_ecma_ast::ExprOrSpread {
+                    spread: None,
+                    expr: Box::new(dep.clone()),
+                })
+            })
+            .collect();
+
+        // Wrap expr in arrow function: () => expr
+        let expr_fn = Expr::Arrow(ArrowExpr {
+            ctxt: SyntaxContext::empty(),
+            span: DUMMY_SP,
+            params: vec![],
+            body: Box::new(BlockStmtOrExpr::Expr(Box::new(expr.clone()))),
+            is_async: false,
+            is_generator: false,
+            type_params: None,
+            return_type: None,
+        });
+
+        Stmt::Expr(ExprStmt {
+            span: DUMMY_SP,
+            expr: Expr::Call(CallExpr {
+                span: DUMMY_SP,
+                ctxt: SyntaxContext::empty(),
+                callee: attr_fn.as_callee(),
+                args: vec![
+                    node.clone().as_arg(),
+                    Str {
+                        span: DUMMY_SP,
+                        value: attr_name.into(),
+                        raw: None,
+                    }
+                    .as_arg(),
+                    ctx_var.clone().as_arg(),
+                    expr_fn.as_arg(),
+                    swc_ecma_ast::ExprOrSpread {
+                        spread: None,
+                        expr: Box::new(Expr::Array(ArrayLit {
+                            span: DUMMY_SP,
+                            elems: deps_elems,
+                        })),
+                    },
                 ],
                 type_args: None,
             })

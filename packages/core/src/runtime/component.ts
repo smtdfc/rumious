@@ -1,16 +1,17 @@
 import { Component } from "../component/component.js";
 import { flushQueue } from "../effect/index.js";
 import { Context } from "./context.js";
-import { $$insertInRange, type RenderRange } from "./range.js";
+import { $$createRange, $$insertInRange, type RenderRange } from "./range.js";
 import type { Renderer } from "./renderer.js";
 
 export type ComponentFunc<T> = (props: T, ins: Component) => Renderer;
 export function $$createComponent<T>(
-  range: RenderRange,
+  node: Node,
   parentCtx: Context,
   component: ComponentFunc<T>,
   props: T,
 ) {
+  const range = $$createRange(node);
   let instance = new Component(parentCtx);
   let renderer = component(props, instance);
 

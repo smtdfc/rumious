@@ -5,3 +5,4 @@ export * from "./range.js";
 export * from "./component.js";
 export * from "./effect.js";
 export * from "./text.js";
+export * from "./attr.js";

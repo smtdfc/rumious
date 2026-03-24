@@ -1,20 +1,18 @@
 import { State } from "../state/state.js";
 import type { Context } from "./context.js";
 import { $$effect } from "./effect.js";
-import { $$createRange, $$insertInRange, type RenderRange } from "./range.js";
 
-export function $$text(
-  node: Node,
+export function $$attr(
+  element: HTMLElement,
+  name: string,
   parentCtx: Context,
   exprFn: () => any,
   deps: State<any>[] = [],
 ) {
-  const range = $$createRange(node);
-
   $$effect(
     () => {
       const value = exprFn();
-      $$insertInRange(range, value ?? "", parentCtx);
+      element.setAttribute(name, value);
     },
     deps,
     parentCtx,

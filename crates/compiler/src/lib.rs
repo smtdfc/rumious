@@ -21,6 +21,7 @@ pub fn compile(code: &str, options: Option<CompileOption>) -> Result<CompileResu
 
 mod compiler;
 mod context;
+mod deps_extractor;
 mod helpers;
 mod parts;
 mod result;

@@ -1,8 +1,9 @@
 use swc_ecma_ast::Expr;
 
-use crate::context::{Path, PathInstruction};
+use crate::context::PathInstruction;
 
 pub struct DynamicAttrPart {
+    pub name: String,
     pub expr: Expr,
     pub path: PathInstruction,
     pub deps: Vec<Expr>,
