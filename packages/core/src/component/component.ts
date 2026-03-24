@@ -1,14 +1,10 @@
 import type { EffectFunc } from "../effect/index.js";
-import { Context } from "../runtime/context.js";
+import { Context, TARGET_SYMBOL, type Target } from "../runtime/context.js";
 import { $$effect } from "../runtime/effect.js";
 import type { State } from "../state/state.js";
 
-export interface ComponentContext {
-  clean();
-}
-
-export class Component {
-  public ctx: Context;
+export class Component implements Target {
+  private ctx: Context;
 
   constructor(parent: Context) {
     this.ctx = new Context(parent);
@@ -17,6 +13,8 @@ export class Component {
       parent.childrens.push(this);
     }
   }
+
+  [TARGET_SYMBOL]: () => Context = () => this.ctx;
 
   clean() {
     this.ctx.clean();

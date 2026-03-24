@@ -1,6 +1,6 @@
 import { Component } from "../component/component.js";
 import { flushQueue } from "../effect/index.js";
-import { Context } from "./context.js";
+import { Context, getContext } from "./context.js";
 import { $$createRange, $$insertInRange, type RenderRange } from "./range.js";
 import type { Renderer } from "./renderer.js";
 
@@ -14,13 +14,14 @@ export function $$createComponent<T>(
   const range = $$createRange(node);
   let instance = new Component(parentCtx);
   let renderer = component(props, instance);
+  let ctx = getContext(instance);
+  $$insertInRange(range, renderer.render(ctx), ctx);
 
-  $$insertInRange(range, renderer.render(instance.ctx), instance.ctx);
-
-  const defs = instance.ctx.deferrers;
+  const defs = ctx.deferrers;
   for (let i = 0; i < defs.length; i++) {
     defs[i]?.();
   }
-  instance.ctx.deferrers = [];
+
+  ctx.deferrers = [];
   flushQueue();
 }

@@ -2,6 +2,15 @@ type Cleanable = {
   clean: () => void;
 };
 
+export const TARGET_SYMBOL = Symbol("target");
+export interface Target {
+  [TARGET_SYMBOL]: () => Context;
+}
+
+export function getContext(target: Target): Context {
+  return target[TARGET_SYMBOL]();
+}
+
 export class Context {
   public childrens: Cleanable[] = [];
   public deferrers: (() => void)[] = [];

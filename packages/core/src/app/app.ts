@@ -1,26 +1,32 @@
 import { flushQueue } from "../effect/index.js";
-import { Context } from "../runtime/context.js";
+import { Context, TARGET_SYMBOL, type Target } from "../runtime/context.js";
 import type { Renderer } from "../runtime/renderer.js";
 
-export class App {
-  private context = new Context();
+export class App implements Target {
+  private ctx = new Context();
 
   constructor(public root: HTMLElement) {}
+  [TARGET_SYMBOL]: () => Context = () => this.ctx;
 
   attach(renderer: Renderer) {
-    this.context.clean();
+    this.ctx.clean();
 
-    const frag = renderer.render(this.context);
+    const frag = renderer.render(this.ctx);
     this.root.appendChild(frag);
 
-    const defs = this.context.deferrers;
+    const defs = this.ctx.deferrers;
     const len = defs.length;
     for (let i = 0; i < len; i++) {
       defs[i]?.();
     }
 
-    this.context.deferrers = [];
+    this.ctx.deferrers = [];
     flushQueue();
+  }
+
+  destroy() {
+    this.root.innerHTML = "";
+    this.ctx.clean();
   }
 }
 export function createApp(root: HTMLElement) {
