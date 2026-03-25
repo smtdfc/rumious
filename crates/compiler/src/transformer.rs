@@ -10,11 +10,11 @@ use std::{
     vec,
 };
 
-use swc_common::{DUMMY_SP, cache};
+use swc_common::{DUMMY_SP, SyntaxContext, cache};
 use swc_ecma_ast::{
-    Bool, Expr, Ident, JSXAttrName, JSXAttrOrSpread, JSXAttrValue, JSXElement, JSXElementChild,
-    JSXElementName, JSXExpr, JSXExprContainer, JSXText, KeyValueProp, Lit, Null, ObjectLit, Prop,
-    PropName, PropOrSpread, Stmt, Str,
+    ArrayLit, Bool, Expr, ExprOrSpread, Ident, JSXAttrName, JSXAttrOrSpread, JSXAttrValue,
+    JSXElement, JSXElementChild, JSXElementName, JSXExpr, JSXExprContainer, JSXFragment, JSXText,
+    KeyValueProp, Lit, Null, ObjectLit, Prop, PropName, PropOrSpread, Stmt, Str,
 };
 
 use crate::{
@@ -22,12 +22,158 @@ use crate::{
     deps_extractor::DepsExtractor,
     helpers::{ASTHelper, ImportHelper},
     parts::{ComponentPart, DynamicAttrPart, ExpressionPart, Part},
-    utils::{get_expr_from_jsx_name, is_component},
+    utils::{get_expr_from_jsx_name, is_component, is_fragment_component},
 };
 
 pub struct Transformer;
 
 impl Transformer {
+    fn transform_fragment_children(children: &[JSXElementChild], ctx: &mut Context, is_root: bool) {
+        let pre_child_length = ctx.node_path_instructions.len();
+
+        for (index, child) in children.iter().enumerate() {
+            if is_root {
+                if index == 0 {
+                    ctx.node_path_instructions.mark(PathInstructionKind::First);
+                } else {
+                    ctx.node_path_instructions
+                        .mark(PathInstructionKind::Sibling);
+                }
+            } else if index > 0 {
+                ctx.node_path_instructions
+                    .mark(PathInstructionKind::Sibling);
+            }
+
+            Self::transform_element_child(child, ctx);
+        }
+
+        ctx.node_path_instructions.truncate(pre_child_length);
+    }
+
+    fn transform_fragment(node: &JSXElement, ctx: &mut Context, is_root: bool) {
+        Self::transform_fragment_children(&node.children, ctx, is_root);
+    }
+
+    fn create_renderer_from_jsx_element(
+        element: &JSXElement,
+        owner_ctx: &mut Context,
+        counter: &mut Counter,
+        import_manager: &mut ImportHelper,
+    ) -> Expr {
+        let mut child_ctx = Context::new(counter);
+        Self::transform_element(element, &mut child_ctx, true);
+
+        let hydration = Self::generate_hydration(&mut child_ctx, counter, import_manager);
+
+        owner_ctx
+            .extra_templates
+            .push((child_ctx.template_var.clone(), child_ctx.html.clone()));
+        owner_ctx
+            .extra_templates
+            .extend(child_ctx.extra_templates.clone());
+
+        let renderer_fn = ASTHelper::render_fn(hydration, &mut child_ctx, import_manager);
+        ASTHelper::create_renderer(renderer_fn, import_manager)
+    }
+
+    fn create_renderer_from_jsx_fragment(
+        fragment: &JSXFragment,
+        owner_ctx: &mut Context,
+        counter: &mut Counter,
+        import_manager: &mut ImportHelper,
+    ) -> Expr {
+        let mut child_ctx = Context::new(counter);
+        Self::transform_fragment_children(&fragment.children, &mut child_ctx, true);
+
+        let hydration = Self::generate_hydration(&mut child_ctx, counter, import_manager);
+
+        owner_ctx
+            .extra_templates
+            .push((child_ctx.template_var.clone(), child_ctx.html.clone()));
+        owner_ctx
+            .extra_templates
+            .extend(child_ctx.extra_templates.clone());
+
+        let renderer_fn = ASTHelper::render_fn(hydration, &mut child_ctx, import_manager);
+        ASTHelper::create_renderer(renderer_fn, import_manager)
+    }
+
+    fn transform_component_prop_expr(
+        expr: &Expr,
+        owner_ctx: &mut Context,
+        counter: &mut Counter,
+        import_manager: &mut ImportHelper,
+    ) -> Expr {
+        match expr {
+            Expr::JSXElement(element) => {
+                Self::create_renderer_from_jsx_element(element, owner_ctx, counter, import_manager)
+            }
+            Expr::JSXFragment(fragment) => Self::create_renderer_from_jsx_fragment(
+                fragment,
+                owner_ctx,
+                counter,
+                import_manager,
+            ),
+            Expr::Array(array) => Expr::Array(ArrayLit {
+                span: array.span,
+                elems: array
+                    .elems
+                    .iter()
+                    .map(|item| {
+                        item.as_ref().map(|expr_or_spread| ExprOrSpread {
+                            spread: expr_or_spread.spread,
+                            expr: Box::new(Self::transform_component_prop_expr(
+                                &expr_or_spread.expr,
+                                owner_ctx,
+                                counter,
+                                import_manager,
+                            )),
+                        })
+                    })
+                    .collect(),
+            }),
+            Expr::Object(obj) => {
+                let mut props = Vec::with_capacity(obj.props.len());
+
+                for prop in &obj.props {
+                    match prop {
+                        PropOrSpread::Prop(prop) => match &**prop {
+                            Prop::KeyValue(kv) => props.push(PropOrSpread::Prop(Box::new(
+                                Prop::KeyValue(KeyValueProp {
+                                    key: kv.key.clone(),
+                                    value: Box::new(Self::transform_component_prop_expr(
+                                        &kv.value,
+                                        owner_ctx,
+                                        counter,
+                                        import_manager,
+                                    )),
+                                }),
+                            ))),
+                            _ => props.push(PropOrSpread::Prop(prop.clone())),
+                        },
+                        PropOrSpread::Spread(spread) => {
+                            props.push(PropOrSpread::Spread(swc_ecma_ast::SpreadElement {
+                                dot3_token: spread.dot3_token,
+                                expr: Box::new(Self::transform_component_prop_expr(
+                                    &spread.expr,
+                                    owner_ctx,
+                                    counter,
+                                    import_manager,
+                                )),
+                            }))
+                        }
+                    }
+                }
+
+                Expr::Object(ObjectLit {
+                    span: obj.span,
+                    props,
+                })
+            }
+            _ => expr.clone(),
+        }
+    }
+
     fn get_attr_name_as_str(node: &JSXAttrName) -> String {
         match node {
             JSXAttrName::Ident(name) => name.sym.to_string(),
@@ -144,6 +290,11 @@ impl Transformer {
         let opening = &node.opening;
         let name = &opening.name;
 
+        if is_fragment_component(name) {
+            Self::transform_fragment(node, ctx, is_root);
+            return;
+        }
+
         if !is_component(name) && matches!(name, JSXElementName::Ident(_)) {
             println!("element");
             if let JSXElementName::Ident(element_name) = name {
@@ -252,7 +403,9 @@ impl Transformer {
 
         ctx.parts.sort_by(|a, b| a.path_len().cmp(&b.path_len()));
 
-        for part in &ctx.parts {
+        let parts = ctx.parts.clone();
+
+        for part in &parts {
             let key = part.path().to_string();
 
             let node_var = if let Some(cached_ident) = path_cache.get(&key) {
@@ -296,11 +449,18 @@ impl Transformer {
 
             match part {
                 Part::ComponentPart(component) => {
+                    let props = Self::transform_component_prop_expr(
+                        &component.props,
+                        ctx,
+                        counter,
+                        import_manager,
+                    );
+
                     effects.push(ASTHelper::create_component(
                         &node_var,
                         &ctx.ctx_var,
                         &component.expr,
-                        &component.props,
+                        &props,
                         import_manager,
                     ));
                 }
@@ -325,8 +485,6 @@ impl Transformer {
                         import_manager,
                     ));
                 }
-
-                _ => {}
             }
         }
 

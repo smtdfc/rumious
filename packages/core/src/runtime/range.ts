@@ -1,4 +1,5 @@
 import { Context } from "./context";
+import { flushQueue } from "../effect/index.js";
 import { Renderer } from "./renderer";
 
 export const RANGE_CACHE = new WeakMap<RenderRange, Context>();
@@ -33,6 +34,12 @@ export function $$insertInRange(
 
   if (!parent) return;
 
+  const oldContent = RANGE_CACHE.get(range);
+  if (oldContent) {
+    oldContent.clean();
+    RANGE_CACHE.delete(range);
+  }
+
   let next = start.nextSibling;
   while (next && next !== end) {
     const toRemove = next;
@@ -46,14 +53,17 @@ export function $$insertInRange(
     const textNode = document.createTextNode(String(content));
     parent.insertBefore(textNode, end);
   } else if (content instanceof Renderer) {
-    let oldContent = RANGE_CACHE.get(range);
-    if (oldContent) {
-      oldContent.clean();
-    }
-
     let ctx = new Context(parentCtx);
     RANGE_CACHE.set(range, ctx);
     let frag = content.render(ctx);
     parent.insertBefore(frag, end);
+
+    const defs = ctx.deferrers;
+    for (let i = 0; i < defs.length; i++) {
+      defs[i]?.();
+    }
+
+    ctx.deferrers = [];
+    flushQueue();
   }
 }

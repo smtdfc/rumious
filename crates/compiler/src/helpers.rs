@@ -357,7 +357,6 @@ impl ASTHelper {
             })
             .collect();
 
-        // Wrap expr in arrow function: () => expr
         let expr_fn = Expr::Arrow(ArrowExpr {
             ctxt: SyntaxContext::empty(),
             span: DUMMY_SP,
@@ -413,7 +412,6 @@ impl ASTHelper {
             })
             .collect();
 
-        // Wrap expr in arrow function: () => expr
         let expr_fn = Expr::Arrow(ArrowExpr {
             ctxt: SyntaxContext::empty(),
             span: DUMMY_SP,

@@ -2,6 +2,7 @@ use swc_ecma_ast::Expr;
 
 use crate::context::PathInstruction;
 
+#[derive(Clone)]
 pub struct DynamicAttrPart {
     pub name: String,
     pub expr: Expr,
@@ -11,6 +12,7 @@ pub struct DynamicAttrPart {
 
 impl DynamicAttrPart {}
 
+#[derive(Clone)]
 pub struct ExpressionPart {
     pub expr: Expr,
     pub path: PathInstruction,
@@ -19,6 +21,7 @@ pub struct ExpressionPart {
 
 impl ExpressionPart {}
 
+#[derive(Clone)]
 pub struct ComponentPart {
     pub expr: Expr,
     pub path: PathInstruction,
@@ -27,6 +30,7 @@ pub struct ComponentPart {
 
 impl ComponentPart {}
 
+#[derive(Clone)]
 pub enum Part {
     DynamicAttr(DynamicAttrPart),
     Expression(ExpressionPart),
