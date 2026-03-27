@@ -13,7 +13,17 @@ pub fn is_fragment_component(name: &JSXElementName) -> bool {
     match name {
         JSXElementName::Ident(id) => {
             let value = id.sym.to_string().to_lowercase();
-            value == "fragment" || value == "fragement"
+            value == "fragment"
+        }
+        _ => false,
+    }
+}
+
+pub fn is_for_component(name: &JSXElementName) -> bool {
+    match name {
+        JSXElementName::Ident(id) => {
+            let value = id.sym.to_string().to_lowercase();
+            value == "for"
         }
         _ => false,
     }

@@ -6,3 +6,4 @@ export * from "./component.js";
 export * from "./effect.js";
 export * from "./text.js";
 export * from "./attr.js";
+export * from "./event.js";

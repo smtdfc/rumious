@@ -338,6 +338,30 @@ impl ASTHelper {
         })
     }
 
+    pub fn create_for_component(
+        node: &Ident,
+        ctx_var: &Ident,
+        props: &Expr,
+        import_manager: &mut ImportHelper,
+    ) -> Stmt {
+        let create_template_fn = import_manager.get("$$forComponent");
+        Stmt::Expr(ExprStmt {
+            span: DUMMY_SP,
+            expr: Expr::Call(CallExpr {
+                span: DUMMY_SP,
+                ctxt: SyntaxContext::empty(),
+                callee: create_template_fn.as_callee(),
+                args: vec![
+                    node.clone().as_arg(),
+                    ctx_var.clone().as_arg(),
+                    props.clone().as_arg(),
+                ],
+                type_args: None,
+            })
+            .into(),
+        })
+    }
+
     pub fn create_text(
         node: &Ident,
         ctx_var: &Ident,
@@ -434,6 +458,67 @@ impl ASTHelper {
                     Str {
                         span: DUMMY_SP,
                         value: attr_name.into(),
+                        raw: None,
+                    }
+                    .as_arg(),
+                    ctx_var.clone().as_arg(),
+                    expr_fn.as_arg(),
+                    swc_ecma_ast::ExprOrSpread {
+                        spread: None,
+                        expr: Box::new(Expr::Array(ArrayLit {
+                            span: DUMMY_SP,
+                            elems: deps_elems,
+                        })),
+                    },
+                ],
+                type_args: None,
+            })
+            .into(),
+        })
+    }
+
+    pub fn create_event(
+        node: &Ident,
+        event_name: &str,
+        ctx_var: &Ident,
+        expr: &Expr,
+        deps: &[Expr],
+        import_manager: &mut ImportHelper,
+    ) -> Stmt {
+        let event_fn = import_manager.get("$$event");
+
+        let deps_elems: Vec<Option<swc_ecma_ast::ExprOrSpread>> = deps
+            .iter()
+            .map(|dep| {
+                Some(swc_ecma_ast::ExprOrSpread {
+                    spread: None,
+                    expr: Box::new(dep.clone()),
+                })
+            })
+            .collect();
+
+        let expr_fn = Expr::Arrow(ArrowExpr {
+            ctxt: SyntaxContext::empty(),
+            span: DUMMY_SP,
+            params: vec![],
+            body: Box::new(BlockStmtOrExpr::Expr(Box::new(expr.clone()))),
+            is_async: false,
+            is_generator: false,
+            type_params: None,
+            return_type: None,
+        });
+
+        Stmt::Expr(ExprStmt {
+            span: DUMMY_SP,
+            expr: Expr::Call(CallExpr {
+                span: DUMMY_SP,
+                ctxt: SyntaxContext::empty(),
+                callee: event_fn.as_callee(),
+                args: vec![
+                    node.clone().as_arg(),
+                    Str {
+                        span: DUMMY_SP,
+                        value: event_name.into(),
                         raw: None,
                     }
                     .as_arg(),

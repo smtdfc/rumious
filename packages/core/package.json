@@ -1,6 +1,6 @@
 {
   "name": "@rumious/core",
-  "version": "1.0.0",
+  "version": "1.0.1-beta.0",
   "description": "",
   "main": "./dist/index.js",
   "exports": {
@@ -25,7 +25,8 @@
     "build:dev": "pnpm tsc",
     "build:prod": "pnpm rollup -c rollup.config.js",
     "build:types": "tsc --project tsconfig.json --emitDeclarationOnly --declaration --declarationDir dist",
-    "test": "vitest"
+    "test": "vitest",
+    "test:perf": "vitest run test/for.perf.test.ts"
   },
   "keywords": [
     "framework",

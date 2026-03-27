@@ -21,13 +21,38 @@ use crate::{
     context::{Context, Counter, Path, PathInstruction, PathInstructionKind},
     deps_extractor::DepsExtractor,
     helpers::{ASTHelper, ImportHelper},
-    parts::{ComponentPart, DynamicAttrPart, ExpressionPart, Part},
-    utils::{get_expr_from_jsx_name, is_component, is_fragment_component},
+    parts::{
+        ComponentPart, DynamicAttrPart, EventHandlerPart, ExpressionPart, ForComponentPart, Part,
+    },
+    utils::{get_expr_from_jsx_name, is_component, is_for_component, is_fragment_component},
 };
 
 pub struct Transformer;
 
 impl Transformer {
+    fn is_event_attr(name: &str) -> bool {
+        name.starts_with("on") && name.len() > 2 && name.chars().nth(2).unwrap().is_uppercase()
+    }
+
+    fn get_event_name(name: &str) -> String {
+        // Convert "onClick" to "click"
+        if Self::is_event_attr(name) {
+            let mut result = String::new();
+            for (i, c) in name[2..].chars().enumerate() {
+                if i == 0 {
+                    result.push(c.to_lowercase().next().unwrap());
+                } else if c.is_uppercase() {
+                    result.push('-');
+                    result.push(c.to_lowercase().next().unwrap());
+                } else {
+                    result.push(c);
+                }
+            }
+            result
+        } else {
+            name.to_string()
+        }
+    }
     fn transform_fragment_children(children: &[JSXElementChild], ctx: &mut Context, is_root: bool) {
         let pre_child_length = ctx.node_path_instructions.len();
 
@@ -258,24 +283,36 @@ impl Transformer {
 
                 match value {
                     JSXAttrValue::Str(str) => {
-                        write!(
-                            &mut ctx.html,
-                            "{}=\"{}\" ",
-                            name,
-                            str.value.as_str().expect("Cannot get attr value")
-                        );
+                        if !Self::is_event_attr(&name) {
+                            write!(
+                                &mut ctx.html,
+                                "{}=\"{}\" ",
+                                name,
+                                str.value.as_str().expect("Cannot get attr value")
+                            );
+                        }
                     }
 
                     JSXAttrValue::JSXExprContainer(expr_container) => {
                         let expr = Self::get_attr_value_as_expr(value);
                         let deps = DepsExtractor::extract(&expr);
 
-                        ctx.parts.push(Part::DynamicAttr(DynamicAttrPart {
-                            name: name.clone(),
-                            expr,
-                            path: ctx.node_path_instructions.clone(),
-                            deps,
-                        }));
+                        if Self::is_event_attr(&name) {
+                            let event_name = Self::get_event_name(&name);
+                            ctx.parts.push(Part::EventHandler(EventHandlerPart {
+                                event_name,
+                                expr,
+                                path: ctx.node_path_instructions.clone(),
+                                deps,
+                            }));
+                        } else {
+                            ctx.parts.push(Part::DynamicAttr(DynamicAttrPart {
+                                name: name.clone(),
+                                expr,
+                                path: ctx.node_path_instructions.clone(),
+                                deps,
+                            }));
+                        }
                     }
 
                     _ => {}
@@ -292,6 +329,11 @@ impl Transformer {
 
         if is_fragment_component(name) {
             Self::transform_fragment(node, ctx, is_root);
+            return;
+        }
+
+        if is_for_component(name) {
+            Self::transform_for_component(node, ctx);
             return;
         }
 
@@ -346,6 +388,18 @@ impl Transformer {
         println!("PATH: {}", ctx.node_path_instructions.to_string());
         ctx.parts.push(Part::ComponentPart(ComponentPart {
             expr: get_expr_from_jsx_name(opening.name.clone()),
+            path: ctx.node_path_instructions.clone(),
+            props: Self::get_component_props_expr(&opening.attrs),
+        }));
+    }
+
+    pub fn transform_for_component(node: &JSXElement, ctx: &mut Context) {
+        let key = ctx.counter.increase();
+        let opening = &node.opening;
+
+        write!(&mut ctx.html, "<!{}/>", key);
+        println!("PATH: {}", ctx.node_path_instructions.to_string());
+        ctx.parts.push(Part::ForComponentPart(ForComponentPart {
             path: ctx.node_path_instructions.clone(),
             props: Self::get_component_props_expr(&opening.attrs),
         }));
@@ -465,6 +519,22 @@ impl Transformer {
                     ));
                 }
 
+                Part::ForComponentPart(component) => {
+                    let props = Self::transform_component_prop_expr(
+                        &component.props,
+                        ctx,
+                        counter,
+                        import_manager,
+                    );
+
+                    effects.push(ASTHelper::create_for_component(
+                        &node_var,
+                        &ctx.ctx_var,
+                        &props,
+                        import_manager,
+                    ));
+                }
+
                 Part::DynamicAttr(attr) => {
                     effects.push(ASTHelper::create_attr(
                         &node_var,
@@ -482,6 +552,17 @@ impl Transformer {
                         &ctx.ctx_var,
                         &part.expr,
                         &part.deps,
+                        import_manager,
+                    ));
+                }
+
+                Part::EventHandler(event) => {
+                    effects.push(ASTHelper::create_event(
+                        &node_var,
+                        &event.event_name,
+                        &ctx.ctx_var,
+                        &event.expr,
+                        &event.deps,
                         import_manager,
                     ));
                 }
