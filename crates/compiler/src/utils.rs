@@ -29,6 +29,16 @@ pub fn is_for_component(name: &JSXElementName) -> bool {
     }
 }
 
+pub fn is_if_component(name: &JSXElementName) -> bool {
+    match name {
+        JSXElementName::Ident(id) => {
+            let value = id.sym.to_string().to_lowercase();
+            value == "if"
+        }
+        _ => false,
+    }
+}
+
 pub fn get_expr_from_jsx_name(node: JSXElementName) -> Expr {
     match node {
         JSXElementName::Ident(i) => Expr::Ident(i),

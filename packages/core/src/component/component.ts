@@ -48,10 +48,24 @@ export type ForProps<T> = {
   keyer?: (item: T, index: number) => any;
 };
 
+export type IfProps = {
+  condition: boolean | State<boolean> | (() => boolean);
+  child: FunctionComponent<any>;
+  fallback?: FunctionComponent<any>;
+};
+
 export function For<T>(props: ForProps<T>, l: Component) {
   return $$createRenderer(() => {
     throw new Error(
       "For placeholder reached runtime. Ensure Rumious compiler is enabled for this file.",
+    );
+  });
+}
+
+export function If(props: IfProps, l: Component) {
+  return $$createRenderer(() => {
+    throw new Error(
+      "If placeholder reached runtime. Ensure Rumious compiler is enabled for this file.",
     );
   });
 }

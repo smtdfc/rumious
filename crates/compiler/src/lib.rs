@@ -86,4 +86,51 @@ app.attach(<Hello title=\"Hi\" count={n} {...rest} disabled />);
 
         assert!(result.map.contains("\"sources\":[\"hello-props.ts\"]"));
     }
+
+    #[test]
+    fn compiles_if_component_with_reactive_condition() {
+        let code = "
+          import { createApp } from '@rumious/core';
+
+const app = createApp(document.getElementById('root')!);
+const count = createState(0);
+function Show() {
+    return <h1>on</h1>;
+}
+app.attach(<If condition={count.get() > 0} child={Show} />);
+        ";
+
+        let options = CompileOption {
+            file_name: "if.ts".to_string(),
+        };
+
+        let result = compile(&code, Some(options)).expect("Error");
+
+        assert!(result.code.contains("$$ifComponent"));
+        assert!(result.code.contains("count.get() > 0"));
+        assert!(result.code.contains("Show"));
+    }
+
+    #[test]
+    fn compiles_if_component_with_function_condition_and_deps() {
+        let code = "
+          import { createApp, createState } from '@rumious/core';
+
+const app = createApp(document.getElementById('root')!);
+const count = createState(0);
+function Show() {
+    return <h1>on</h1>;
+}
+app.attach(<If condition={() => count.get() > 0} child={Show} />);
+        ";
+
+        let options = CompileOption {
+            file_name: "if-fn.ts".to_string(),
+        };
+
+        let result = compile(&code, Some(options)).expect("Error");
+        assert!(result.code.contains("$$ifComponent"));
+        assert!(result.code.contains("count.get()"));
+        assert!(result.code.contains("Show, null, ["));
+    }
 }

@@ -49,12 +49,24 @@ pub struct ForComponentPart {
 impl ForComponentPart {}
 
 #[derive(Clone)]
+pub struct IfComponentPart {
+    pub path: PathInstruction,
+    pub condition: Expr,
+    pub child: Expr,
+    pub fallback: Option<Expr>,
+    pub deps: Vec<Expr>,
+}
+
+impl IfComponentPart {}
+
+#[derive(Clone)]
 pub enum Part {
     DynamicAttr(DynamicAttrPart),
     EventHandler(EventHandlerPart),
     Expression(ExpressionPart),
     ComponentPart(ComponentPart),
     ForComponentPart(ForComponentPart),
+    IfComponentPart(IfComponentPart),
 }
 
 impl Part {
@@ -65,6 +77,7 @@ impl Part {
             Part::Expression(e) => e.path.len(),
             Part::ComponentPart(c) => c.path.len(),
             Part::ForComponentPart(c) => c.path.len(),
+            Part::IfComponentPart(c) => c.path.len(),
         }
     }
 
@@ -75,6 +88,7 @@ impl Part {
             Part::Expression(e) => &e.path,
             Part::ComponentPart(c) => &c.path,
             Part::ForComponentPart(c) => &c.path,
+            Part::IfComponentPart(c) => &c.path,
         }
     }
 }

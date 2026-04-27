@@ -1,7 +1,7 @@
 {
   "name": "@rumious/compiler",
   "description": "Compiler for Rumious framework",
-  "version": "0.1.1-beta.0",
+  "version": "0.1.0",
   "license": "MIT",
   "repository": {
     "type": "git",

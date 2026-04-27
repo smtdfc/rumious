@@ -362,6 +362,53 @@ impl ASTHelper {
         })
     }
 
+    pub fn create_if_component(
+        node: &Ident,
+        ctx_var: &Ident,
+        condition: &Expr,
+        then_branch: &Expr,
+        fallback_branch: &Expr,
+        deps: &[Expr],
+        import_manager: &mut ImportHelper,
+    ) -> Stmt {
+        let create_template_fn = import_manager.get("$$ifComponent");
+
+        let deps_elems: Vec<Option<swc_ecma_ast::ExprOrSpread>> = deps
+            .iter()
+            .map(|dep| {
+                Some(swc_ecma_ast::ExprOrSpread {
+                    spread: None,
+                    expr: Box::new(dep.clone()),
+                })
+            })
+            .collect();
+
+        Stmt::Expr(ExprStmt {
+            span: DUMMY_SP,
+            expr: Expr::Call(CallExpr {
+                span: DUMMY_SP,
+                ctxt: SyntaxContext::empty(),
+                callee: create_template_fn.as_callee(),
+                args: vec![
+                    node.clone().as_arg(),
+                    ctx_var.clone().as_arg(),
+                    condition.clone().as_arg(),
+                    then_branch.clone().as_arg(),
+                    fallback_branch.clone().as_arg(),
+                    swc_ecma_ast::ExprOrSpread {
+                        spread: None,
+                        expr: Box::new(Expr::Array(ArrayLit {
+                            span: DUMMY_SP,
+                            elems: deps_elems,
+                        })),
+                    },
+                ],
+                type_args: None,
+            })
+            .into(),
+        })
+    }
+
     pub fn create_text(
         node: &Ident,
         ctx_var: &Ident,

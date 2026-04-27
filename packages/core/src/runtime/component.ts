@@ -1,10 +1,14 @@
-import { Component, type ForProps } from "../component/component.js";
+import {
+  Component,
+  type ForProps,
+  type FunctionComponent,
+} from "../component/component.js";
 import { flushQueue } from "../effect/index.js";
 import { State, type ArrayMutationEvent } from "../state/state.js";
 import { Context, getContext } from "./context.js";
 import { $$effect } from "./effect.js";
 import { $$createRange, $$insertInRange } from "./range.js";
-import type { Renderer } from "./renderer.js";
+import { $$createRenderer, type Renderer } from "./renderer.js";
 
 export type ComponentFunc<T> = (props: T, ins: Component) => Renderer;
 export function $$createComponent<T>(
@@ -348,4 +352,52 @@ export function $$forComponent<T>(
   }
 
   reconcile(data);
+}
+
+export function $$ifComponent(
+  node: Node,
+  parentCtx: Context,
+  condition: boolean | State<boolean> | (() => boolean),
+  thenBranch: FunctionComponent<any> | null | undefined,
+  fallbackBranch: FunctionComponent<any> | null | undefined,
+  deps: State<any>[] = [],
+) {
+  const range = $$createRange(node);
+  const watchedDeps =
+    condition instanceof State && deps.indexOf(condition) < 0
+      ? [condition, ...deps]
+      : deps;
+
+  $$effect(
+    () => {
+      const value =
+        condition instanceof State
+          ? condition.get()
+          : typeof condition === "function"
+            ? condition()
+            : condition;
+      const branch = value ? thenBranch : fallbackBranch;
+
+      const content = branch
+        ? $$createRenderer((ctx) => {
+            const instance = new Component(ctx);
+            const renderer = branch({}, instance);
+            const branchCtx = getContext(instance);
+            const fragment = renderer.render(branchCtx);
+
+            const defs = branchCtx.deferrers;
+            for (let i = 0; i < defs.length; i++) {
+              defs[i]?.();
+            }
+            branchCtx.deferrers = [];
+
+            return fragment;
+          })
+        : null;
+
+      $$insertInRange(range, content, parentCtx);
+    },
+    watchedDeps,
+    parentCtx,
+  );
 }

@@ -12,7 +12,8 @@ use std::{
 
 use swc_common::{DUMMY_SP, SyntaxContext, cache};
 use swc_ecma_ast::{
-    ArrayLit, Bool, Expr, ExprOrSpread, Ident, JSXAttrName, JSXAttrOrSpread, JSXAttrValue,
+    ArrayLit, BlockStmtOrExpr, Bool, Expr, ExprOrSpread, Ident, JSXAttrName, JSXAttrOrSpread,
+    JSXAttrValue,
     JSXElement, JSXElementChild, JSXElementName, JSXExpr, JSXExprContainer, JSXFragment, JSXText,
     KeyValueProp, Lit, Null, ObjectLit, Prop, PropName, PropOrSpread, Stmt, Str,
 };
@@ -22,9 +23,13 @@ use crate::{
     deps_extractor::DepsExtractor,
     helpers::{ASTHelper, ImportHelper},
     parts::{
-        ComponentPart, DynamicAttrPart, EventHandlerPart, ExpressionPart, ForComponentPart, Part,
+        ComponentPart, DynamicAttrPart, EventHandlerPart, ExpressionPart, ForComponentPart,
+        IfComponentPart, Part,
     },
-    utils::{get_expr_from_jsx_name, is_component, is_for_component, is_fragment_component},
+    utils::{
+        get_expr_from_jsx_name, is_component, is_for_component, is_fragment_component,
+        is_if_component,
+    },
 };
 
 pub struct Transformer;
@@ -275,6 +280,69 @@ impl Transformer {
         })
     }
 
+    fn get_component_prop_expr(attrs: &[JSXAttrOrSpread], prop_name: &str) -> Option<Expr> {
+        for attr in attrs {
+            if let JSXAttrOrSpread::JSXAttr(jsx_attr) = attr {
+                if Self::get_attr_name_as_str(&jsx_attr.name) == prop_name {
+                    return Some(match jsx_attr.value.as_ref() {
+                        None => Expr::Lit(Lit::Bool(Bool {
+                            span: DUMMY_SP,
+                            value: true,
+                        })),
+                        Some(JSXAttrValue::Str(str_lit)) => Expr::Lit(Lit::Str(str_lit.clone())),
+                        Some(JSXAttrValue::JSXExprContainer(expr_container)) => {
+                            match &expr_container.expr {
+                                JSXExpr::Expr(expr) => *expr.clone(),
+                                JSXExpr::JSXEmptyExpr(_) => {
+                                    Expr::Lit(Lit::Null(Null { span: DUMMY_SP }))
+                                }
+                            }
+                        }
+                        Some(JSXAttrValue::JSXElement(el)) => Expr::JSXElement(el.clone()),
+                        Some(JSXAttrValue::JSXFragment(fragment)) => {
+                            Expr::JSXFragment(fragment.clone())
+                        }
+                    });
+                }
+            }
+        }
+
+        None
+    }
+
+    fn extract_if_condition_deps(condition: &Expr) -> Vec<Expr> {
+        match condition {
+            Expr::Arrow(arrow) => match &*arrow.body {
+                BlockStmtOrExpr::Expr(expr) => DepsExtractor::extract(expr),
+                BlockStmtOrExpr::BlockStmt(block) => {
+                    let mut deps: Vec<Expr> = vec![];
+                    for stmt in &block.stmts {
+                        if let Stmt::Return(return_stmt) = stmt {
+                            if let Some(arg) = &return_stmt.arg {
+                                deps.extend(DepsExtractor::extract(arg));
+                            }
+                        }
+                    }
+                    deps
+                }
+            },
+            Expr::Fn(fn_expr) => {
+                let mut deps: Vec<Expr> = vec![];
+                if let Some(body) = &fn_expr.function.body {
+                    for stmt in &body.stmts {
+                        if let Stmt::Return(return_stmt) = stmt {
+                            if let Some(arg) = &return_stmt.arg {
+                                deps.extend(DepsExtractor::extract(arg));
+                            }
+                        }
+                    }
+                }
+                deps
+            }
+            _ => DepsExtractor::extract(condition),
+        }
+    }
+
     pub fn transform_attr(node: &JSXAttrOrSpread, ctx: &mut Context) {
         match node {
             JSXAttrOrSpread::JSXAttr(attr) => {
@@ -329,6 +397,11 @@ impl Transformer {
 
         if is_fragment_component(name) {
             Self::transform_fragment(node, ctx, is_root);
+            return;
+        }
+
+        if is_if_component(name) {
+            Self::transform_if_component(node, ctx);
             return;
         }
 
@@ -402,6 +475,33 @@ impl Transformer {
         ctx.parts.push(Part::ForComponentPart(ForComponentPart {
             path: ctx.node_path_instructions.clone(),
             props: Self::get_component_props_expr(&opening.attrs),
+        }));
+    }
+
+    pub fn transform_if_component(node: &JSXElement, ctx: &mut Context) {
+        let key = ctx.counter.increase();
+        let opening = &node.opening;
+
+        write!(&mut ctx.html, "<!{}/>", key);
+        println!("PATH: {}", ctx.node_path_instructions.to_string());
+
+        if !node.children.is_empty() {
+            panic!("If component does not accept JSX children. Use child={{Func}}.");
+        }
+
+        let condition = Self::get_component_prop_expr(&opening.attrs, "condition")
+            .expect("If component requires a condition prop");
+        let child = Self::get_component_prop_expr(&opening.attrs, "child")
+            .expect("If component requires a child prop, e.g. child={MyComponent}");
+        let deps = Self::extract_if_condition_deps(&condition);
+        let fallback = Self::get_component_prop_expr(&opening.attrs, "fallback");
+
+        ctx.parts.push(Part::IfComponentPart(IfComponentPart {
+            path: ctx.node_path_instructions.clone(),
+            condition,
+            child,
+            fallback,
+            deps,
         }));
     }
 
@@ -531,6 +631,32 @@ impl Transformer {
                         &node_var,
                         &ctx.ctx_var,
                         &props,
+                        import_manager,
+                    ));
+                }
+
+                Part::IfComponentPart(component) => {
+                    let then_branch = Self::transform_component_prop_expr(
+                        &component.child,
+                        ctx,
+                        counter,
+                        import_manager,
+                    );
+
+                    let fallback_branch = match &component.fallback {
+                        Some(expr) => {
+                            Self::transform_component_prop_expr(expr, ctx, counter, import_manager)
+                        }
+                        None => Expr::Lit(Lit::Null(Null { span: DUMMY_SP })),
+                    };
+
+                    effects.push(ASTHelper::create_if_component(
+                        &node_var,
+                        &ctx.ctx_var,
+                        &component.condition,
+                        &then_branch,
+                        &fallback_branch,
+                        &component.deps,
                         import_manager,
                     ));
                 }
