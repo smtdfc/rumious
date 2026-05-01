@@ -1,6 +1,6 @@
 import type { EffectFunc } from "../effect/index.js";
 import { Context, TARGET_SYMBOL, type Target } from "../runtime/context.js";
-import { $$effect } from "../runtime/effect.js";
+import { createEffect } from "../runtime/effect.js";
 import { $$createRenderer, Renderer } from "../runtime/renderer.js";
 import type { State } from "../state/state.js";
 
@@ -22,7 +22,7 @@ export class Component implements Target {
   }
 
   effect(fn: EffectFunc, deps: State<any>[]) {
-    $$effect(fn, deps, this.ctx);
+    createEffect(fn, deps, this.ctx);
   }
 
   cleanup(fn: () => void) {
@@ -30,7 +30,11 @@ export class Component implements Target {
   }
 }
 
-export type FunctionComponent<T> = (props: T, ins?: Component) => Renderer;
+export type FunctionComponent<T> = (
+  props: T,
+  ins?: Component,
+  ctx?: Context,
+) => Renderer;
 
 export function Fragment(props: any, l: Component) {
   return $$createRenderer(() => {

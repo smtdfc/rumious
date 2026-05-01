@@ -5,12 +5,16 @@ import {
 } from "../component/component.js";
 import { flushQueue } from "../effect/index.js";
 import { State, type ArrayMutationEvent } from "../state/state.js";
-import { Context, getContext } from "./context.js";
+import { Context, getContext, withCurrentContext } from "./context.js";
 import { $$effect } from "./effect.js";
 import { $$createRange, $$insertInRange } from "./range.js";
 import { $$createRenderer, type Renderer } from "./renderer.js";
 
-export type ComponentFunc<T> = (props: T, ins: Component) => Renderer;
+export type ComponentFunc<T> = (
+  props: T,
+  ins: Component,
+  ctx?: Context,
+) => Renderer;
 export function $$createComponent<T>(
   node: Node,
   parentCtx: Context,
@@ -19,16 +23,24 @@ export function $$createComponent<T>(
 ) {
   const range = $$createRange(node);
   let instance = new Component(parentCtx);
-  let renderer = component(props, instance);
   let ctx = getContext(instance);
-  $$insertInRange(range, renderer.render(ctx), ctx);
 
-  const defs = ctx.deferrers;
-  for (let i = 0; i < defs.length; i++) {
-    defs[i]?.();
-  }
+  let renderer!: Renderer;
+  withCurrentContext(ctx, () => {
+    renderer = component(props, instance, ctx);
+  });
 
-  ctx.deferrers = [];
+  withCurrentContext(ctx, () => {
+    $$insertInRange(range, renderer.render(ctx), ctx);
+
+    const defs = ctx.deferrers;
+    for (let i = 0; i < defs.length; i++) {
+      defs[i]?.();
+    }
+
+    ctx.deferrers = [];
+  });
+
   flushQueue();
 }
 
@@ -62,11 +74,13 @@ export function $$forComponent<T>(
 
   const runDeferrers = (instance: Component) => {
     const ctx = getContext(instance);
-    const defs = ctx.deferrers;
-    for (let i = 0; i < defs.length; i++) {
-      defs[i]?.();
-    }
-    ctx.deferrers = [];
+    withCurrentContext(ctx, () => {
+      const defs = ctx.deferrers;
+      for (let i = 0; i < defs.length; i++) {
+        defs[i]?.();
+      }
+      ctx.deferrers = [];
+    });
   };
 
   const removeEntry = (entry: ForEntry, parent: Node) => {
@@ -118,12 +132,19 @@ export function $$forComponent<T>(
     const itemEnd = new Comment("f:e");
     const instance = new Component(parentCtx);
     const itemState = new State(item);
-    const renderer = template({ data: itemState, index }, instance);
+    const ctx = getContext(instance);
+    let renderer!: Renderer;
 
-    parent.insertBefore(itemStart, before);
-    parent.insertBefore(renderer.render(getContext(instance)), before);
-    parent.insertBefore(itemEnd, before);
-    runDeferrers(instance);
+    withCurrentContext(ctx, () => {
+      renderer = template({ data: itemState, index }, instance, ctx);
+    });
+
+    withCurrentContext(ctx, () => {
+      parent.insertBefore(itemStart, before);
+      parent.insertBefore(renderer.render(ctx), before);
+      parent.insertBefore(itemEnd, before);
+      runDeferrers(instance);
+    });
 
     return {
       key,
@@ -381,15 +402,24 @@ export function $$ifComponent(
       const content = branch
         ? $$createRenderer((ctx) => {
             const instance = new Component(ctx);
-            const renderer = branch({}, instance);
             const branchCtx = getContext(instance);
-            const fragment = renderer.render(branchCtx);
 
-            const defs = branchCtx.deferrers;
-            for (let i = 0; i < defs.length; i++) {
-              defs[i]?.();
-            }
-            branchCtx.deferrers = [];
+            let renderer!: Renderer;
+            withCurrentContext(branchCtx, () => {
+              renderer = branch({}, instance, branchCtx);
+            });
+
+            const fragment = withCurrentContext(branchCtx, () => {
+              const rendered = renderer.render(branchCtx);
+
+              const defs = branchCtx.deferrers;
+              for (let i = 0; i < defs.length; i++) {
+                defs[i]?.();
+              }
+              branchCtx.deferrers = [];
+
+              return rendered;
+            });
 
             return fragment;
           })

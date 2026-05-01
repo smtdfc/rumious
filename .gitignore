@@ -7,3 +7,4 @@ pkg
 .rollup.cache
 dist
 **/*.tsbuildinfo
+docs

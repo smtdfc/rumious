@@ -3,12 +3,30 @@ type Cleanable = {
 };
 
 export const TARGET_SYMBOL = Symbol("target");
+
+let currentContext: Context | null = null;
+
 export interface Target {
   [TARGET_SYMBOL]: () => Context;
 }
 
 export function getContext(target: Target): Context {
   return target[TARGET_SYMBOL]();
+}
+
+export function getCurrentContext() {
+  return currentContext;
+}
+
+export function withCurrentContext<T>(ctx: Context, fn: () => T): T {
+  const previous = currentContext;
+  currentContext = ctx;
+
+  try {
+    return fn();
+  } finally {
+    currentContext = previous;
+  }
 }
 
 export class Context {

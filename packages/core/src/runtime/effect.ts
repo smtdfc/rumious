@@ -1,10 +1,10 @@
 import {
   enqueueEffect,
-  removeQueuedEffect,
   type EffectFunc,
+  removeQueuedEffect,
 } from "../effect/index.js";
 import type { State } from "../state/state.js";
-import type { Context } from "./context.js";
+import { getCurrentContext, type Context } from "./context.js";
 
 export function $$effect(fn: EffectFunc, deps: State<any>[], ctx: Context) {
   let lastCleanup: (() => void) | null = null;
@@ -43,4 +43,20 @@ export function $$effect(fn: EffectFunc, deps: State<any>[], ctx: Context) {
 
     removeQueuedEffect(runEffect);
   });
+}
+
+export function createEffect(
+  fn: EffectFunc,
+  deps: State<any>[] = [],
+  ctx?: Context,
+) {
+  const current = ctx ?? getCurrentContext();
+
+  if (!current) {
+    throw new Error(
+      "createEffect must be called during a Rumious render or component execution",
+    );
+  }
+
+  $$effect(fn, deps, current);
 }

@@ -95,7 +95,7 @@ function mountForList(state: State<Row[]>) {
 }
 
 test("for keyed reconcile perf scenarios", () => {
-  const initialSize = 1000;
+  const initialSize = 10000;
   const opCount = 300;
 
   const state = createState(makeRows(initialSize));

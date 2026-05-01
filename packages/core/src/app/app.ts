@@ -1,5 +1,10 @@
 import { flushQueue } from "../effect/index.js";
-import { Context, TARGET_SYMBOL, type Target } from "../runtime/context.js";
+import {
+  Context,
+  TARGET_SYMBOL,
+  type Target,
+  withCurrentContext,
+} from "../runtime/context.js";
 import type { Renderer } from "../runtime/renderer.js";
 
 export class App implements Target {
@@ -11,16 +16,19 @@ export class App implements Target {
   attach(renderer: Renderer) {
     this.ctx.clean();
 
-    const frag = renderer.render(this.ctx);
-    this.root.appendChild(frag);
+    withCurrentContext(this.ctx, () => {
+      const frag = renderer.render(this.ctx);
+      this.root.appendChild(frag);
 
-    const defs = this.ctx.deferrers;
-    const len = defs.length;
-    for (let i = 0; i < len; i++) {
-      defs[i]?.();
-    }
+      const defs = this.ctx.deferrers;
+      const len = defs.length;
+      for (let i = 0; i < len; i++) {
+        defs[i]?.();
+      }
 
-    this.ctx.deferrers = [];
+      this.ctx.deferrers = [];
+    });
+
     flushQueue();
   }
 

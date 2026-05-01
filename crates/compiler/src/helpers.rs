@@ -272,7 +272,7 @@ impl ASTHelper {
         ctx_var: &Ident,
         import_manager: &mut ImportHelper,
     ) -> Stmt {
-        let create_template_fn = import_manager.get("$$effect");
+        let create_template_fn = import_manager.get("createEffect");
 
         let arrow_fn = ArrowExpr {
             span: DUMMY_SP,
