@@ -73,3 +73,5 @@ export function If(props: IfProps, l: Component) {
     );
   });
 }
+
+export type LazyProps = {};

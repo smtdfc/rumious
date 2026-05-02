@@ -25,11 +25,12 @@ mod deps_extractor;
 mod helpers;
 mod parts;
 mod result;
+mod route_generator;
+mod router;
 mod sourcemap;
 mod transformer;
 mod utils;
 mod visitor;
-
 #[cfg(test)]
 mod tests {
     use super::*;
