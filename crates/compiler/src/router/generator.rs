@@ -6,21 +6,17 @@ use swc_core::ecma::{
 };
 use swc_ecma_ast::{
     ArrowExpr, BindingIdent, BlockStmtOrExpr, CallExpr, Callee, Decl, ExportDecl, Expr,
-    ExprOrSpread, ExprStmt, Ident, ImportDecl, ImportNamedSpecifier, ImportPhase, ImportSpecifier,
-    KeyValueProp, Lit, Module, ModuleDecl, ModuleItem, Null, ObjectLit, Pat, Prop, PropName,
-    PropOrSpread, Stmt, Str, VarDecl, VarDeclKind, VarDeclarator,
+    ExprOrSpread, ImportDecl, ImportNamedSpecifier, ImportPhase, ImportSpecifier, KeyValueProp,
+    Lit, Module, ModuleDecl, ModuleItem, ObjectLit, Prop, PropName, PropOrSpread, Str, VarDecl,
+    VarDeclKind, VarDeclarator,
 };
 
-use crate::configs::import::{RUMIOUS_CORE_PKG, RUMIOUS_ROUTER_PKG};
+use crate::configs::import::RUMIOUS_CORE_PKG;
 use crate::router::metadata::{LayoutMetadata, PageMetadata, RouteMetadata};
 
 pub struct RouteGenerator {}
 
 impl RouteGenerator {
-    pub fn new() -> Self {
-        Self {}
-    }
-
     fn create_named_import(src: &str, names: Vec<&str>) -> ModuleItem {
         ModuleItem::ModuleDecl(ModuleDecl::Import(ImportDecl {
             span: DUMMY_SP,
@@ -171,6 +167,8 @@ impl RouteGenerator {
         path.trim_start_matches('/')
             .replace(".page.ts", "")
             .replace(".layout.ts", "")
+            .replace(".page.tsx", "")
+            .replace(".layout.tsx", "")
             .replace(".tsx", "")
             .replace(".ts", "")
             .replace("/", "_")
@@ -179,18 +177,20 @@ impl RouteGenerator {
             .replace("]", "")
     }
 
-    fn extract_metadata(paths: Vec<String>, route_dir: &String) -> Result<RouteMetadata, String> {
+    fn extract_metadata(paths: Vec<String>) -> Result<RouteMetadata, String> {
         let mut pages: Vec<PageMetadata> = vec![];
         let mut layouts = vec![];
 
         paths
             .iter()
-            .filter(|p| p.ends_with(".layout.ts"))
+            .filter(|p| p.ends_with(".layout.ts") || p.ends_with(".layout.tsx"))
             .for_each(|p| {
-                let layout_path = p
-                    .strip_suffix(".layout.ts")
-                    .unwrap_or(&p)
-                    .replace("index", "_root_layout");
+                let layout_path = match p {
+                    _ if p.ends_with(".layout.ts") => p.strip_suffix(".layout.ts").unwrap(),
+                    _ if p.ends_with(".layout.tsx") => p.strip_suffix(".layout.tsx").unwrap(),
+                    _ => &p,
+                }
+                .replace("index", "_root_layout");
 
                 let key = RouteGenerator::get_key_from_path(&layout_path);
                 layouts.push(LayoutMetadata {
@@ -203,14 +203,16 @@ impl RouteGenerator {
 
         paths
             .iter()
-            .filter(|p| p.ends_with(".page.ts"))
+            .filter(|p| p.ends_with(".page.ts") || p.ends_with(".page.tsx"))
             .for_each(|p| {
-                let page_path = p
-                    .strip_suffix(".page.ts")
-                    .unwrap_or(&p)
-                    .replace("index", "")
-                    .replace("[", ":")
-                    .replace("]", "");
+                let page_path = match p {
+                    _ if p.ends_with(".page.ts") => p.strip_suffix(".page.ts").unwrap(),
+                    _ if p.ends_with(".page.tsx") => p.strip_suffix(".page.tsx").unwrap(),
+                    _ => &p,
+                }
+                .replace("index", "")
+                .replace("[", ":")
+                .replace("]", "");
 
                 let page_dir = std::path::Path::new(p)
                     .parent()
@@ -243,7 +245,8 @@ impl RouteGenerator {
     }
 
     fn generate_ast(paths: Vec<String>, route_dir: String) -> Module {
-        let metadata = RouteGenerator::extract_metadata(paths, &route_dir).expect("Error");
+        let _route_dir = route_dir;
+        let metadata = RouteGenerator::extract_metadata(paths).expect("Error");
 
         Module {
             span: DUMMY_SP,

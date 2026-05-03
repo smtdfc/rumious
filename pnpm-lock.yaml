@@ -51,28 +51,6 @@ importers:
         specifier: ^4.0.18
         version: 4.0.18(@types/node@25.3.0)(happy-dom@20.7.0)(jiti@2.6.1)(terser@5.46.0)
 
-  local:
-    dependencies:
-      '@rumious/config':
-        specifier: workspace:*
-        version: link:../packages/config
-      '@rumious/core':
-        specifier: workspace:*
-        version: link:../packages/core
-      '@rumious/router':
-        specifier: workspace:*
-        version: link:../packages/router
-      '@rumious/vite-plugin':
-        specifier: workspace:*
-        version: link:../packages/vite-plugin
-    devDependencies:
-      typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
-      vite:
-        specifier: ^7.3.1
-        version: 7.3.1(@types/node@25.3.0)(jiti@2.6.1)(terser@5.46.0)
-
   packages/compiler: {}
 
   packages/config:
@@ -95,6 +73,9 @@ importers:
       '@rumious/compiler':
         specifier: workspace:*
         version: link:../compiler
+      '@rumious/core':
+        specifier: workspace:*
+        version: link:../core
       fast-glob:
         specifier: ^3.3.3
         version: 3.3.3

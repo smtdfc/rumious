@@ -144,8 +144,7 @@ declare module "@routes/*.layout.ts" {
     },
 
     configureServer(server) {
-      server.watcher.add(ROUTES_DIR);
-
+      server.watcher.add(path.resolve(root, config.routesDir || "routes"));
       const handleFileChange = async () => {
         await refreshRouter(server);
       };
