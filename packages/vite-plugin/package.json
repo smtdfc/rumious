@@ -1,6 +1,6 @@
 {
   "name": "@rumious/vite-plugin",
-  "version": "1.0.1-beta.0",
+  "version": "0.0.1",
   "description": "",
   "main": "./dist/index.js",
   "exports": {
@@ -34,7 +34,10 @@
   ],
   "packageManager": "pnpm@10.28.1",
   "dependencies": {
-    "@rumious/compiler": "workspace:*"
+    "@rumious/compiler": "workspace:*",
+    "@rumious/config": "workspace:*",
+    "fast-glob": "^3.3.3",
+    "jiti": "^2.6.1"
   },
   "devDependencies": {
     "vite": "^7.3.1"

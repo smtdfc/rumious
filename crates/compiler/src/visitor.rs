@@ -3,6 +3,7 @@ use swc_core::ecma::visit::{VisitMut, VisitMutWith};
 use swc_ecma_ast::Expr;
 
 use crate::{
+    configs::import::RUMIOUS_CORE_PKG,
     context::{Context, Counter},
     helpers::{ASTHelper, ImportHelper},
     transformer::Transformer,
@@ -74,7 +75,7 @@ impl VisitMut for Visitor {
         }
 
         let mut final_body = Vec::new();
-        if let Some(compiler_import) = self.import_helper.to_import_decl("@rumious/core") {
+        if let Some(compiler_import) = self.import_helper.to_import_decl(RUMIOUS_CORE_PKG) {
             final_body.push(compiler_import);
         }
 

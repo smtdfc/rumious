@@ -1,0 +1,12 @@
+{
+  // Visit https://aka.ms/tsconfig to read more about this file
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "target": "ES2015",
+    "module": "ESNext"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["test/**/*", "node_modules"]
+}

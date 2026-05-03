@@ -3,6 +3,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 use crate::{
     compiler::{CompileOption, Compiler},
     result::CompileResult,
+    router::generator::RouteGenerator,
 };
 
 #[wasm_bindgen(start)]
@@ -19,13 +20,18 @@ pub fn compile(code: &str, options: Option<CompileOption>) -> Result<CompileResu
     })
 }
 
+#[wasm_bindgen]
+pub fn generate_router_decl_code(paths: Vec<String>, route_dir: String) -> Result<String, String> {
+    RouteGenerator::generate(paths, route_dir)
+}
+
 mod compiler;
+mod configs;
 mod context;
 mod deps_extractor;
 mod helpers;
 mod parts;
 mod result;
-mod route_generator;
 mod router;
 mod sourcemap;
 mod transformer;

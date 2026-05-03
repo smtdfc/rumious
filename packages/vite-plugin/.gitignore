@@ -1,0 +1,11 @@
+node_modules
+target
+local
+pkg
+*.wasm
+
+.rollup.cache
+dist
+**/*.tsbuildinfo
+**/tsconfig.tsbuildinfo
+docs

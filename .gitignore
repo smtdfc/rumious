@@ -7,4 +7,5 @@ pkg
 .rollup.cache
 dist
 **/*.tsbuildinfo
+**/tsconfig.tsbuildinfo
 docs
